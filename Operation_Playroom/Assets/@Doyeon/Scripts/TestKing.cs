@@ -2,7 +2,7 @@ using UnityEngine;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 
-public class Knight : MonoBehaviour
+public class TestKing : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public float rotationSpeed = 10f;
@@ -28,8 +28,8 @@ public class Knight : MonoBehaviour
         // 입력받기
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-
-        Vector3 moveDirection = new Vector3(horizontal, 0, vertical).normalized; // 이동 방향 설정
+        // 이동 방향 설정
+        moveDirection = new Vector3(horizontal, 0, vertical).normalized; 
 
         // 이동방향이 있으면 회전
         if (moveDirection.magnitude > 0)
@@ -58,7 +58,8 @@ public class Knight : MonoBehaviour
         // 땅에 있을 때만 이동 적용
         if (isGrounded)
         {
-            rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
+            //rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
+            rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
         }
     }
 
