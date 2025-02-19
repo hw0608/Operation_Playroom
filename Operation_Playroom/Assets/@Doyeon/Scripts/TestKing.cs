@@ -4,15 +4,15 @@ using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class TestKing : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float rotationSpeed = 10f;
+    [SerializeField] float moveSpeed = 5f;
+    [SerializeField] float rotationSpeed = 10f;
     private Rigidbody rb;
-    public LayerMask groundLayer;
-    public float groundCheck = 1.1f; // 바닥 감지 거리
+    [SerializeField] LayerMask groundLayer;
+    [SerializeField] float groundCheck = 1.1f; // 바닥 감지 거리
     private bool isGrounded;
 
-    public float gravity = 9.8f; //중력 값
-    public float jumpForce = 5f; // 점프 힘 
+    [SerializeField] float gravity = 9.8f; //중력 값
+    [SerializeField] float jumpForce = 5f; // 점프 힘 
 
     private Vector3 moveDirection; // 이동방향 저장
 
