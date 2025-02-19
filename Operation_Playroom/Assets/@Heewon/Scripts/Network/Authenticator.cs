@@ -14,11 +14,11 @@ public enum AuthState
     Timeout
 }
 
-public static class Authenticator 
+public static class Authenticator
 {
-    public static AuthState state {  get; private set; } = AuthState.NotAuthenticated;
+    public static AuthState state { get; private set; } = AuthState.NotAuthenticated;
 
-    public static async Task<AuthState> DoAuth(int maxTries =5)
+    public static async Task<AuthState> DoAuth(int maxTries = 5)
     {
         if (state == AuthState.Authenticating) return state;
 
@@ -27,7 +27,7 @@ public static class Authenticator
         return state;
     }
 
-    static async Task SignInAnonymouslyAsync(int maxTries=5)
+    static async Task SignInAnonymouslyAsync(int maxTries = 5)
     {
         state = AuthState.Authenticating;
 

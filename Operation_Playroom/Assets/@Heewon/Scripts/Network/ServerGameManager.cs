@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Matchmaker.Models;
@@ -26,7 +24,6 @@ public class ServerGameManager : IDisposable
     {
         await multiplayAllocationService.BeginServerCheck();
 
-
         try
         {
             MatchmakingResults matchmakerPayload = await GetMatchmakerPayload();
@@ -40,7 +37,7 @@ public class ServerGameManager : IDisposable
             }
             else
             {
-                Debug.LogWarning("matchmaker payload timed out ");
+                Debug.LogWarning("matchmaker payload timed out");
             }
         }
         catch (Exception ex)
@@ -48,14 +45,14 @@ public class ServerGameManager : IDisposable
             Debug.LogException(ex);
         }
 
-
         if (!ServerSingleton.Instance.OpenConnection(serverIp, serverPort))
         {
             Debug.LogWarning("Network Server not started");
             return;
         }
 
-        NetworkManager.Singleton.SceneManager.LoadScene("BattleScene",
+        // TODO: 서버가 정상적으로 작동할 경우, 로드할 씬 이름 변경하기
+        NetworkManager.Singleton.SceneManager.LoadScene("GameScene",
             UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 

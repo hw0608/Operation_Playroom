@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Unity.Multiplayer;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,9 +32,12 @@ public class ApplicationManager : MonoBehaviour
 
             if (authenticated)
             {
-                GotoMenu();
+                //GotoMenu();
             }
-
+            else
+            {
+                //TODO: 로그인 실패했을 경우 재시도
+            }
         }
     }
 
