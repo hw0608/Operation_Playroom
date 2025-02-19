@@ -69,4 +69,9 @@ public class LobbyList : MonoBehaviour
         }
         isJoining = false;
     }
+
+    public async void OnCreateLobbyButtonPressed()
+    {
+        await HostSingleton.Instance.StartHostAsync();
+    }
 }

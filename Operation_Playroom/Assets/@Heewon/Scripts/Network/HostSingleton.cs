@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -65,11 +64,11 @@ public class HostSingleton : MonoBehaviour
         {
             CreateLobbyOptions options = new CreateLobbyOptions();
             options.IsPrivate = false;
-            options.Data = new Dictionary<string, Unity.Services.Lobbies.Models.DataObject>
+            options.Data = new Dictionary<string, DataObject>
             {
                 {
                     "JoinCode",
-                    new Unity.Services.Lobbies.Models.DataObject(Unity.Services.Lobbies.Models.DataObject.VisibilityOptions.Member,joinCode)
+                    new DataObject(DataObject.VisibilityOptions.Member,joinCode)
                 }
             };
 
@@ -101,7 +100,7 @@ public class HostSingleton : MonoBehaviour
         ServerSingleton.Instance.OnClientLeft += HandleClientLeft;
 
         NetworkManager.Singleton.StartHost();
-        NetworkManager.Singleton.SceneManager.LoadScene("BattleScene", 
+        NetworkManager.Singleton.SceneManager.LoadScene("LobbyScene", 
             UnityEngine.SceneManagement.LoadSceneMode.Single);
 
     }

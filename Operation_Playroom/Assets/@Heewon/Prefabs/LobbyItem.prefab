@@ -622,7 +622,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 6553609095545775637}
         m_TargetAssemblyTypeName: LobbyItem, Assembly-CSharp
         m_MethodName: JoinPressed
         m_Mode: 1
