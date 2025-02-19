@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using Unity.Services.Lobbies;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -23,12 +25,55 @@ public class LobbyRoom : NetworkBehaviour
     {
         if (IsClient)
         {
-            players.OnListChanged += HandlePlayerNameChanged;
+            players.OnListChanged += HandlePlayerStateChanged;
+
+            foreach (var player in players)
+            {
+                HandlePlayerStateChanged(new NetworkListEvent<LobbyRoomPlayerData>
+                {
+                    Type = NetworkListEvent<LobbyRoomPlayerData>.EventType.Add,
+                    Value = player
+                });
+            }
         }
 
         if (IsServer)
         {
-            AddPlayerServerRpc(NetworkManager.Singleton.LocalClientId, "Player " + players.Count);
+            AddPlayerServerRpc(OwnerClientId, "Player " + players.Count);
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+        }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (IsClient)
+        {
+            players.OnListChanged -= HandlePlayerStateChanged;
+        }
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        }
+    }
+
+    private void OnClientConnected(ulong clientId)
+    {
+        AddPlayerServerRpc(clientId, "Player " + players.Count);
+    }
+
+    private void OnClientDisconnected(ulong clientId)
+    {
+        if (players == null) return;
+
+        foreach (var player in players)
+        {
+            if (player.clientId == clientId)
+            {
+                players.Remove(player);
+                break;
+            }
         }
     }
 
@@ -54,14 +99,48 @@ public class LobbyRoom : NetworkBehaviour
             readyButton.SetActive(false);
             startButton.SetActive(true);
         }
+
+        Debug.Log("Player Count: " + players.Count);
     }
 
     public void OnBackButtonPressed()
     {
-
+        if (NetworkManager.Singleton.IsHost)
+        {
+            if (players.Count <= 1)     // 방장밖에 없었으면 방 폭파
+            {
+                HostSingleton.Instance.ShutDown();
+            }
+            else
+            {
+                //TODO: 남아 있는 사람한테 방장 위임
+                AssignNewLeader();
+            }
+        }
+        else if (NetworkManager.Singleton.IsConnectedClient)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
     }
 
-    public void HandlePlayerNameChanged(NetworkListEvent<LobbyRoomPlayerData> changeEvent)
+    void AssignNewLeader()
+    {
+        int newLeader = 0;
+        do
+        {
+            newLeader = UnityEngine.Random.Range(0, players.Count);
+        } while (players[newLeader].clientId != OwnerClientId);
+
+        players[newLeader] = new LobbyRoomPlayerData
+        {
+            clientId = players[newLeader].clientId,
+            userName = players[newLeader].userName,
+            isLeader = true,
+            team = players[newLeader].team
+        };
+    }
+
+    public void HandlePlayerStateChanged(NetworkListEvent<LobbyRoomPlayerData> changeEvent)
     {
         UpdateUI();
     }
@@ -98,7 +177,10 @@ public class LobbyRoom : NetworkBehaviour
 
     public void ToggleReady()
     {
-        ToggleReadyServerRpc(NetworkManager.Singleton.LocalClientId);
+        if (IsOwner)
+        {
+            ToggleReadyServerRpc(OwnerClientId);
+        }
     }
 
     [ServerRpc]

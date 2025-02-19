@@ -67,9 +67,9 @@ public class ClientSingleton : MonoBehaviour
             return;
         }
 
-        if (SceneManager.GetActiveScene().name != "MenuScene")
+        if (SceneManager.GetActiveScene().name != "TitleScene")
         {
-            SceneManager.LoadScene("MenuScene");
+            SceneManager.LoadScene("TitleScene");
         }
     }
 
