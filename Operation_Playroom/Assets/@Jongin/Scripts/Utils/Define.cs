@@ -9,4 +9,10 @@ public static class Define
         Max
     }
 
+    public enum EGameState
+    {
+        Ready,
+        Play,
+        End
+    }
 }

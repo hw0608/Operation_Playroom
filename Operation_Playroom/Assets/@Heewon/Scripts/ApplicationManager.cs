@@ -32,7 +32,7 @@ public class ApplicationManager : MonoBehaviour
 
             if (authenticated)
             {
-                //GotoMenu();
+                GotoMenu();
             }
             else
             {
@@ -43,6 +43,6 @@ public class ApplicationManager : MonoBehaviour
 
     public void GotoMenu()
     {
-        SceneManager.LoadScene("MenuScene");
+        SceneManager.LoadScene("MainScene");
     }
 }
