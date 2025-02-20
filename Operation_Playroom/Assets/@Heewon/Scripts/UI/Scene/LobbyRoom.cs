@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -39,7 +41,7 @@ public class LobbyRoom : NetworkBehaviour
         if (IsServer)
         {
             string userName = ServerSingleton.Instance.clientIdToUserData[NetworkManager.Singleton.LocalClientId].userName;
-            AddPlayerServerRpc(OwnerClientId, userName);
+            AddPlayerServerRpc(AuthenticationService.Instance.PlayerId, NetworkManager.Singleton.LocalClientId, userName);
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         }
@@ -60,7 +62,7 @@ public class LobbyRoom : NetworkBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
-        AddPlayerServerRpc(clientId, ServerSingleton.Instance.clientIdToUserData[clientId].userName);
+        AddPlayerServerRpc(ServerSingleton.Instance.clientIdToUserData[clientId].userAuthId, clientId, ServerSingleton.Instance.clientIdToUserData[clientId].userName);
     }
 
     private void OnClientDisconnected(ulong clientId)
@@ -78,13 +80,14 @@ public class LobbyRoom : NetworkBehaviour
     }
 
     [ServerRpc]
-    void AddPlayerServerRpc(ulong clientId, string name)
+    void AddPlayerServerRpc(string authId, ulong clientId, string name)
     {
         int team = AssignTeam();
         bool isLeader = (players.Count == 0);   // 방에 맨 처음으로 들어왔으면 방장
 
         LobbyRoomPlayerData newPlayer = new LobbyRoomPlayerData
         {
+            authId = authId,
             clientId = clientId,
             userName = name,
             isReady = false,
@@ -115,7 +118,7 @@ public class LobbyRoom : NetworkBehaviour
         return (blue == red) ? UnityEngine.Random.Range(0, 1) : blue < red ? 0 : 1;
     }
 
-    public void OnBackButtonPressed()
+    public async void OnBackButtonPressedAsync()
     {
         if (NetworkManager.Singleton.IsHost)
         {
@@ -126,30 +129,41 @@ public class LobbyRoom : NetworkBehaviour
             else
             {
                 //TODO: 남아 있는 사람한테 방장 위임
-                AssignNewLeader();
+                await AssignNewLeaderAsync();
             }
         }
-        else if (NetworkManager.Singleton.IsConnectedClient)
+        if (NetworkManager.Singleton.IsConnectedClient)
         {
             NetworkManager.Singleton.Shutdown();
         }
     }
 
-    void AssignNewLeader()
+    async Task AssignNewLeaderAsync()
     {
+        Debug.Log("AssignNewLeader");
         int newLeader = 0;
         do
         {
             newLeader = UnityEngine.Random.Range(0, players.Count);
-        } while (players[newLeader].clientId != OwnerClientId);
+        } while (players[newLeader].clientId == OwnerClientId);
 
         players[newLeader] = new LobbyRoomPlayerData
         {
+            authId = players[newLeader].authId,
             clientId = players[newLeader].clientId,
             userName = players[newLeader].userName,
             isLeader = true,
             team = players[newLeader].team
         };
+
+        try
+        {
+            await HostSingleton.Instance.UpdateLobbyHost(players[newLeader].authId.ToString());
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogException(ex);
+        }
     }
 
     public void HandlePlayerStateChanged(NetworkListEvent<LobbyRoomPlayerData> changeEvent)

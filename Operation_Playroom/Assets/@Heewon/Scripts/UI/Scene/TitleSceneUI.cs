@@ -1,14 +1,18 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using Unity.Services.Authentication;
+using UnityEngine;
 
 public class TitleSceneUI : MonoBehaviour
 {
-    [SerializeField] GameObject LobbyCanvas;
-    [SerializeField] GameObject StartOptionPanel;
+    [SerializeField] GameObject lobbyCanvas;
+    [SerializeField] GameObject startOptionPanel;
+    [SerializeField] TMP_InputField userNameInputField;
+    [SerializeField] TMP_InputField joinCodeInputField;
 
     void Init()
     {
-        StartOptionPanel.SetActive(false);
-        LobbyCanvas.SetActive(false);
+        startOptionPanel.SetActive(false);
+        lobbyCanvas.SetActive(false);
     }
 
     private void Start()
@@ -18,12 +22,22 @@ public class TitleSceneUI : MonoBehaviour
 
     public void OnStartButtonPressed()
     {
-        StartOptionPanel.SetActive(true);
+        startOptionPanel.SetActive(true);
     }
 
     public async void OnFindMatchButtonPressed()
     {
-        StartOptionPanel.SetActive(false);
+        startOptionPanel.SetActive(false);
 
+    }
+
+    public async void OnChangeUserNameButtonPressed()
+    {
+        await AuthenticationService.Instance.UpdatePlayerNameAsync(userNameInputField.text);
+    }
+
+    public async void OnJoinButtonPressed()
+    {
+        await ClientSingleton.Instance.StartClientAsync(joinCodeInputField.text);
     }
 }

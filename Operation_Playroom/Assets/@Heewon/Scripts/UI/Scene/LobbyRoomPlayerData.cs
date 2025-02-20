@@ -5,6 +5,7 @@ using UnityEngine;
 
 public struct LobbyRoomPlayerData : INetworkSerializable, IEquatable<LobbyRoomPlayerData>
 {
+    public FixedString512Bytes authId; 
     public ulong clientId;
     public FixedString128Bytes userName;
     public bool isReady;
@@ -13,7 +14,8 @@ public struct LobbyRoomPlayerData : INetworkSerializable, IEquatable<LobbyRoomPl
 
     public bool Equals(LobbyRoomPlayerData other)
     {
-        return clientId == other.clientId 
+        return authId == other.authId
+            && clientId == other.clientId 
             && userName == other.userName 
             && isReady == other.isReady 
             && isLeader == other.isLeader
@@ -22,6 +24,7 @@ public struct LobbyRoomPlayerData : INetworkSerializable, IEquatable<LobbyRoomPl
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
+        serializer.SerializeValue(ref authId);
         serializer.SerializeValue(ref clientId);
         serializer.SerializeValue(ref userName);
         serializer.SerializeValue(ref isReady);

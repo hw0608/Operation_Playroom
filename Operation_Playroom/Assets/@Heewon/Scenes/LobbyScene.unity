@@ -3230,8 +3230,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1839352112}
-        m_TargetAssemblyTypeName: LobbySceneUI, Assembly-CSharp
-        m_MethodName: OnBackButtonPressed
+        m_TargetAssemblyTypeName: LobbyRoom, Assembly-CSharp
+        m_MethodName: OnBackButtonPressedAsync
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -38,6 +38,28 @@ public class HostSingleton : MonoBehaviour
     string joinCode;
     string lobbyId;
 
+    public string LobbyId
+    {
+        get { return lobbyId; }
+    }
+
+    public async Task UpdateLobbyHost(string newHostAuthId)
+    {
+        try
+        {
+            UpdateLobbyOptions op = new UpdateLobbyOptions
+            {
+                HostId = newHostAuthId
+            };
+
+            await LobbyService.Instance.UpdateLobbyAsync(lobbyId, op);
+        }
+        catch (LobbyServiceException ex)
+        {
+            Debug.LogException(ex);
+        }
+    }
+
     public async Task StartHostAsync()
     {
         // 릴레이 접속
