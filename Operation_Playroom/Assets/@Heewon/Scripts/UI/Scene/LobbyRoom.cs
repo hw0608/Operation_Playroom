@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
@@ -39,7 +38,8 @@ public class LobbyRoom : NetworkBehaviour
 
         if (IsServer)
         {
-            AddPlayerServerRpc(OwnerClientId, "Player " + players.Count);
+            string userName = ServerSingleton.Instance.clientIdToUserData[NetworkManager.Singleton.LocalClientId].userName;
+            AddPlayerServerRpc(OwnerClientId, userName);
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         }
@@ -60,7 +60,7 @@ public class LobbyRoom : NetworkBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
-        AddPlayerServerRpc(clientId, "Player " + players.Count);
+        AddPlayerServerRpc(clientId, ServerSingleton.Instance.clientIdToUserData[clientId].userName);
     }
 
     private void OnClientDisconnected(ulong clientId)
@@ -80,7 +80,7 @@ public class LobbyRoom : NetworkBehaviour
     [ServerRpc]
     void AddPlayerServerRpc(ulong clientId, string name)
     {
-        int team = players.Count % 2;
+        int team = AssignTeam();
         bool isLeader = (players.Count == 0);   // 방에 맨 처음으로 들어왔으면 방장
 
         LobbyRoomPlayerData newPlayer = new LobbyRoomPlayerData
@@ -101,6 +101,18 @@ public class LobbyRoom : NetworkBehaviour
         }
 
         Debug.Log("Player Count: " + players.Count);
+    }
+
+    int AssignTeam()
+    {
+        int blue = 0, red = 0;
+
+        foreach (var player in players) {
+            if (player.team == 0) blue++;
+            else red++;
+        }
+
+        return (blue == red) ? UnityEngine.Random.Range(0, 1) : blue < red ? 0 : 1;
     }
 
     public void OnBackButtonPressed()
@@ -147,9 +159,6 @@ public class LobbyRoom : NetworkBehaviour
 
     private void UpdateUI()
     {
-        Debug.Log(playerNameTexts.Length);
-        Debug.Log(playerNameTexts[0].texts.Length);
-
         for (int i = 0; i < playerNameTexts.Length; i++)
         {
             for (int j = 0; j < playerNameTexts[i].texts.Length; j++)
@@ -159,33 +168,37 @@ public class LobbyRoom : NetworkBehaviour
             }
         }
 
-        Dictionary<int, int> teamIndex = new Dictionary<int, int> { { 0, 0 }, { 1, 0 } };
+        int[] teamCount = new int[2];
+        ulong clientId = NetworkManager.Singleton.LocalClientId;
 
         foreach (var player in players)
         {
             int team = player.team;
-            int index = teamIndex[team];
+            int index = teamCount[team];
 
             if (index < playerNameTexts[team].texts.Length)
             {
                 playerNameTexts[team].texts[index].text = player.userName.ToString();
+                if (player.clientId == clientId)
+                {
+                    playerNameTexts[team].texts[index].text = $"<b>{player.userName.ToString()}</b>";
+                }
                 playerReadyTexts[team].texts[index].text = !player.isLeader && player.isReady ? "<color=green>Ready</color>" : "";
-                teamIndex[team]++;
+                teamCount[team]++;
             }
         }
     }
 
     public void ToggleReady()
     {
-        if (IsOwner)
-        {
-            ToggleReadyServerRpc(OwnerClientId);
-        }
+        Debug.Log($"ToggleReady() called by client {NetworkManager.Singleton.LocalClientId}");
+        ToggleReadyServerRpc(NetworkManager.Singleton.LocalClientId);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void ToggleReadyServerRpc(ulong clientId)
     {
+        Debug.Log($"ToggleReadyServerRpc() called by client {NetworkManager.Singleton.LocalClientId}");
         for (int i = 0; i < players.Count; i++)
         {
             if (players[i].clientId == clientId)
@@ -196,22 +209,39 @@ public class LobbyRoom : NetworkBehaviour
                 break;
             }
         }
+
+        foreach (var player in players)
+        {
+            Debug.Log($"{player.clientId} : {player.isReady}");
+        }
     }
 
     private bool CheckAllPlayersReady()
     {
-        bool allReady = true;
         foreach (var player in players)
         {
-            if (!player.isReady)
+            if (!player.isLeader && !player.isReady)
             {
-                allReady = false;
-                break;
+                return false;
             }
         }
 
-        return allReady;
+        return true;
     }
 
+    public void OnStartButtonPressed()
+    {
+        if (!IsServer) return;
 
+        if (CheckAllPlayersReady())
+        {
+            StartGameServerRpc();
+        }
+    }
+
+    [ServerRpc]
+    void StartGameServerRpc()
+    {
+        NetworkManager.SceneManager.LoadScene("TestScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
+    }
 }
