@@ -2442,7 +2442,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   king: {fileID: 360798282}
   followDistance: 2
-  formationIndex: 2
+  formationIndex: 1
   attackRange: 2
   damage: 10
   attackCooldown: 1.5
@@ -7954,7 +7954,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   king: {fileID: 360798282}
   followDistance: 2
-  formationIndex: 2
+  formationIndex: 0
   attackRange: 2
   damage: 10
   attackCooldown: 1.5

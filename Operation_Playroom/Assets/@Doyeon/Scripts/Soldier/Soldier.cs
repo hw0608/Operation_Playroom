@@ -76,19 +76,19 @@ public class Soldier : MonoBehaviour
     }
     private Vector3 GetTrianglePosition(int index)
     {
-        float spacing = 1.2f * scaleFactor; // 병사간 간격
+        float spacing = 1.5f * scaleFactor; // 병사간 간격
         Vector3 kingPosition = king.position;
-        Vector3 forwardOffset = king.forward * -spacing * 0.8f; // 왕 뒤쪽
+        Vector3 forwardOffset = king.forward * -spacing * 1f; // 왕 뒤쪽
         Vector3 sideOffset = king.right * spacing; // 왕 좌우 
 
         switch (index)
         {
             case 0:
-                return kingPosition + forwardOffset - sideOffset *0.8f; // 왼쪽
+                return kingPosition - sideOffset; // 왼쪽
             case 1:
-                return kingPosition + forwardOffset + sideOffset * 0.8f; // 오른쪽
+                return kingPosition + sideOffset; // 오른쪽
             case 2:
-                return kingPosition + forwardOffset * 0.5f; // 뒤쪽 
+                return kingPosition + forwardOffset ; // 뒤쪽 
             default:
                 return kingPosition; // 기본 위치
         }
