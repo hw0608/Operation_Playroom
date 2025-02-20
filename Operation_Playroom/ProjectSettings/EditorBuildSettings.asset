@@ -9,7 +9,10 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 0
-    path: Assets/@Heewon/Scenes/TitleScene.unity
+    path: Assets/@Heewon/Scenes/NetConnectScene.unity
+    guid: 12ca226e1d25316458227a670f1f05c7
+  - enabled: 0
+    path: Assets/@Heewon/Scenes/MainScene.unity
     guid: 238e9455ced455d45900f718f832feba
   - enabled: 0
     path: Assets/@Heewon/Scenes/LobbyScene.unity
