@@ -292,13 +292,13 @@ public class LobbyRoom : NetworkBehaviour
 
         if (CheckAllPlayersReady())
         {
-            NetworkManager.SceneManager.LoadScene("TestScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
+            NetworkManager.SceneManager.LoadScene("BattleTestScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
 
     [ServerRpc]
     void StartGameServerRpc()
     {
-        NetworkManager.SceneManager.LoadScene("TestScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
+        NetworkManager.SceneManager.LoadScene("BattleTestScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Android.Gradle.Manifest;
 using Unity.Cinemachine;
 using Unity.Netcode;
@@ -8,18 +9,21 @@ using UnityEngine.TextCore.Text;
 
 public abstract class Character : NetworkBehaviour, ICharacter
 {
-    float moveSpeed = 5;
+    public CinemachineFreeLookModifier cam;
+
     bool isGrounded;
 
     CharacterController controller;
     Vector3 velocity;
-    Quaternion currentRotation;
 
     protected Animator animator;
     protected NetworkAnimator networkAnimator;
     protected float maxHp = 100;
     protected float currentHp;
-    protected CinemachineCamera cam;
+    protected float moveSpeed = 5;
+    protected Quaternion currentRotation;
+
+
 
 
     public virtual void Start()
@@ -27,6 +31,9 @@ public abstract class Character : NetworkBehaviour, ICharacter
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false; 
     }
 
     public abstract void Attack(); // 공격 구현
@@ -40,11 +47,14 @@ public abstract class Character : NetworkBehaviour, ICharacter
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
+        float scaleFactor = transform.localScale.y;
+        float adjustedMoveSpeed = moveSpeed * scaleFactor;
+
         // 카메라 방향에 따른 이동
         Vector3 moveDirection = cam.gameObject.transform.right * moveX + cam.gameObject.transform.forward * moveZ;
         moveDirection.y = 0;
 
-        Vector3 velocity = moveDirection.normalized * moveSpeed;
+        Vector3 velocity = moveDirection.normalized * adjustedMoveSpeed;
         velocity.y = rb.linearVelocity.y;
 
         rb.linearVelocity = velocity;
@@ -83,6 +93,28 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public void Die()
     {
         Debug.Log("Die");
+    }
+
+    void AssignCamera()
+    {
+        cam = FindFirstObjectByType<CinemachineFreeLookModifier>();
+
+        if (cam != null)
+        {
+            cam.transform.position = transform.position;
+            cam.gameObject.GetComponent<CinemachineCamera>().Follow = transform;
+            cam.gameObject.GetComponent<CinemachineCamera>().LookAt = transform;
+        }
+        else
+        {
+            Debug.LogError("Cinemachine Camera를 찾을 수 없습니다.");
+        }
+    }
+
+    IEnumerator CamRoutine()
+    {
+        yield return new WaitUntil(() => FindFirstObjectByType<CinemachineCamera>() != null);
+        AssignCamera();
     }
 
 }
