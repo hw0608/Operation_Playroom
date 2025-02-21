@@ -384,4 +384,4 @@ MonoBehaviour:
   redTeamResourceCountImage: {fileID: 8222264562448540431}
   blueTeamResourceCountImage: {fileID: 1358541235369553088}
   redTeamBuildingPrefab: {fileID: 6715654517453632122, guid: e9ae5b3be7e38504db6f08f4a0db641f, type: 3}
-  blueTeamBuildingPrefab: {fileID: 6715654517453632122, guid: e9ae5b3be7e38504db6f08f4a0db641f, type: 3}
+  blueTeamBuildingPrefab: {fileID: 6715654517453632122, guid: 2a3ad2630ac881446ab26e48514540c9, type: 3}
