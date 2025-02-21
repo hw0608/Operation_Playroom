@@ -14832,6 +14832,7 @@ GameObject:
   - component: {fileID: -7515905400544672292}
   - component: {fileID: 4244218131759594287}
   - component: {fileID: -7743729214425065396}
+  - component: {fileID: -3931345857987243654}
   m_Layer: 0
   m_Name: Swordman
   m_TagString: Untagged
@@ -15029,6 +15030,19 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   attackCooldown: 0.5
   swordHitbox: {fileID: 171234}
+--- !u!114 &-3931345857987243654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba910acba8d5ff94dab90742c4525e2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &182750
 GameObject:
   m_ObjectHideFlags: 0
