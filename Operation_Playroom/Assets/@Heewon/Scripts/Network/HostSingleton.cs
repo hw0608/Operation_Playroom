@@ -35,8 +35,8 @@ public class HostSingleton : MonoBehaviour
 
     const int MaxConnections = 10;
     Allocation allocation;
-    string joinCode;
-    string lobbyId;
+    public string joinCode;
+    public string lobbyId;
 
     public string LobbyId
     {
@@ -60,51 +60,58 @@ public class HostSingleton : MonoBehaviour
         }
     }
 
-    public async Task StartHostAsync()
+    public async Task StartHostAsync(bool createNewLobby = true, string joinCode = "", string lobbyId = "")
     {
-        // 릴레이 접속
-
-        try
+        if (createNewLobby)
         {
-            allocation = await RelayService.Instance.CreateAllocationAsync(MaxConnections);
-            joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            Debug.Log(joinCode);
-        }
-        catch (RelayServiceException e)
-        {
-            Debug.LogException(e);
-            return;
-        }
+            // 릴레이 접속
 
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        RelayServerData relayServerData = allocation.ToRelayServerData("dtls");
-        transport.SetRelayServerData(relayServerData);
+            try
+            {
+                allocation = await RelayService.Instance.CreateAllocationAsync(MaxConnections);
+                this.joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+                Debug.Log(this.joinCode);
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.LogException(e);
+                return;
+            }
 
-        // 로비 만들기
+            UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            RelayServerData relayServerData = allocation.ToRelayServerData("dtls");
+            transport.SetRelayServerData(relayServerData);
 
-        try
-        {
-            CreateLobbyOptions options = new CreateLobbyOptions();
-            options.IsPrivate = false;
-            options.Data = new Dictionary<string, DataObject>
+            // 로비 만들기
+
+            try
+            {
+                CreateLobbyOptions options = new CreateLobbyOptions();
+                options.IsPrivate = false;
+                options.Data = new Dictionary<string, DataObject>
             {
                 {
                     "JoinCode",
-                    new DataObject(DataObject.VisibilityOptions.Member,joinCode)
+                    new DataObject(DataObject.VisibilityOptions.Member,this.joinCode)
                 }
             };
 
-            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(joinCode, MaxConnections, options);
-            lobbyId = lobby.Id;
-
-            StartCoroutine(HeartBeatLobby(15));
-
+                Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(this.joinCode, MaxConnections, options);
+                this.lobbyId = lobby.Id;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.LogException(e);
+                return;
+            }
         }
-        catch (LobbyServiceException e)
+        else
         {
-            Debug.LogException(e);
-            return;
+            this.joinCode = joinCode;
+            this.lobbyId = lobbyId;
         }
+        
+        StartCoroutine(HeartBeatLobby(15));
 
         // 여기까지 로비
 
@@ -122,8 +129,9 @@ public class HostSingleton : MonoBehaviour
         ServerSingleton.Instance.OnClientLeft += HandleClientLeft;
 
         NetworkManager.Singleton.StartHost();
-        NetworkManager.Singleton.SceneManager.LoadScene("LobbyScene", 
-            UnityEngine.SceneManagement.LoadSceneMode.Single);
+        if (createNewLobby)
+            NetworkManager.Singleton.SceneManager.LoadScene("LobbyScene", 
+                UnityEngine.SceneManagement.LoadSceneMode.Single);
 
     }
 
@@ -131,6 +139,14 @@ public class HostSingleton : MonoBehaviour
     {
         try
         {
+            Lobby lobby = await LobbyService.Instance.GetLobbyAsync(lobbyId);
+            if (lobby.HostId != AuthenticationService.Instance.PlayerId) 
+            {
+                Debug.Log("호스트 불일치");
+                ShutDown();
+                return;
+            }
+
             await LobbyService.Instance.RemovePlayerAsync(lobbyId,authId);
         }
         catch (LobbyServiceException e)
@@ -151,11 +167,11 @@ public class HostSingleton : MonoBehaviour
     }
 
     //방폭버튼
-    public async void ShutDown()    
+    public async void ShutDown(bool deleteLobby = false)    
     {
         StopAllCoroutines();
 
-        if (!lobbyId.IsNullOrEmpty())
+        if (deleteLobby && !lobbyId.IsNullOrEmpty())
         {
             try
             {
@@ -165,7 +181,7 @@ public class HostSingleton : MonoBehaviour
             {
                 Debug.LogException(e);
             }
-            lobbyId=null;
+            lobbyId = null;
         }
 
         ServerSingleton.Instance.OnClientLeft -= HandleClientLeft;

@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
+using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -20,6 +23,7 @@ public class LobbyRoom : NetworkBehaviour
     [SerializeField] GameObject readyButton;
     [SerializeField] GameObject startButton;
 
+    Lobby lobby;
     NetworkList<LobbyRoomPlayerData> players = new NetworkList<LobbyRoomPlayerData>();
 
     public override void OnNetworkSpawn()
@@ -124,12 +128,22 @@ public class LobbyRoom : NetworkBehaviour
         {
             if (players.Count <= 1)     // 방장밖에 없었으면 방 폭파
             {
-                HostSingleton.Instance.ShutDown();
+                HostSingleton.Instance.ShutDown(true);
             }
             else
             {
                 //TODO: 남아 있는 사람한테 방장 위임
-                await AssignNewLeaderAsync();
+                Task<string> assignNewLeader = AssignNewLeaderAsync();
+                if (await Task.WhenAny(assignNewLeader, Task.Delay(10000)) == assignNewLeader)
+                {
+                    Debug.Log("CheckNewHostClientRpc");
+                    CheckNewHostClientRpc(assignNewLeader.Result, HostSingleton.Instance.joinCode, HostSingleton.Instance.lobbyId);
+                }
+                else
+                {
+                    Debug.Log("방장 위임 실패");
+                    HostSingleton.Instance.ShutDown(true);
+                }
             }
         }
         if (NetworkManager.Singleton.IsConnectedClient)
@@ -138,14 +152,40 @@ public class LobbyRoom : NetworkBehaviour
         }
     }
 
-    async Task AssignNewLeaderAsync()
+    [ClientRpc]
+    void CheckNewHostClientRpc(string newHostAuthId, string joinCode, string lobbyId)
+    {
+        Debug.Log(NetworkManager.Singleton.LocalClientId);
+        HandleLobbyCheckAsync(newHostAuthId, lobbyId, joinCode);
+    }
+
+    private async void HandleLobbyCheckAsync(string newHostAuthId, string lobbyId, string joinCode)
+    {
+        try
+        {
+            if (newHostAuthId != AuthenticationService.Instance.PlayerId)
+            {
+                return;
+            }
+
+            await HostSingleton.Instance.StartHostAsync(false, joinCode, lobbyId);
+
+            Debug.Log(NetworkManager.Singleton.LocalClientId + " Start Host");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"{e.Message}");
+        }
+    }
+
+    async Task<string> AssignNewLeaderAsync()
     {
         Debug.Log("AssignNewLeader");
         int newLeader = 0;
         do
         {
             newLeader = UnityEngine.Random.Range(0, players.Count);
-        } while (players[newLeader].clientId == OwnerClientId);
+        } while (players[newLeader].isLeader);
 
         players[newLeader] = new LobbyRoomPlayerData
         {
@@ -159,11 +199,14 @@ public class LobbyRoom : NetworkBehaviour
         try
         {
             await HostSingleton.Instance.UpdateLobbyHost(players[newLeader].authId.ToString());
+            return players[newLeader].authId.ToString();
         }
         catch (LobbyServiceException ex)
         {
             Debug.LogException(ex);
         }
+
+        return "";
     }
 
     public void HandlePlayerStateChanged(NetworkListEvent<LobbyRoomPlayerData> changeEvent)
@@ -249,7 +292,7 @@ public class LobbyRoom : NetworkBehaviour
 
         if (CheckAllPlayersReady())
         {
-            StartGameServerRpc();
+            NetworkManager.SceneManager.LoadScene("TestScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
     }
 
