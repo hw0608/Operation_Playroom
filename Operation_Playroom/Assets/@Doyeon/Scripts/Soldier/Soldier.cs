@@ -1,16 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Soldier : MonoBehaviour
+public class Soldier : NetworkBehaviour
 {
+    enum State
+    {
+        Idle,
+        Walk,
+        Attack,
+        hold
+    }
     private float scaleFactor = 0.1f; // 왕 병사 스케일
-    [SerializeField] Transform king; // 왕 유닛 참조
+    public Transform king; // 왕 유닛 참조
     [SerializeField] float followDistance = 0.15f; // 왕과의 거리 
     private NavMeshAgent navAgent;
 
-    [SerializeField] int formationIndex; // 병사 삼각 대형 위치 인덱스
+    public int formationIndex; // 병사 삼각 대형 위치 인덱스
     private Vector3 lastTargetPosition; // 마지막 목표 위치 
 
     [SerializeField] float attackRange = 0.15f; // 공격 범위
@@ -19,7 +27,11 @@ public class Soldier : MonoBehaviour
     private float lastAttackTime = 0f; // 마지막 공격 시간
 
     [SerializeField] Transform holdPoint; // 아이템 위치
+
+    private NetworkVariable<State> networkState = new NetworkVariable<State>(State.Idle, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     
+    State state;
+    Animator animator;
     private void Start()
     {
         navAgent = GetComponent<NavMeshAgent>();
@@ -38,21 +50,51 @@ public class Soldier : MonoBehaviour
             lastTargetPosition = GetTrianglePosition(formationIndex);
             navAgent.SetDestination(lastTargetPosition);
         }
-
+        // 이 부분 수정
         if (king.TryGetComponent(out NavMeshAgent kingAgent))
         {
             navAgent.speed = kingAgent.speed * 1.1f;
         }
+
+        state = State.Idle;
+        animator = GetComponent<Animator>();
+    }
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            networkState.Value = State.Idle;
+        }
+        base.OnNetworkSpawn();
+        if (IsServer && king == null)
+        {
+            // NetworkObject가 동기화된 후에 왕을 할당
+            king = GameObject.FindFirstObjectByType<TestController>().transform;
+        }
     }
     private void Update()
     {
+        if (!IsServer) return;
+
         if (king == null || navAgent == null || !navAgent.enabled) return;
         
         Vector3 targetPosition = GetTrianglePosition(formationIndex);
 
         float distanceToKing = Vector3.Distance(transform.position, king.position);
-        
-        if(distanceToKing > followDistance * 2) // 너무 멀어지면 강제이동
+
+        // Idle 애니메이션
+        if (navAgent.velocity.magnitude < 0.01f)
+        {
+            UpdateSoldierAnim(State.Idle);
+        }
+        // Move 애니메이션
+        else if (Vector3.Distance(lastTargetPosition, targetPosition) > 0.05f)
+        {
+            UpdateSoldierAnim(State.Walk);
+            navAgent.SetDestination(targetPosition);
+            lastTargetPosition = targetPosition;
+        }
+        if (distanceToKing > followDistance * 2) // 너무 멀어지면 강제이동
         {
             navAgent.Warp(targetPosition);
             lastTargetPosition = targetPosition;
@@ -70,8 +112,14 @@ public class Soldier : MonoBehaviour
         Collider[] enemies = Physics.OverlapSphere(transform.position, attackRange, LayerMask.GetMask("Enemy"));
         if (enemies.Length > 0 && Time.time -lastAttackTime > attackCooldown)
         {
+            
             Attack(enemies[0].gameObject);
             lastAttackTime = Time.time;
+        }
+        // 상태 변경을 서버에서만
+        if (IsServer)
+        {
+            networkState.Value = state;
         }
     }
     private Vector3 GetTrianglePosition(int index)
@@ -96,5 +144,45 @@ public class Soldier : MonoBehaviour
     void Attack(GameObject enemy)
     {
         Debug.Log("Attack :" + enemy.name);
+
+        //if (IsServer)
+        //{
+        //    networkState.Value = State.Attack;
+        //    if (enemy.TryGetComponent(out Health enemyHealth))
+        //    {
+        //        enemyHealth.TakeDamage(damage);
+        //    }
+        //}
+    }
+    public void AttackEnded()
+    {
+        SetState(State.Idle);
+    }
+    
+    void SetState(State newState)
+    {
+        if (state == newState) return;
+        state = newState;
+        if (IsServer)
+        {
+            networkState.Value = state;
+        }
+    }
+    void UpdateSoldierAnim(State currentState)
+    {
+        switch (currentState)
+        {
+            case State.Idle:
+                animator.SetBool("Idle", true);
+                animator.SetBool("Walk", false);
+                break;
+            case State.Walk:
+                animator.SetBool("Idle", false);
+                animator.SetBool("Walk", true);
+                break;
+            case State.Attack:
+                animator.SetTrigger("Attack");
+                break;
+        }
     }
 }
