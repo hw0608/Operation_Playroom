@@ -1,5 +1,5 @@
 ﻿DataId,DescriptionTextID,Label,Hp,Atk
-201000,Knight,UnitPrefab,150,40
-201001,Archer,UnitPrefab,150,30
-201002,King,UnitPrefab,200,30
+201000,Knight,UnitPrefab,200,40
+201001,Archer,UnitPrefab,150,40
+201002,King,UnitPrefab,200,40
 201003,KingsKnight,UnitPrefab,80,20
