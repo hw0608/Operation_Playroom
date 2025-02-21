@@ -15,5 +15,6 @@ EditorBuildSettings:
     path: Assets/@Heewon/Scenes/LobbyScene.unity
     guid: 36abf6b8c5f57554091b846ebc82d63a
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 235d6a3b3c072854e83353bc74d30bf3, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
