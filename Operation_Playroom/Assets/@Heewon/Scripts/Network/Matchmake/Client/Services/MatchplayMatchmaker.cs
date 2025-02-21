@@ -64,6 +64,19 @@ public class MatchplayMatchmaker : IDisposable
 
                         if (matchAssignment.Status == MultiplayAssignment.StatusOptions.Found)
                         {
+                            // 속한 팀 알아내기
+                            var result = await MatchmakerService.Instance.GetMatchmakingResultsAsync(matchAssignment.MatchId);
+                            var properties = result.MatchProperties;
+
+                            foreach (var team in properties.Teams)
+                            {
+                                if (team.PlayerIds.Contains(data.userAuthId))
+                                {
+                                    Debug.Log($"{data.userAuthId} : {team.TeamName}");
+                                }
+                            }
+                            // ---
+
                             return ReturnMatchResult(MatchmakerPollingResult.Success, "", matchAssignment);
                         }
                         if (matchAssignment.Status == MultiplayAssignment.StatusOptions.Timeout ||
