@@ -3,37 +3,25 @@ using UnityEngine;
 
 public class OccupyManager : MonoBehaviour
 {
-    public static OccupyManager instance;
+    // 점령지 프리팹
+    [SerializeField] GameObject occupyPrefab;
 
-    public List<GameObject> occupyPoints;
-    public GameObject occupyPrefab;
-    [SerializeField] private List<GameObject> generatedOccupy;
-    public enum TeamType { Neutral, Red, Blue }
-
-    void Awake()
-    {
-        if (instance != null) instance = this;
-    }
+    // 점령지로 지정할 위치 오브젝트
+    [SerializeField] List<Transform> occupyPoints;
 
     void Start()
     {
-        generatedOccupy = new List<GameObject>();
         GenerateOccupy();
     }
 
+    /// <summary>
+    /// 점령지 생성 함수
+    /// </summary>
     void GenerateOccupy()
     {
-        foreach (GameObject points in occupyPoints)
+        foreach (Transform points in occupyPoints)
         {
-            GameObject occupy = CreateOccupy(points.transform.position);
-            generatedOccupy.Add(occupy);
+            Instantiate(occupyPrefab, points.position, Quaternion.identity);
         }
-    }
-   
-    GameObject CreateOccupy(Vector3 pos)
-    {
-        GameObject occupyObject = Instantiate(occupyPrefab, pos, Quaternion.identity);
-        
-        return occupyObject;
     }
 }
