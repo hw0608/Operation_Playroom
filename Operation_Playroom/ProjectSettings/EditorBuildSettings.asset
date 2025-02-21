@@ -30,5 +30,6 @@ EditorBuildSettings:
     path: Assets/@Jongin/Scenes/NetConnectScene.unity
     guid: 6df7bb36f5b7e014b932927316166e2d
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 53344585ba74e984c82b815869af5e6f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
