@@ -7,7 +7,7 @@ public class OccupyManager : MonoBehaviour
     [SerializeField] GameObject occupyPrefab;
 
     // 점령지로 지정할 위치 오브젝트
-    [SerializeField] List<Transform> occupyPoints;
+    [SerializeField] List<GameObject> occupyPoints;
 
     void Start()
     {
@@ -19,9 +19,9 @@ public class OccupyManager : MonoBehaviour
     /// </summary>
     void GenerateOccupy()
     {
-        foreach (Transform points in occupyPoints)
+        foreach (GameObject points in occupyPoints)
         {
-            Instantiate(occupyPrefab, points.position, Quaternion.identity);
+            Instantiate(occupyPrefab, points.transform.position, Quaternion.identity);
         }
     }
 }

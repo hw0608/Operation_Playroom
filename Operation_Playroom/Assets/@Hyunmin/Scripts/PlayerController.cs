@@ -19,7 +19,6 @@ public class PlayerController : NetworkBehaviour
 
     Rigidbody rb;
     Character character;
-    CinemachineCamera cam;
 
     void Start()
     {
@@ -30,7 +29,7 @@ public class PlayerController : NetworkBehaviour
         {
             StartCoroutine(CamRoutine());
         }
-
+        transform.position = new Vector3(0, 0.5f, 0);
         character.SetHP();
     }
     void FixedUpdate()
@@ -40,7 +39,7 @@ public class PlayerController : NetworkBehaviour
         // 플레이어가 아니거나 플레이 가능상황이 아니면 리턴
         if (!IsOwner || !isPlayable) return;
 
-        character.Move(cam, rb); // 캐릭터 이동
+        character.Move(character.cam.gameObject.GetComponent<CinemachineCamera>(), rb); // 캐릭터 이동
 
     }
 
@@ -70,13 +69,13 @@ public class PlayerController : NetworkBehaviour
     }
     void AssignCamera()
     {
-        cam = FindFirstObjectByType<CinemachineCamera>();
+        character.cam = FindFirstObjectByType<CinemachineFreeLookModifier>();
 
-        if (cam != null)
+        if (character.cam != null)
         {
-            cam.transform.position = transform.position;
-            cam.Follow = transform;
-            cam.LookAt = transform;
+            character.cam.transform.position = transform.position;
+            character.cam.gameObject.GetComponent<CinemachineCamera>().Follow = transform;
+            character.cam.gameObject.GetComponent<CinemachineCamera>().LookAt = transform;
         }
         else
         {

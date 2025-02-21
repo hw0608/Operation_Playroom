@@ -81,9 +81,10 @@ public class TestController : NetworkBehaviour
 
             // Soldier 스크립트의 formationIndex 설정
             Soldier soldierScript = soldier.GetComponent<Soldier>();
-            soldierScript.formationIndex = i; // 0, 1, 2로 설정
+            SoldierFormation soldierFormation = soldier.GetComponent<SoldierFormation>();
+            soldierFormation.formationIndex = i; // 0, 1, 2로 설정
 
-            soldierScript.king = this.transform;
+            soldierFormation.king = this.transform;
 
             soldier.GetComponent<NetworkObject>().Spawn();
         }
