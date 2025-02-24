@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using TMPro;
-using Unity.Android.Gradle.Manifest;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -36,7 +35,6 @@ public class PlayerController : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        // 플레이어가 아니거나 플레이 가능상황이 아니면 리턴
         if (!IsOwner || !isPlayable) return;
 
         character.Move(character.cam.gameObject.GetComponent<CinemachineCamera>(), rb); // 캐릭터 이동
@@ -67,6 +65,8 @@ public class PlayerController : NetworkBehaviour
             OnPlayerDespawn?.Invoke(this);
         }
     }
+
+    // 씬에 있는 시네머신 카메라를 찾아서 할당
     void AssignCamera()
     {
         character.cam = FindFirstObjectByType<CinemachineFreeLookModifier>();
@@ -83,6 +83,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    // 카메라 할당 루틴
     IEnumerator CamRoutine()
     {
         yield return new WaitUntil(() => FindFirstObjectByType<CinemachineCamera>() != null);

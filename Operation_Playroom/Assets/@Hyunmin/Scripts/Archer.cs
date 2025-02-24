@@ -21,14 +21,7 @@ public class Archer : Character
         }
     }
 
-    private void Update()
-    {
-        if (isAiming)
-        {
-            RotateView();
-        }
-    }
-
+    // 이동 메서드
     public override void Move(CinemachineCamera cam, Rigidbody rb)
     {
         float moveX = Input.GetAxis("Horizontal");
@@ -38,7 +31,8 @@ public class Archer : Character
         float adjustedMoveSpeed = moveSpeed * scaleFactor;
 
         // 카메라 방향에 따른 이동
-        Vector3 moveDirection = cam.gameObject.transform.right * moveX + cam.gameObject.transform.forward * moveZ;
+        Transform referenceCam = isAiming ? aimCamera.transform : cam.transform; // 기준으로 할 카메라 선택
+        Vector3 moveDirection = referenceCam.right * moveX + referenceCam.forward * moveZ;
         moveDirection.y = 0;
 
         Vector3 velocity = moveDirection.normalized * adjustedMoveSpeed;
@@ -50,6 +44,7 @@ public class Archer : Character
         float speed = moveDirection.magnitude > 0.1f ? 1f : 0f;
         HandleAnimationserverRpc("Move", speed, 0.1f, Time.deltaTime);
 
+        // 조준중이 아닐때
         if (!isAiming)
         {
             // 일정 움직임이 있을때만 회전값 변경
@@ -60,6 +55,11 @@ public class Archer : Character
 
             // 회전 적용 (회전 값은 계속 유지됨)
             rb.rotation = Quaternion.Normalize(Quaternion.Slerp(rb.rotation, currentRotation, Time.deltaTime * 10f));
+        }
+        // 조준중일때
+        else
+        {
+            RotateView(); // 1인칭 회전 적용
         }
       
     }
@@ -73,6 +73,7 @@ public class Archer : Character
             aimCamera.transform.position = transform.position + transform.forward * 0.05f + transform.up * 0.11f;
             transform.rotation = cam.transform.rotation;
             aimCamera.transform.rotation = cam.transform.rotation;
+            aimCamera.transform.localRotation = Quaternion.Euler(0, 0f, 0f);
 
             aimCamera.Priority = 10;
 
@@ -84,6 +85,7 @@ public class Archer : Character
             aimCamera.Priority = -10;
             isAiming = false;
         }
+        // 조준중이면
         if (isAiming)
         {
             // 발사
@@ -113,18 +115,19 @@ public class Archer : Character
         currentHp = maxHp;
     }
 
+    // 1인칭 회전 메서드
     void RotateView()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        // 위아래 회전 (Pitch)
+        // 위아래 회전
         xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -80f, 80f); // 시야 제한
+        xRotation = Mathf.Clamp(xRotation, -80f, 40f); // 시야 제한
 
         // 캐릭터와 카메라 회전
-        transform.Rotate(Vector3.up * mouseX); // 좌우 회전 (Yaw)
-        aimCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f); // 위아래 회전
+        aimCamera.transform.rotation = Quaternion.Euler(xRotation, transform.eulerAngles.y, 0f);
+        transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y + mouseX, 0f);
     }
 
     [ServerRpc]
