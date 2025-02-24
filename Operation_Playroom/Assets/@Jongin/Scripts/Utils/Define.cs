@@ -15,4 +15,12 @@ public static class Define
         Play,
         End
     }
+
+    public enum ETimmyState
+    {
+        Sleep,
+        Idle,
+        Move,
+        PickUp
+    }
 }
