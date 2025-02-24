@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.Android.Gradle.Manifest;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
@@ -31,6 +30,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
+
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false; 
@@ -94,27 +94,4 @@ public abstract class Character : NetworkBehaviour, ICharacter
     {
         Debug.Log("Die");
     }
-
-    void AssignCamera()
-    {
-        cam = FindFirstObjectByType<CinemachineFreeLookModifier>();
-
-        if (cam != null)
-        {
-            cam.transform.position = transform.position;
-            cam.gameObject.GetComponent<CinemachineCamera>().Follow = transform;
-            cam.gameObject.GetComponent<CinemachineCamera>().LookAt = transform;
-        }
-        else
-        {
-            Debug.LogError("Cinemachine Camera를 찾을 수 없습니다.");
-        }
-    }
-
-    IEnumerator CamRoutine()
-    {
-        yield return new WaitUntil(() => FindFirstObjectByType<CinemachineCamera>() != null);
-        AssignCamera();
-    }
-
 }
