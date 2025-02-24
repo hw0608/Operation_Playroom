@@ -14,6 +14,12 @@ public enum GameQueue
     Team
 }
 
+public enum GameTeam
+{
+    Blue,
+    Red
+}
+
 public enum Map
 {
     Default
@@ -33,6 +39,7 @@ public class GameInfo
     public Map map;
     public GameMode gameMode;
     public GameQueue gameQueue;
+    public GameTeam gameTeam;
 
     public string ToMultiplayQueue()
     {

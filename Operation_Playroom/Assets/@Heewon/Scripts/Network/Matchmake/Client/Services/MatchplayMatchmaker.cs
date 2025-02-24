@@ -21,6 +21,7 @@ public class MatchmakingResult
     public int port;
     public MatchmakerPollingResult result;
     public string resultMessage;
+    public string team;
 }
 
 public class MatchplayMatchmaker : IDisposable
@@ -73,6 +74,8 @@ public class MatchplayMatchmaker : IDisposable
                                 if (team.PlayerIds.Contains(data.userAuthId))
                                 {
                                     Debug.Log($"{data.userAuthId} : {team.TeamName}");
+                                    data.userGamePreferences.gameTeam = team.TeamName == "Blue" ? GameTeam.Blue : GameTeam.Red;
+                                    break;
                                 }
                             }
                             // ---
