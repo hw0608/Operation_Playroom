@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Services.Matchmaker;
@@ -69,15 +70,20 @@ public class MatchplayMatchmaker : IDisposable
                             var result = await MatchmakerService.Instance.GetMatchmakingResultsAsync(matchAssignment.MatchId);
                             var properties = result.MatchProperties;
 
-                            foreach (var team in properties.Teams)
-                            {
-                                if (team.PlayerIds.Contains(data.userAuthId))
+                            var playerTeam = properties.Teams
+                                .Select(team => new
                                 {
-                                    Debug.Log($"{data.userAuthId} : {team.TeamName}");
-                                    data.userGamePreferences.gameTeam = team.TeamName == "Blue" ? GameTeam.Blue : GameTeam.Red;
-                                    break;
-                                }
+                                    Team = team,
+                                    Index = team.PlayerIds.IndexOf(data.userAuthId)
+                                })
+                                .FirstOrDefault(p => p.Index != -1);
+
+                            if (playerTeam != null)
+                            {
+                                data.userGamePreferences.gameTeam = playerTeam.Team.TeamName == "Blue" ? GameTeam.Blue : GameTeam.Red;
+                                data.userGamePreferences.gameRole = (GameRole)playerTeam.Index;
                             }
+
                             // ---
 
                             return ReturnMatchResult(MatchmakerPollingResult.Success, "", matchAssignment);

@@ -54,6 +54,8 @@ public class ServerGameManager : IDisposable
         // TODO: 서버가 정상적으로 작동할 경우, 로드할 씬 이름 변경하기
         NetworkManager.Singleton.SceneManager.LoadScene("GameScene",
             UnityEngine.SceneManagement.LoadSceneMode.Single);
+
+        Debug.Log("Load Game Scene");
     }
 
     async Task StartBackfill(MatchmakingResults payload)

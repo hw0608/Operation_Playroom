@@ -15,6 +15,7 @@ public class ServerSingleton : MonoBehaviour
 
     public Dictionary<ulong, UserData> clientIdToUserData = new Dictionary<ulong, UserData>();
     public Dictionary<string, UserData> authIdToUserData = new Dictionary<string, UserData>();
+    public Dictionary<GameRole, uint> gameRoleToPrefabHash = new Dictionary<GameRole, uint> { { GameRole.King, 2763668601 }, { GameRole.Swordman, 1812290600 }, { GameRole.Archer, 2881064952 } };
 
     public Action<string> OnClientLeft;
 
@@ -94,6 +95,7 @@ public class ServerSingleton : MonoBehaviour
 
         response.Approved = true;
         response.CreatePlayerObject = true;
+        response.PlayerPrefabHash = gameRoleToPrefabHash[userData.userGamePreferences.gameRole];
         //response.Position = SpawnPoint.GetRandomSpawnPoint();
         response.Rotation = Quaternion.identity;
 
