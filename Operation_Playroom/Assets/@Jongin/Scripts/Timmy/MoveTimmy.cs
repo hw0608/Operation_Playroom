@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 using static Define;
-public class MoveTimmy : MonoBehaviour
+public class MoveTimmy : NetworkBehaviour
 {
     public List<Transform> path = new List<Transform>();
     ETimmyState timmyState = ETimmyState.Sleep;
@@ -20,6 +21,8 @@ public class MoveTimmy : MonoBehaviour
 
     void Update()
     {
+        if (!IsServer) return;
+        
         if (Input.GetKeyDown(KeyCode.G))
         {
             MoveToPath(pathIndex);
@@ -37,7 +40,6 @@ public class MoveTimmy : MonoBehaviour
                 isMove = false;
             }
         }
-        Debug.Log(HasReachedDestination());
     }
 
     void MoveToPath(int index)

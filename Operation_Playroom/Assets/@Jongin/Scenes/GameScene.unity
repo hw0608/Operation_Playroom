@@ -222,7 +222,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.43, y: 0.25, z: 9.12}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -510,7 +510,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.42, y: 0.25, z: 4.89}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1782,13 +1782,16 @@ PrefabInstance:
       addedObject: {fileID: 1093084765}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34456307b55a70044b41f08dfe6ff8a0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1093084766}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34456307b55a70044b41f08dfe6ff8a0, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1093084767}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34456307b55a70044b41f08dfe6ff8a0, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 1093084766}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34456307b55a70044b41f08dfe6ff8a0, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1093084768}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34456307b55a70044b41f08dfe6ff8a0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1093084770}
   m_SourcePrefab: {fileID: 100100000, guid: 34456307b55a70044b41f08dfe6ff8a0, type: 3}
 --- !u!1 &1093084762 stripped
 GameObject:
@@ -1851,6 +1854,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bf7509ab61aa094193eaaa868335988, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   path:
   - {fileID: 2076951368}
   - {fileID: 644600106}
@@ -1903,9 +1907,9 @@ MonoBehaviour:
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
@@ -1916,6 +1920,42 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &1093084770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093084762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 765711723
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 2081823275
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 765711723
+    DestinationState: -1396872774
+    TransitionDuration: 0.25
+    TriggerNameHash: -1396872774
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: 765711723
+    TransitionDuration: 0
+    TriggerNameHash: 765711723
+    TransitionIndex: 0
+  m_Animator: {fileID: 1093084763}
 --- !u!1 &1120406745
 GameObject:
   m_ObjectHideFlags: 0
@@ -2785,7 +2825,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.25, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
