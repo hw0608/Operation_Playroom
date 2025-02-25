@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
@@ -23,8 +24,8 @@ public class LobbyRoom : NetworkBehaviour
     [SerializeField] GameObject readyButton;
     [SerializeField] GameObject startButton;
 
-    Lobby lobby;
     NetworkList<LobbyRoomPlayerData> players = new NetworkList<LobbyRoomPlayerData>();
+    MatchplayMatchmaker matchmaker = new MatchplayMatchmaker();
 
     public override void OnNetworkSpawn()
     {
@@ -122,93 +123,17 @@ public class LobbyRoom : NetworkBehaviour
         return (blue == red) ? UnityEngine.Random.Range(0, 1) : blue < red ? 0 : 1;
     }
 
-    public async void OnBackButtonPressedAsync()
+    public void OnBackButtonPressedAsync()
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            if (players.Count <= 1)     // 방장밖에 없었으면 방 폭파
-            {
-                HostSingleton.Instance.ShutDown(true);
-            }
-            else
-            {
-                //TODO: 남아 있는 사람한테 방장 위임
-                Task<string> assignNewLeader = AssignNewLeaderAsync();
-                if (await Task.WhenAny(assignNewLeader, Task.Delay(10000)) == assignNewLeader)
-                {
-                    Debug.Log("CheckNewHostClientRpc");
-                    CheckNewHostClientRpc(assignNewLeader.Result, HostSingleton.Instance.joinCode, HostSingleton.Instance.lobbyId);
-                }
-                else
-                {
-                    Debug.Log("방장 위임 실패");
-                    HostSingleton.Instance.ShutDown(true);
-                }
-            }
+           HostSingleton.Instance.ShutDown();
         }
         if (NetworkManager.Singleton.IsConnectedClient)
         {
             NetworkManager.Singleton.Shutdown();
         }
     }
-
-    [ClientRpc]
-    void CheckNewHostClientRpc(string newHostAuthId, string joinCode, string lobbyId)
-    {
-        Debug.Log(NetworkManager.Singleton.LocalClientId);
-        HandleLobbyCheckAsync(newHostAuthId, lobbyId, joinCode);
-    }
-
-    private async void HandleLobbyCheckAsync(string newHostAuthId, string lobbyId, string joinCode)
-    {
-        try
-        {
-            if (newHostAuthId != AuthenticationService.Instance.PlayerId)
-            {
-                return;
-            }
-
-            await HostSingleton.Instance.StartHostAsync(false, joinCode, lobbyId);
-
-            Debug.Log(NetworkManager.Singleton.LocalClientId + " Start Host");
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"{e.Message}");
-        }
-    }
-
-    async Task<string> AssignNewLeaderAsync()
-    {
-        Debug.Log("AssignNewLeader");
-        int newLeader = 0;
-        do
-        {
-            newLeader = UnityEngine.Random.Range(0, players.Count);
-        } while (players[newLeader].isLeader);
-
-        players[newLeader] = new LobbyRoomPlayerData
-        {
-            authId = players[newLeader].authId,
-            clientId = players[newLeader].clientId,
-            userName = players[newLeader].userName,
-            isLeader = true,
-            team = players[newLeader].team
-        };
-
-        try
-        {
-            await HostSingleton.Instance.UpdateLobbyHost(players[newLeader].authId.ToString());
-            return players[newLeader].authId.ToString();
-        }
-        catch (LobbyServiceException ex)
-        {
-            Debug.LogException(ex);
-        }
-
-        return "";
-    }
-
     public void HandlePlayerStateChanged(NetworkListEvent<LobbyRoomPlayerData> changeEvent)
     {
         UpdateUI();
@@ -245,7 +170,6 @@ public class LobbyRoom : NetworkBehaviour
             }
         }
     }
-
     public void ToggleReady()
     {
         Debug.Log($"ToggleReady() called by client {NetworkManager.Singleton.LocalClientId}");
@@ -292,13 +216,67 @@ public class LobbyRoom : NetworkBehaviour
 
         if (CheckAllPlayersReady())
         {
-            NetworkManager.SceneManager.LoadScene("BattleTestScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
+            MatchmakeAsync();
         }
     }
 
-    [ServerRpc]
-    void StartGameServerRpc()
+    async void MatchmakeAsync(Action<MatchmakerPollingResult> onMatchmakeResponse = null)
     {
-        NetworkManager.SceneManager.LoadScene("BattleTestScene", UnityEngine.SceneManagement.LoadSceneMode.Single);
+        if (matchmaker.IsMatchmaking)
+        {
+            return;
+        }
+
+        MatchmakerPollingResult result = await GetMatchAsync();
+        onMatchmakeResponse?.Invoke(result);
+    }
+
+    public async Task<MatchmakerPollingResult> GetMatchAsync()
+    {
+        List<UserData> userDatas = new List<UserData>();
+
+        List<int> availableRoles = Enum.GetValues(typeof(GameRole)).Cast<int>().ToList();
+        availableRoles = availableRoles.OrderBy(x => UnityEngine.Random.value).ToList();
+
+        int idx = 0;
+
+        for (int i = 0; i < players.Count; i++)
+        {
+            var updatedPlayer = players[i];
+            updatedPlayer.role = availableRoles[idx];
+            players[i] = updatedPlayer;
+
+            idx = (idx + 1) % System.Enum.GetValues(typeof(GameRole)).Length;
+        }
+
+        userDatas = ServerSingleton.Instance.authIdToUserData.Values.ToList();
+
+        MatchmakingResult result = await matchmaker.Matchmake(userDatas);
+
+        Debug.Log(result.resultMessage);
+
+        if (result.result == MatchmakerPollingResult.Success)
+        {
+            // 클라이언트 시작
+            SwitchToDSClientRpc(result.ip, (ushort)result.port);
+        }
+
+        return result.result;
+    }
+
+    [ClientRpc]
+    void SwitchToDSClientRpc(string ip, ushort port)
+    {
+        Debug.Log($"{NetworkManager.Singleton.LocalClientId} called SwitchToDSClientRpc.");
+        Debug.Log($"ip : {ip} , port : {port}");
+
+        foreach (var player in players)
+        {
+            if (player.clientId != NetworkManager.Singleton.LocalClientId) continue;
+            ClientSingleton.Instance.UserData.userGamePreferences.gameRole = (GameRole)player.role;
+            ClientSingleton.Instance.UserData.userGamePreferences.gameTeam = (GameTeam)player.team;
+        }
+
+        ClientSingleton.Instance.StartClient(ip, port);
     }
 }

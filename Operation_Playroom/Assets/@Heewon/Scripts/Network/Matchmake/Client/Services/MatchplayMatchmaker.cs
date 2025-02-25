@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Services.Matchmaker;
@@ -21,6 +22,7 @@ public class MatchmakingResult
     public int port;
     public MatchmakerPollingResult result;
     public string resultMessage;
+    public string team;
 }
 
 public class MatchplayMatchmaker : IDisposable
@@ -32,18 +34,14 @@ public class MatchplayMatchmaker : IDisposable
 
     public bool IsMatchmaking { get; private set; }
 
-    public async Task<MatchmakingResult> Matchmake(UserData data)
+    public async Task<MatchmakingResult> Matchmake(List<UserData> datas, string queueName)
     {
         cancelToken = new CancellationTokenSource();
 
-        string queueName = data.userGamePreferences.ToMultiplayQueue();
         CreateTicketOptions createTicketOptions = new CreateTicketOptions(queueName);
         Debug.Log(createTicketOptions.QueueName);
 
-        List<Player> players = new List<Player>
-        {
-            new Player(data.userAuthId, data.userGamePreferences)
-        };
+        List<Player> players = datas.Select(data => new Player(data.userAuthId, data.userGamePreferences)).ToList();
 
         try
         {
@@ -64,6 +62,26 @@ public class MatchplayMatchmaker : IDisposable
 
                         if (matchAssignment.Status == MultiplayAssignment.StatusOptions.Found)
                         {
+                            if (queueName == "solo-queue")
+                            {
+                                var result = await MatchmakerService.Instance.GetMatchmakingResultsAsync(matchAssignment.MatchId);
+                                var properties = result.MatchProperties;
+
+                                var playerTeam = properties.Teams
+                                    .Select(team => new
+                                    {
+                                        Team = team,
+                                        Index = team.PlayerIds.IndexOf(datas[0].userAuthId)
+                                    })
+                                    .FirstOrDefault(p => p.Index != -1);
+
+                                if (playerTeam != null)
+                                {
+                                    datas[0].userGamePreferences.gameTeam = playerTeam.Team.TeamName == "Blue" ? GameTeam.Blue : GameTeam.Red;
+                                    datas[0].userGamePreferences.gameRole = (GameRole)playerTeam.Index;
+                                }
+                            }
+
                             return ReturnMatchResult(MatchmakerPollingResult.Success, "", matchAssignment);
                         }
                         if (matchAssignment.Status == MultiplayAssignment.StatusOptions.Timeout ||
@@ -90,6 +108,9 @@ public class MatchplayMatchmaker : IDisposable
 
         return ReturnMatchResult(MatchmakerPollingResult.TicketRetrievalError, "Cancelled Matchmaking", null);
     }
+
+    public Task<MatchmakingResult> Matchmake(UserData data) => Matchmake(new List<UserData> { data }, "solo-queue");
+    public Task<MatchmakingResult> Matchmake(List<UserData> datas) => Matchmake(datas, "team-queue");
 
     public async Task CancelMatchmaking()
     {

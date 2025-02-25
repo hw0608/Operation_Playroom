@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +7,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ServerSingleton : MonoBehaviour
 {
@@ -15,6 +15,7 @@ public class ServerSingleton : MonoBehaviour
 
     public Dictionary<ulong, UserData> clientIdToUserData = new Dictionary<ulong, UserData>();
     public Dictionary<string, UserData> authIdToUserData = new Dictionary<string, UserData>();
+    public Dictionary<GameRole, uint> gameRoleToPrefabHash = new Dictionary<GameRole, uint> { { GameRole.King, 2763668601 }, { GameRole.Swordman, 1812290600 }, { GameRole.Archer, 2881064952 } };
 
     public Action<string> OnClientLeft;
 
@@ -85,18 +86,24 @@ public class ServerSingleton : MonoBehaviour
     {
         string payload = Encoding.UTF8.GetString(request.Payload);
         UserData userData = JsonConvert.DeserializeObject<UserData>(payload);
-        Debug.Log("Approval User Data : " + userData.userName);
+        Debug.Log($"User Data : {userData.userName}");
 
         clientIdToUserData[request.ClientNetworkId] = userData;
         authIdToUserData[userData.userAuthId] = userData;
 
         OnUserJoined?.Invoke(userData);
 
-        response.Approved = true;
-        response.CreatePlayerObject = true;
-        //response.Position = SpawnPoint.GetRandomSpawnPoint();
-        response.Rotation = Quaternion.identity;
+        Debug.Log($"Id : {userData.userAuthId}, preference : {userData.userGamePreferences}");
 
+        response.Approved = true;
+
+        if (SceneManager.GetActiveScene().name == "GameScene")
+        {
+            response.CreatePlayerObject = true;
+            response.PlayerPrefabHash = gameRoleToPrefabHash[userData.userGamePreferences.gameRole];
+            response.Position = SpawnPoint.GetRandomSpawnPoint(userData.userGamePreferences.gameTeam);
+            response.Rotation = Quaternion.identity;
+        }
     }
 
     private void OnClientDisconnect(ulong clientId)

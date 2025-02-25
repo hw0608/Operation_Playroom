@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/@Heewon/Scenes/LobbyScene.unity
     guid: 36abf6b8c5f57554091b846ebc82d63a
   - enabled: 1
-    path: Assets/@Heewon/Scenes/TestScene.unity
+    path: Assets/@Heewon/Scenes/GameScene.unity
     guid: 86cb8de77c46373488db642ccc63c4f1
   - enabled: 1
     path: Assets/@Jongin/Scenes/MainScene.unity

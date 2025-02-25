@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public enum GameMode
 {
@@ -12,6 +9,19 @@ public enum GameQueue
 {
     Solo,
     Team
+}
+
+public enum GameTeam
+{
+    Blue,
+    Red
+}
+
+public enum GameRole
+{
+    King,
+    Swordman,
+    Archer
 }
 
 public enum Map
@@ -33,7 +43,8 @@ public class GameInfo
     public Map map;
     public GameMode gameMode;
     public GameQueue gameQueue;
-
+    public GameTeam gameTeam;
+    public GameRole gameRole;
     public string ToMultiplayQueue()
     {
         if (gameQueue == GameQueue.Team)

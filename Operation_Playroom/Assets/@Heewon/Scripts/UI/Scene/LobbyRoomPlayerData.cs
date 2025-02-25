@@ -11,6 +11,7 @@ public struct LobbyRoomPlayerData : INetworkSerializable, IEquatable<LobbyRoomPl
     public bool isReady;
     public bool isLeader;
     public int team;
+    public int role;
 
     public bool Equals(LobbyRoomPlayerData other)
     {
@@ -19,7 +20,8 @@ public struct LobbyRoomPlayerData : INetworkSerializable, IEquatable<LobbyRoomPl
             && userName == other.userName 
             && isReady == other.isReady 
             && isLeader == other.isLeader
-            && team == other.team;
+            && team == other.team
+            && role == other.role;
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -30,5 +32,6 @@ public struct LobbyRoomPlayerData : INetworkSerializable, IEquatable<LobbyRoomPl
         serializer.SerializeValue(ref isReady);
         serializer.SerializeValue(ref isLeader);
         serializer.SerializeValue(ref team);
+        serializer.SerializeValue(ref role);
     }
 }
