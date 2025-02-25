@@ -8,6 +8,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ServerSingleton : MonoBehaviour
 {
@@ -86,19 +87,24 @@ public class ServerSingleton : MonoBehaviour
     {
         string payload = Encoding.UTF8.GetString(request.Payload);
         UserData userData = JsonConvert.DeserializeObject<UserData>(payload);
-        Debug.Log("Approval User Data : " + userData.userName);
+        Debug.Log($"User Data : {userData.userName}");
 
         clientIdToUserData[request.ClientNetworkId] = userData;
         authIdToUserData[userData.userAuthId] = userData;
 
         OnUserJoined?.Invoke(userData);
 
-        response.Approved = true;
-        response.CreatePlayerObject = true;
-        response.PlayerPrefabHash = gameRoleToPrefabHash[userData.userGamePreferences.gameRole];
-        //response.Position = SpawnPoint.GetRandomSpawnPoint();
-        response.Rotation = Quaternion.identity;
+        Debug.Log($"Id : {userData.userAuthId}, preference : {userData.userGamePreferences}");
 
+        response.Approved = true;
+
+        if (SceneManager.GetActiveScene().name == "GameScene")
+        {
+            response.CreatePlayerObject = true;
+            response.PlayerPrefabHash = gameRoleToPrefabHash[userData.userGamePreferences.gameRole];
+            response.Position = SpawnPoint.GetRandomSpawnPoint(userData.userGamePreferences.gameTeam);
+            response.Rotation = Quaternion.identity;
+        }
     }
 
     private void OnClientDisconnect(ulong clientId)

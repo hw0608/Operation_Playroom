@@ -18,6 +18,11 @@ public class ClientSingleton : MonoBehaviour
     MatchplayMatchmaker matchmaker;
     UserData userData;
 
+    public UserData UserData
+    {
+        get { return userData; }
+    }
+
     public static ClientSingleton Instance
     {
         get
@@ -118,8 +123,22 @@ public class ClientSingleton : MonoBehaviour
         return result.result;
     }
 
-    public void StartClient(string ip, ushort port)
+    public async void StartClient(string ip, ushort port)
     {
+        if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsHost)
+        {
+            NetworkManager.Singleton.Shutdown();
+
+            int timer = 10000; // 10√ 
+            while (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsHost)
+            {
+                await Task.Delay(500);
+                timer -= 500;
+
+                if (timer <= 0) break;
+            }
+        }
+
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.SetConnectionData(ip, port);
 

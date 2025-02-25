@@ -34,18 +34,14 @@ public class MatchplayMatchmaker : IDisposable
 
     public bool IsMatchmaking { get; private set; }
 
-    public async Task<MatchmakingResult> Matchmake(UserData data)
+    public async Task<MatchmakingResult> Matchmake(List<UserData> datas, string queueName)
     {
         cancelToken = new CancellationTokenSource();
 
-        string queueName = data.userGamePreferences.ToMultiplayQueue();
         CreateTicketOptions createTicketOptions = new CreateTicketOptions(queueName);
         Debug.Log(createTicketOptions.QueueName);
 
-        List<Player> players = new List<Player>
-        {
-            new Player(data.userAuthId, data.userGamePreferences)
-        };
+        List<Player> players = datas.Select(data => new Player(data.userAuthId, data.userGamePreferences)).ToList();
 
         try
         {
@@ -66,26 +62,6 @@ public class MatchplayMatchmaker : IDisposable
 
                         if (matchAssignment.Status == MultiplayAssignment.StatusOptions.Found)
                         {
-                            // 속한 팀 알아내기
-                            var result = await MatchmakerService.Instance.GetMatchmakingResultsAsync(matchAssignment.MatchId);
-                            var properties = result.MatchProperties;
-
-                            var playerTeam = properties.Teams
-                                .Select(team => new
-                                {
-                                    Team = team,
-                                    Index = team.PlayerIds.IndexOf(data.userAuthId)
-                                })
-                                .FirstOrDefault(p => p.Index != -1);
-
-                            if (playerTeam != null)
-                            {
-                                data.userGamePreferences.gameTeam = playerTeam.Team.TeamName == "Blue" ? GameTeam.Blue : GameTeam.Red;
-                                data.userGamePreferences.gameRole = (GameRole)playerTeam.Index;
-                            }
-
-                            // ---
-
                             return ReturnMatchResult(MatchmakerPollingResult.Success, "", matchAssignment);
                         }
                         if (matchAssignment.Status == MultiplayAssignment.StatusOptions.Timeout ||
@@ -112,6 +88,9 @@ public class MatchplayMatchmaker : IDisposable
 
         return ReturnMatchResult(MatchmakerPollingResult.TicketRetrievalError, "Cancelled Matchmaking", null);
     }
+
+    public Task<MatchmakingResult> Matchmake(UserData data) => Matchmake(new List<UserData> { data }, "solo-queue");
+    public Task<MatchmakingResult> Matchmake(List<UserData> datas) => Matchmake(datas, "team-queue");
 
     public async Task CancelMatchmaking()
     {
