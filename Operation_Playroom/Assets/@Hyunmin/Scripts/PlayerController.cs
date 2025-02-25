@@ -4,7 +4,6 @@ using TMPro;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -24,12 +23,17 @@ public class PlayerController : NetworkBehaviour
         character = GetComponent<Character>();
         rb = GetComponent<Rigidbody>();
 
+        // 카메라 활성화
         if (IsOwner)
         {
             StartCoroutine(CamRoutine());
+
+            transform.position = new Vector3(0, 0.5f, 0);
+
+            character.SetHP(); // 직업 별 HP 설정
+
         }
-        transform.position = new Vector3(0, 0.5f, 0);
-        character.SetHP();
+
     }
     void FixedUpdate()
     {

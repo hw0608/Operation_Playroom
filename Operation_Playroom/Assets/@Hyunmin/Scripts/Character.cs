@@ -3,8 +3,6 @@ using Unity.Cinemachine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.TextCore.Text;
 
 public abstract class Character : NetworkBehaviour, ICharacter
 {
@@ -61,7 +59,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         // 애니메이션 적용
         float speed = moveDirection.magnitude > 0.1f ? 1f : 0f;
-        HandleAnimationserverRpc("Move", speed, 0.1f, Time.deltaTime);
+        SetFloatAnimationserverRpc("Move", speed, 0.1f, Time.deltaTime);
 
         // 일정 움직임이 있을때만 회전값 변경
         if (moveDirection.magnitude > 0.1f)
@@ -73,14 +71,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
         rb.rotation = Quaternion.Normalize(Quaternion.Slerp(rb.rotation, currentRotation, Time.deltaTime * 10f));
     }
 
-    [ServerRpc]
-    void HandleAnimationserverRpc(string name, float value, float dampTime, float deltaTime)
-    {
-        networkAnimator.Animator.SetFloat(name, value, dampTime, deltaTime);
-    }
-
     // 피격 메서드
-    public virtual void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage, ulong clientId)
     {
         currentHp -= damage;
         if (currentHp < 0)
@@ -94,4 +86,26 @@ public abstract class Character : NetworkBehaviour, ICharacter
     {
         Debug.Log("Die");
     }
+
+    // 애니메이션 Trigger 메서드
+    [ServerRpc]
+    public void SetTriggerAnimationserverRpc(string name)
+    {
+        networkAnimator.SetTrigger(name);
+    }
+
+    // 애니메이션 Float 메서드
+    [ServerRpc]
+    public void SetFloatAnimationserverRpc(string name, float value, float dampTime, float deltaTime)
+    {
+        networkAnimator.Animator.SetFloat(name, value, dampTime, deltaTime);
+    }
+
+    // 애니메이션 상체 웨이트 메서드
+    [ServerRpc]
+    public void SetAvatarLayerWeightserverRpc(int value)
+    {
+        networkAnimator.Animator.SetLayerWeight(1, value);
+    }
+
 }

@@ -5,10 +5,14 @@ using UnityEngine;
 public class Archer : Character
 {
     [SerializeField] CinemachineCamera aimCamera;
+    [SerializeField] GameObject aimCanvas;
+    [SerializeField] GameObject arrowObject;
+    [SerializeField] GameObject projectileObject;
 
     bool isAiming;
     float xRotation = 0;
     float mouseSensitivity = 100;
+    Quaternion lastAimRotation;
 
 
     // 공격 메서드
@@ -17,7 +21,7 @@ public class Archer : Character
         // 화살 발사
         if (isAiming)
         {
-            Debug.Log("Archer Attack");
+            aimCamera.GetComponent<ProjectileLauncher>().ShootArrow(aimCamera.transform);
         }
     }
 
@@ -42,26 +46,27 @@ public class Archer : Character
 
         // 애니메이션 적용
         float speed = moveDirection.magnitude > 0.1f ? 1f : 0f;
-        HandleAnimationserverRpc("Move", speed, 0.1f, Time.deltaTime);
+        SetFloatAnimationserverRpc("Move", speed, 0.1f, Time.deltaTime);
 
+        // 조준중일때
+        if (isAiming)
+        {
+            RotateView(); // 1인칭 회전 적용
+        }
         // 조준중이 아닐때
-        if (!isAiming)
+        else
         {
             // 일정 움직임이 있을때만 회전값 변경
             if (moveDirection.magnitude > 0.1f)
             {
                 currentRotation = Quaternion.LookRotation(moveDirection);
             }
+           
 
             // 회전 적용 (회전 값은 계속 유지됨)
             rb.rotation = Quaternion.Normalize(Quaternion.Slerp(rb.rotation, currentRotation, Time.deltaTime * 10f));
         }
-        // 조준중일때
-        else
-        {
-            RotateView(); // 1인칭 회전 적용
-        }
-      
+
     }
 
     // 키 입력 메서드
@@ -70,19 +75,39 @@ public class Archer : Character
         // 조준 시작
         if (Input.GetButtonDown("Aim"))
         {
-            aimCamera.transform.position = transform.position + transform.forward * 0.05f + transform.up * 0.11f;
-            transform.rotation = cam.transform.rotation;
-            aimCamera.transform.rotation = cam.transform.rotation;
-            aimCamera.transform.localRotation = Quaternion.Euler(0, 0f, 0f);
+            // 조준점 활성화
+            aimCanvas.SetActive(true);
+            arrowObject.SetActive(true);
+
+            transform.rotation = Quaternion.Euler(0, cam.transform.eulerAngles.y, 0);
+
+            // X축(상하 회전)은 정면을 바라보도록 초기화
+            xRotation = 0;
+
+            aimCamera.transform.position = transform.position + transform.forward * 0.05f + transform.up * 0.13f;
+            aimCamera.transform.rotation = Quaternion.Euler(0, cam.transform.eulerAngles.y, 0); // 정면 바라보기
+
 
             aimCamera.Priority = 10;
 
+            // 조준 애니메이션 실행
+            SetAvatarLayerWeightserverRpc(1);
+            SetTriggerAnimationserverRpc("Aim");
             isAiming = true;
         }
-        // 조준 취소
+        // 조준 해제
         if (Input.GetButtonUp("Aim"))
         {
+            aimCanvas.SetActive(false);
+            arrowObject.SetActive(false);
+
+            SetAvatarLayerWeightserverRpc(0);
+
             aimCamera.Priority = -10;
+
+            transform.rotation = lastAimRotation;
+            currentRotation = lastAimRotation;
+
             isAiming = false;
         }
         // 조준중이면
@@ -91,7 +116,19 @@ public class Archer : Character
             // 발사
             if (Input.GetButtonDown("Attack"))
             {
+                SetTriggerAnimationserverRpc("BowAttack");
+
                 Attack();
+
+                isAiming = false;
+                aimCanvas.SetActive(false);
+                arrowObject.SetActive(false);
+                aimCamera.Priority = -10;
+
+
+                transform.rotation = lastAimRotation;
+                currentRotation = lastAimRotation;
+
             }
         }
         // 줍기
@@ -128,12 +165,9 @@ public class Archer : Character
         // 캐릭터와 카메라 회전
         aimCamera.transform.rotation = Quaternion.Euler(xRotation, transform.eulerAngles.y, 0f);
         transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y + mouseX, 0f);
+
+        lastAimRotation = transform.rotation;
     }
 
-    [ServerRpc]
-    void HandleAnimationserverRpc(string name, float value, float dampTime, float deltaTime)
-    {
-        networkAnimator.Animator.SetFloat(name, value, dampTime, deltaTime);
-    }
 }
 

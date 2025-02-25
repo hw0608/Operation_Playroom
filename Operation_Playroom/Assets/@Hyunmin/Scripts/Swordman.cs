@@ -1,6 +1,5 @@
 using System.Collections;
 using Unity.Netcode;
-using Unity.Netcode.Components;
 using UnityEngine;
 
 public class Swordman : Character
@@ -58,9 +57,9 @@ public class Swordman : Character
     // 칼 공격 코루틴
     IEnumerator SwordAttack()
     {
-        HandleLayerWeightserverRpc(1);
+        SetAvatarLayerWeightserverRpc(1); // 상체 움직임으로 설정
         attackAble = false; // 재공격 비활성화
-        HandleAnimationserverRpc("Attack"); // 공격 모션 실행
+        SetTriggerAnimationserverRpc("SwordAttack"); // 공격 모션 실행
 
         // 0.2초 후 0.2초 동안 콜라이더 활성화
         yield return new WaitForSeconds(0.2f);
@@ -72,19 +71,6 @@ public class Swordman : Character
         // 0.5초 쿨타임
         yield return new WaitForSeconds(attackCooldown);
         attackAble = true; // 공격 가능
-        HandleLayerWeightserverRpc(0);
+        SetAvatarLayerWeightserverRpc(0); // 상체 움직임 해제
     }
-
-    [ServerRpc]
-    void HandleAnimationserverRpc(string name)
-    {
-        networkAnimator.SetTrigger(name);
-    }
-
-    [ServerRpc]
-    void HandleLayerWeightserverRpc(int value)
-    {
-        networkAnimator.Animator.SetLayerWeight(1, value);
-    }
-
 }
