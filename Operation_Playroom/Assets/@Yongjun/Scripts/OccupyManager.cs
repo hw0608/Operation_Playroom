@@ -1,27 +1,23 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OccupyManager : MonoBehaviour
 {
-    // 점령지 프리팹
-    [SerializeField] GameObject occupyPrefab;
-
-    // 점령지로 지정할 위치 오브젝트
-    [SerializeField] List<GameObject> occupyPoints;
+    [SerializeField] GameObject occupyPrefab; // 점령지 프리팹
+    [SerializeField] GameObject occupyPoints; // 점령지 위치
+    [SerializeField] GameObject occupyPool; // 점령지 풀
 
     void Start()
     {
         GenerateOccupy();
+        Destroy(occupyPoints);
     }
 
-    /// <summary>
-    /// 점령지 생성 함수
-    /// </summary>
-    void GenerateOccupy()
+    void GenerateOccupy() // 점령지 위치에 프리팹 생성
     {
-        foreach (GameObject points in occupyPoints)
+        foreach (Transform child in occupyPoints.transform)
         {
-            Instantiate(occupyPrefab, points.transform.position, Quaternion.identity);
+            GameObject occupyInstance = Instantiate(occupyPrefab, child.position, Quaternion.identity);
+            occupyInstance.transform.SetParent(occupyPool.transform);
         }
     }
 }

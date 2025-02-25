@@ -381,7 +381,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb2f118e00d1d4b438ea142a7205597d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  redTeamResourceCount: 0
+  blueTeamResourceCount: 0
   redTeamResourceCountImage: {fileID: 8222264562448540431}
   blueTeamResourceCountImage: {fileID: 1358541235369553088}
-  redTeamBuildingPrefab: {fileID: 6715654517453632122, guid: e9ae5b3be7e38504db6f08f4a0db641f, type: 3}
-  blueTeamBuildingPrefab: {fileID: 6715654517453632122, guid: 2a3ad2630ac881446ab26e48514540c9, type: 3}
+  occupyData: {fileID: 11400000, guid: c211f66c92cdb074b98cbbde88101053, type: 2}

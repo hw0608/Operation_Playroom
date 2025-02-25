@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 5354764330188872879}
   - component: {fileID: 6291256353235427619}
   - component: {fileID: 2913858521376639270}
+  - component: {fileID: 4746419861959351039}
   m_Layer: 0
-  m_Name: RedTeamBuilding
+  m_Name: Building Team Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86,3 +87,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4746419861959351039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6715654517453632122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e877a9eea3fd944eafa8aea6bde0ed5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildingData: {fileID: 11400000, guid: 2240b267c512f574d8a4edd7fb6ca780, type: 2}
+  health: 0
