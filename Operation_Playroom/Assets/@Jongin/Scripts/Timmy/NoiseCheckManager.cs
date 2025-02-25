@@ -31,6 +31,7 @@ public class NoiseCheckManager : NetworkBehaviour
     void AddNoiseGage(float value)
     {
         noise += value;
+        noise = Mathf.Clamp(noise, 0, 30);
         if (IsClient) // 클라이언트에서 서버에 요청
         {
             SubmitNoiseToServerRpc(value);
@@ -41,7 +42,6 @@ public class NoiseCheckManager : NetworkBehaviour
     void SubmitNoiseToServerRpc(float noiseValue)
     {
         totalNoise += noiseValue; // 서버에서 전체 noise 값 관리
-        Debug.Log(totalNoise);
     }
 
     void FixedUpdate()
