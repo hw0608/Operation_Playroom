@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SoldierA : MonoBehaviour
+public class SoldierAnim : MonoBehaviour
 {
     private Animator animator;
     void Start()
@@ -8,7 +8,7 @@ public class SoldierA : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public void SodierIdleAnim()
+    public void SoldierIdleAnim()
     {
         animator.SetBool("Idle", true);
         animator.SetBool("Walk", false);
@@ -22,4 +22,13 @@ public class SoldierA : MonoBehaviour
     {
         animator.SetTrigger("Attack");
     }
+    public void SoldierCollectAnim()
+    {
+        animator.SetTrigger("Collect");
+    }
+    public void SoldierDieAnim()
+    {
+        animator.SetTrigger("Die");
+    }
 }
+
