@@ -62,6 +62,26 @@ public class MatchplayMatchmaker : IDisposable
 
                         if (matchAssignment.Status == MultiplayAssignment.StatusOptions.Found)
                         {
+                            if (queueName == "solo-queue")
+                            {
+                                var result = await MatchmakerService.Instance.GetMatchmakingResultsAsync(matchAssignment.MatchId);
+                                var properties = result.MatchProperties;
+
+                                var playerTeam = properties.Teams
+                                    .Select(team => new
+                                    {
+                                        Team = team,
+                                        Index = team.PlayerIds.IndexOf(datas[0].userAuthId)
+                                    })
+                                    .FirstOrDefault(p => p.Index != -1);
+
+                                if (playerTeam != null)
+                                {
+                                    datas[0].userGamePreferences.gameTeam = playerTeam.Team.TeamName == "Blue" ? GameTeam.Blue : GameTeam.Red;
+                                    datas[0].userGamePreferences.gameRole = (GameRole)playerTeam.Index;
+                                }
+                            }
+
                             return ReturnMatchResult(MatchmakerPollingResult.Success, "", matchAssignment);
                         }
                         if (matchAssignment.Status == MultiplayAssignment.StatusOptions.Timeout ||

@@ -37,7 +37,7 @@ public class SpawnPoint : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, 1);
+        Gizmos.color = team == GameTeam.Blue ? Color.blue : Color.red;
+        Gizmos.DrawWireSphere(transform.position, 0.1f);
     }
 }

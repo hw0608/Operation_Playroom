@@ -40,6 +40,7 @@ public class TitleSceneUI : MonoBehaviour
 
     public async void OnFindMatchButtonPressed()
     {
+        if (isCancelling) { return; }
         if (isMatchmaking)
         {
             //cancel

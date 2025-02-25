@@ -155,6 +155,8 @@ public class ClientSingleton : MonoBehaviour
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
 
         NetworkManager.Singleton.StartClient();
+
+        Debug.Log($"ID : {userData.userAuthId} Team : {userData.userGamePreferences.gameTeam} Role : {userData.userGamePreferences.gameRole}");
     }
 
     public async Task CancelMatchmaking()
