@@ -11367,6 +11367,7 @@ GameObject:
   - component: {fileID: -3931345857987243654}
   - component: {fileID: 4163147820075246991}
   - component: {fileID: 141585091533852052}
+  - component: {fileID: 4943261774732861824}
   m_Layer: 0
   m_Name: Swordman
   m_TagString: Untagged
@@ -11451,7 +11452,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  TransitionStateInfoList: []
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 1
+    OriginatingState: 153482222
+    DestinationState: 1654249765
+    TransitionDuration: 0.25
+    TriggerNameHash: -943199693
+    TransitionIndex: 0
   m_Animator: {fileID: 9553400}
 --- !u!114 &4244218131759594287
 MonoBehaviour:
@@ -11502,6 +11510,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  cam: {fileID: 0}
   attackCooldown: 0.5
   swordHitbox: {fileID: 171234}
 --- !u!114 &-3931345857987243654
@@ -11567,6 +11576,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &4943261774732861824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa5b04b780c6964e98cd7571f67c9ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 100
+  currentHealth:
+    m_InternalValue: 0
+  isDead: 0
 --- !u!1 &182750
 GameObject:
   m_ObjectHideFlags: 0

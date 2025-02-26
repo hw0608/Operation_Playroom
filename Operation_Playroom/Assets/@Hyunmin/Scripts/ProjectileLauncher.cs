@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class ProjectileLauncher : NetworkBehaviour
 {
-    [SerializeField] GameObject projectile;
+    [SerializeField] GameObject serverProjectile;
+    [SerializeField] GameObject clientProjectile;
     [SerializeField] GameObject trailprefab;
 
     float speed = 3f;
@@ -23,23 +24,21 @@ public class ProjectileLauncher : NetworkBehaviour
     void FireServerRpc(Vector3 spawnPoint, Vector3 direction)
     {
         // 서버에서 실제 발사체 생성
-        GameObject arrow = Managers.Pool.Pop(projectile);
+        GameObject arrow = Managers.Pool.Pop(serverProjectile);
         arrow.GetComponent<ProjectileDamage>().SetOwner(OwnerClientId);
 
-        // 클라이언트에 동기화
-        FireClientRpc(spawnPoint, direction);
+        arrow.GetComponent<Projectile>().Launch(spawnPoint, direction);
 
-        arrow.GetComponent<Projectile>().Launch(spawnPoint, direction, trailprefab);
+        // 클라이언트에 동기화
+        FireClientRpc(spawnPoint, direction); 
     }
 
     [ClientRpc]
     void FireClientRpc(Vector3 spawnPoint, Vector3 direction)
     {
         // 클라이언트에서 더미 화살 생성
-        if (IsOwner) return;  // 소유자 클라이언트에서는 더미를 만들지 않음
 
-        GameObject arrow = Managers.Pool.Pop(projectile);
-        arrow.GetComponent<ProjectileDamage>().SetOwner(OwnerClientId);
+        GameObject arrow = Managers.Pool.Pop(clientProjectile);
 
         arrow.GetComponent<Projectile>().Launch(spawnPoint, direction, trailprefab);
     }

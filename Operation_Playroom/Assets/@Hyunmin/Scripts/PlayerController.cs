@@ -57,6 +57,8 @@ public class PlayerController : NetworkBehaviour
         if (IsServer)
         {
             OnPlayerSpawn?.Invoke(this);
+            transform.position = new Vector3(0, 0.5f, 0);
+
         }
 
         if (!IsOwner) return;

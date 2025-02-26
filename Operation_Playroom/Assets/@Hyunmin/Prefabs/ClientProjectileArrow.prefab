@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100000, guid: 7368c7d5f6071c248bc3f744189c7d7b, type: 3}
       propertyPath: m_Name
-      value: ProjectileArrow
+      value: ClientProjectileArrow
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 7368c7d5f6071c248bc3f744189c7d7b, type: 3}
       propertyPath: m_IsActive
@@ -80,9 +80,6 @@ PrefabInstance:
       addedObject: {fileID: 163675876300879808}
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 7368c7d5f6071c248bc3f744189c7d7b, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1450560360191652889}
-    - targetCorrespondingSourceObject: {fileID: 100000, guid: 7368c7d5f6071c248bc3f744189c7d7b, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4328746384155361998}
   m_SourcePrefab: {fileID: 100100000, guid: 7368c7d5f6071c248bc3f744189c7d7b, type: 3}
 --- !u!1 &8598686334400172540 stripped
@@ -138,19 +135,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1450560360191652889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8598686334400172540}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40e964ed3478a0a4ba21e1fe0ab47b48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 10
 --- !u!114 &4328746384155361998
 MonoBehaviour:
   m_ObjectHideFlags: 0

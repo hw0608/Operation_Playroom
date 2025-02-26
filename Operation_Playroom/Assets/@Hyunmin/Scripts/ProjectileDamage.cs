@@ -21,15 +21,15 @@ public class ProjectileDamage : MonoBehaviour
 
         if (other.TryGetComponent<NetworkObject>(out NetworkObject obj))
         {
-            //if (ownerClientId == obj.OwnerClientId && other.GetComponent<>() == null)
-            //{
-            //    return;
-            //}
+            if (ownerClientId == obj.OwnerClientId)
+            {
+                return;
+            }
         }
 
-        if (other.TryGetComponent<Character>(out Character character))
+        if (other.TryGetComponent<Health>(out Health health))
         {
-            character.TakeDamage(damage, ownerClientId);
+            health.TakeDamage(damage, ownerClientId);
         }
     }
 }

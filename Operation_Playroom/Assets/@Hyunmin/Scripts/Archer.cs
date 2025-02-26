@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,11 +8,11 @@ public class Archer : Character
     [SerializeField] CinemachineCamera aimCamera;
     [SerializeField] GameObject aimCanvas;
     [SerializeField] GameObject arrowObject;
-    [SerializeField] GameObject projectileObject;
 
     bool isAiming;
     float xRotation = 0;
     float mouseSensitivity = 100;
+
     Quaternion lastAimRotation;
 
 
@@ -19,9 +20,9 @@ public class Archer : Character
     public override void Attack()
     {
         // 화살 발사
-        if (isAiming)
+        if (isAiming && attackable)
         {
-            aimCamera.GetComponent<ProjectileLauncher>().ShootArrow(aimCamera.transform);
+            StartCoroutine(ShootAndReloadRoutine());
         }
     }
 
@@ -116,15 +117,7 @@ public class Archer : Character
             // 발사
             if (Input.GetButtonDown("Attack"))
             {
-                SetTriggerAnimationserverRpc("BowAttack");
-
                 Attack();
-
-                isAiming = false;
-                aimCanvas.SetActive(false);
-                arrowObject.SetActive(false);
-                aimCamera.Priority = -10;
-
 
                 transform.rotation = lastAimRotation;
                 currentRotation = lastAimRotation;
@@ -167,6 +160,24 @@ public class Archer : Character
         transform.rotation = Quaternion.Euler(0f, transform.rotation.eulerAngles.y + mouseX, 0f);
 
         lastAimRotation = transform.rotation;
+    }
+
+    // 장전 루틴
+    IEnumerator ShootAndReloadRoutine()
+    {
+        SetTriggerAnimationserverRpc("BowAttack");
+        aimCamera.GetComponent<ProjectileLauncher>().ShootArrow(aimCamera.transform);
+        arrowObject.SetActive(false);
+        attackable = false;
+
+        yield return new WaitForSeconds(0.5f);
+
+        SetTriggerAnimationserverRpc("Aim");
+        arrowObject.SetActive(true);
+
+        yield return new WaitForSeconds(1f);
+
+        attackable = true;
     }
 
 }
