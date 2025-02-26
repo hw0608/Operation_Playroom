@@ -14,17 +14,16 @@ public class Projectile : MonoBehaviour
     GameObject trail;
 
     // 화살 발사 메서드
-    public void Launch(Vector3 shootPoint, Vector3 direction, GameObject trailPrefab)
+    public void Launch(Vector3 shootPoint, Vector3 direction, GameObject trailPrefab = null)
     {
         transform.position = shootPoint;
         transform.localRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(-90, 0, 0);
 
         // 궤적 생성
-        if (trail != null)
+        if(trailPrefab != null)
         {
-            Destroy(trail);
+            trail = Instantiate(trailPrefab, transform);
         }
-        trail = Instantiate(trailPrefab, transform);
 
         // 발사 루틴 시작
         arrowCoroutine = StartCoroutine(ArrowParabolaRoutine(direction));
@@ -57,6 +56,7 @@ public class Projectile : MonoBehaviour
     {
         if (Iscollision) return; // 이미 충돌상태 일때
         if (other.GetComponent<NetworkObject>()) return; // 플레이어 피격 시
+        if (other.GetComponent<Projectile>()) return; // 서버 화살 피격 시
 
         Iscollision = true;
 
@@ -65,9 +65,12 @@ public class Projectile : MonoBehaviour
             StopCoroutine(arrowCoroutine);
         }
 
+        RemoveArrow();
+    }
+    public void RemoveArrow()
+    {
         StartCoroutine(RemoveArrowRoutine());
     }
-
     // 화살 삭제 루틴
     IEnumerator RemoveArrowRoutine()
     {

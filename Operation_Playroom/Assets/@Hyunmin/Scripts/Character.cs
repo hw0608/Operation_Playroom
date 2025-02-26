@@ -9,15 +9,15 @@ public abstract class Character : NetworkBehaviour, ICharacter
     [HideInInspector] public CinemachineFreeLookModifier cam;
 
     bool isGrounded;
-
-    CharacterController controller;
     Vector3 velocity;
 
-    protected Animator animator;
-    protected NetworkAnimator networkAnimator;
+    protected bool attackable;
     protected float maxHp = 100;
     protected float currentHp;
     protected float moveSpeed = 5;
+
+    protected Animator animator;
+    protected NetworkAnimator networkAnimator;
     protected Quaternion currentRotation;
 
 
@@ -25,11 +25,10 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     public virtual void Start()
     {
-        controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
 
-
+        attackable = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false; 
     }
@@ -74,35 +73,46 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 피격 메서드
     public virtual void TakeDamage(float damage, ulong clientId)
     {
-        currentHp -= damage;
-        if (currentHp < 0)
-        {
-            Die();
-        }
+        Debug.Log("Damage");
+        StartCoroutine(DamageRoutine());
+    }
+
+    IEnumerator DamageRoutine()
+    {
+        SetAvatarLayerWeightserverRpc(1);
+        SetTriggerAnimationserverRpc("Damage");
+        attackable = false;
+
+        yield return new WaitForSeconds(0.5f);
+
+        SetAvatarLayerWeightserverRpc(0);
+        attackable = true;
+
     }
 
     // 사망 메서드
     public void Die()
     {
         Debug.Log("Die");
+        SetTriggerAnimationserverRpc("Die");
     }
 
     // 애니메이션 Trigger 메서드
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void SetTriggerAnimationserverRpc(string name)
     {
         networkAnimator.SetTrigger(name);
     }
 
     // 애니메이션 Float 메서드
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void SetFloatAnimationserverRpc(string name, float value, float dampTime, float deltaTime)
     {
         networkAnimator.Animator.SetFloat(name, value, dampTime, deltaTime);
     }
 
     // 애니메이션 상체 웨이트 메서드
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void SetAvatarLayerWeightserverRpc(int value)
     {
         networkAnimator.Animator.SetLayerWeight(1, value);

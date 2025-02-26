@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -3931345857987243654}
   - component: {fileID: 4163147820075246991}
   - component: {fileID: 141585091533852052}
+  - component: {fileID: 7588611022480350649}
   m_Layer: 0
   m_Name: Archer
   m_TagString: Untagged
@@ -130,7 +131,7 @@ MonoBehaviour:
   TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
-  SyncPositionY: 0
+  SyncPositionY: 1
   SyncPositionZ: 1
   SyncRotAngleX: 0
   SyncRotAngleY: 1
@@ -165,7 +166,6 @@ MonoBehaviour:
   aimCamera: {fileID: 8114598411042677039}
   aimCanvas: {fileID: 5010046624809275930}
   arrowObject: {fileID: 2154582282572986278}
-  projectileObject: {fileID: 0}
 --- !u!114 &-3931345857987243654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,6 +229,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &7588611022480350649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa5b04b780c6964e98cd7571f67c9ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 100
+  currentHealth:
+    m_InternalValue: 0
+  isDead: 0
 --- !u!1 &12193087923080358
 GameObject:
   m_ObjectHideFlags: 0
@@ -948,7 +965,7 @@ Transform:
   m_Children:
   - {fileID: 3110798296630975218}
   m_Father: {fileID: 3399826048558614754}
-  m_LocalEulerAnglesHint: {x: 11.506557, y: -5.391297, z: 160.79976}
+  m_LocalEulerAnglesHint: {x: -0.00858492, y: 3.2947242, z: 172.72923}
 --- !u!1 &468630843999150907
 GameObject:
   m_ObjectHideFlags: 0
@@ -7440,7 +7457,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  projectile: {fileID: 8598686334400172540, guid: 622608291d6ef9841b3a7a127595223c, type: 3}
+  serverProjectile: {fileID: 8598686334400172540, guid: 622608291d6ef9841b3a7a127595223c, type: 3}
+  clientProjectile: {fileID: 8598686334400172540, guid: 4ad1f9c1c4b2670458bd4fea1800c640, type: 3}
   trailprefab: {fileID: 7807458964011383569, guid: 2eb3ecaa0e56766419ca733057a072d9, type: 3}
   flightTime: 3
 --- !u!1 &4410012350216309992
@@ -14178,11 +14196,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8598686334399942108, guid: 1468c85d392c3754bbcc0164b671d468, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.0214
+      value: -0.0386
       objectReference: {fileID: 0}
     - target: {fileID: 8598686334399942108, guid: 1468c85d392c3754bbcc0164b671d468, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0025
+      value: -0.0039
       objectReference: {fileID: 0}
     - target: {fileID: 8598686334399942108, guid: 1468c85d392c3754bbcc0164b671d468, type: 3}
       propertyPath: m_LocalRotation.w
