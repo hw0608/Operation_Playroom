@@ -38,6 +38,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/@Hyunmin/Scenes/BattleTestScene.unity
     guid: cc6f7162e37f8bf42a4516b81c449078
+  - enabled: 1
+    path: Assets/@Yongjun/Scenes/Test.unity
+    guid: a599ac4ec8f22124e8ee983f2b9b5048
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 235d6a3b3c072854e83353bc74d30bf3, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
