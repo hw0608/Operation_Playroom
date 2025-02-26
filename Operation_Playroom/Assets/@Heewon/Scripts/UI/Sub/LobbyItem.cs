@@ -6,6 +6,7 @@ public class LobbyItem : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI lobbyTitleTmp;
     [SerializeField] TextMeshProUGUI lobbyPlayersTmp;
+    [SerializeField] GameObject lockImage;
 
     LobbyList lobbyList;
     Lobby lobby;
@@ -15,12 +16,22 @@ public class LobbyItem : MonoBehaviour
         this.lobbyList = lobbyList;
         this.lobby = lobby;
 
+        if (lobby.HasPassword)
+        {
+            lockImage.SetActive(true);
+        }
+        else
+        {
+            lockImage.SetActive(false);
+        }
+
         lobbyTitleTmp.text = lobby.Name;
         lobbyPlayersTmp.text = lobby.Players.Count + "/" + lobby.MaxPlayers;
     }
 
     public void JoinPressed()
     {
-        lobbyList.JoinAsync(lobby);
+        bool needPassword = lobby.HasPassword;
+        lobbyList.JoinAsync(lobby, needPassword);
     }
 }

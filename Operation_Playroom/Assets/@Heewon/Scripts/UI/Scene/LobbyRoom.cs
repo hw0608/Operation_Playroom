@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
@@ -10,6 +11,7 @@ using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 class TMPList
@@ -23,12 +25,23 @@ public class LobbyRoom : NetworkBehaviour
     [SerializeField] TMPList[] playerReadyTexts = new TMPList[2];
     [SerializeField] GameObject readyButton;
     [SerializeField] GameObject startButton;
+    [SerializeField] TMP_Text joinCodeText;
 
+    NetworkVariable<FixedString32Bytes> joinCode = new NetworkVariable<FixedString32Bytes>();
     NetworkList<LobbyRoomPlayerData> players = new NetworkList<LobbyRoomPlayerData>();
     MatchplayMatchmaker matchmaker = new MatchplayMatchmaker();
 
     public override void OnNetworkSpawn()
     {
+        if (IsServer)
+        {
+            joinCode.Value = HostSingleton.Instance.joinCode;
+            string userName = ServerSingleton.Instance.clientIdToUserData[NetworkManager.Singleton.LocalClientId].userName;
+            AddPlayerServerRpc(AuthenticationService.Instance.PlayerId, NetworkManager.Singleton.LocalClientId, userName);
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+        }
+
         if (IsClient)
         {
             players.OnListChanged += HandlePlayerStateChanged;
@@ -41,14 +54,8 @@ public class LobbyRoom : NetworkBehaviour
                     Value = player
                 });
             }
-        }
 
-        if (IsServer)
-        {
-            string userName = ServerSingleton.Instance.clientIdToUserData[NetworkManager.Singleton.LocalClientId].userName;
-            AddPlayerServerRpc(AuthenticationService.Instance.PlayerId, NetworkManager.Singleton.LocalClientId, userName);
-            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+            joinCodeText.text = joinCode.Value.ToString();
         }
     }
 
@@ -227,6 +234,8 @@ public class LobbyRoom : NetworkBehaviour
             return;
         }
 
+        NetworkManager.Singleton.SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+
         MatchmakerPollingResult result = await GetMatchAsync();
         onMatchmakeResponse?.Invoke(result);
     }
@@ -275,6 +284,7 @@ public class LobbyRoom : NetworkBehaviour
             if (player.clientId != NetworkManager.Singleton.LocalClientId) continue;
             ClientSingleton.Instance.UserData.userGamePreferences.gameRole = (GameRole)player.role;
             ClientSingleton.Instance.UserData.userGamePreferences.gameTeam = (GameTeam)player.team;
+            break;
         }
 
         ClientSingleton.Instance.StartClient(ip, port);
