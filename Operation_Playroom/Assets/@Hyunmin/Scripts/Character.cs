@@ -6,7 +6,7 @@ using UnityEngine;
 
 public abstract class Character : NetworkBehaviour, ICharacter
 {
-    public CinemachineFreeLookModifier cam;
+    [HideInInspector] public CinemachineFreeLookModifier cam;
 
     bool isGrounded;
 

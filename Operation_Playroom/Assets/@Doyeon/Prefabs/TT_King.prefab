@@ -882,6 +882,7 @@ GameObject:
   - component: {fileID: -2179658925127300013}
   - component: {fileID: -3470240674914768057}
   - component: {fileID: -1022042755230406192}
+  - component: {fileID: 3331980182297944375}
   - component: {fileID: 703102458143384672}
   - component: {fileID: -6926711141856501639}
   - component: {fileID: 3244654840610318058}
@@ -988,7 +989,7 @@ Animator:
   m_GameObject: {fileID: 332360702600548052}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 02ded044b8e0963439276550f50be6f9, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a5ce94a06fcdf4842a1799ac0db8a070, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -1075,6 +1076,21 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &3331980182297944375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 332360702600548052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 0}
 --- !u!114 &703102458143384672
 MonoBehaviour:
   m_ObjectHideFlags: 0
