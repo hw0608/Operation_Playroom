@@ -1,34 +1,98 @@
+using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 
-public class SoldierAnim : MonoBehaviour
+public class SoldierAnim : NetworkBehaviour
 {
     private Animator animator;
-    void Start()
+    private NetworkAnimator networkAnimator;
+    public override void OnNetworkSpawn()
     {
         animator = GetComponent<Animator>();
-    }
+        networkAnimator = GetComponent<NetworkAnimator>();
 
+        if (networkAnimator == null)
+            Debug.LogError("네트워크애니메이터 초기화 안됨");
+    }
     public void SoldierIdleAnim()
     {
-        animator.SetBool("Idle", true);
-        animator.SetBool("Walk", false);
+        if (IsOwner)
+        {
+            SoldierIdleAnimServerRpc();
+        }
+    }
+    [ServerRpc]
+    private void SoldierIdleAnimServerRpc()
+    {
+        networkAnimator.Animator.SetBool("Idle", true);
+        networkAnimator.Animator.SetBool("Walk", false);
+        networkAnimator.Animator.SetBool("Die", false);
     }
     public void SoldierWalkAnim()
     {
-        animator.SetBool("Idle", false);
-        animator.SetBool("Walk", true);
+        if (IsOwner)
+        {
+            SoldierWalkAnimServerRpc();
+        }
+    }
+    [ServerRpc]
+    private void SoldierWalkAnimServerRpc()
+    {
+        if (networkAnimator == null) return;
+        networkAnimator.Animator.SetBool("Idle", false);
+        networkAnimator.Animator.SetBool("Walk", true);
+        networkAnimator.Animator.SetBool("Die", false);
     }
     public void SoldierAttackAnim()
     {
-        animator.SetTrigger("Attack");
+        if (IsOwner)
+        {
+            SoldierAttackAnimServerRpc();
+        }
+    }
+    [ServerRpc]
+    private void SoldierAttackAnimServerRpc()
+    {
+        if (networkAnimator == null) return;
+        networkAnimator.Animator.SetTrigger("Attack");
+    }
+    public void SoldierHitAnim()
+    {
+        if (IsOwner)
+        {
+            SoldierCollectAnimServerRpc();
+        }
+    }
+    [ServerRpc]
+    private void SoldierHitAnimServerRpc()
+    {
+        if (networkAnimator == null) return;
+        networkAnimator.Animator.SetTrigger("Hit");
     }
     public void SoldierCollectAnim()
     {
-        animator.SetTrigger("Collect");
+        if (IsOwner)
+        {
+            SoldierCollectAnimServerRpc();
+        }
+    }
+    [ServerRpc]
+    private void SoldierCollectAnimServerRpc()
+    {
+        if (networkAnimator == null) return;
+        networkAnimator.Animator.SetTrigger("Collect");
     }
     public void SoldierDieAnim()
     {
-        animator.SetTrigger("Die");
+        SoldierCollectAnimServerRpc();
+    }
+    [ServerRpc]
+    private void SoldierDieAnimServerRpc()
+    {
+        if (networkAnimator == null) return;
+        networkAnimator.Animator.SetBool("Idle", false);
+        networkAnimator.Animator.SetBool("Walk", false);
+        networkAnimator.Animator.SetBool("Die", true);
     }
 }
 
