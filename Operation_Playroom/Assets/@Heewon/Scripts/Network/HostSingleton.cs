@@ -60,7 +60,7 @@ public class HostSingleton : MonoBehaviour
         }
     }
 
-    public async Task StartHostAsync()
+    public async Task StartHostAsync(CreateLobbyOptions options = null, string lobbyName = "")
     {
         // 릴레이 접속
         try
@@ -82,8 +82,11 @@ public class HostSingleton : MonoBehaviour
         // 로비 만들기
         try
         {
-            CreateLobbyOptions options = new CreateLobbyOptions();
-            options.IsPrivate = false;
+            if (options == null)
+            {
+                options = new CreateLobbyOptions();
+                options.IsPrivate = false;
+            }
             options.Data = new Dictionary<string, DataObject>
             {
                 {
@@ -92,7 +95,12 @@ public class HostSingleton : MonoBehaviour
                 }
             };
 
-            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(joinCode, MAX_CONNECTIONS, options);
+            if (lobbyName.Length == 0)
+            {
+                lobbyName = joinCode;
+            }
+
+            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, MAX_CONNECTIONS, options);
             lobbyId = lobby.Id;
 
             StartCoroutine(HeartBeatLobby(15f));

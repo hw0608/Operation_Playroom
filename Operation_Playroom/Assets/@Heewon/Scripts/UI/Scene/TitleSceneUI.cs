@@ -19,6 +19,8 @@ public class TitleSceneUI : MonoBehaviour
 
     void Init()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         startOptionPanel.SetActive(false);
         lobbyCanvas.SetActive(false);
 
@@ -31,6 +33,7 @@ public class TitleSceneUI : MonoBehaviour
     private void Start()
     {
         Init();
+        Managers.Resource.LoadAllAsync<GameObject>("default", null);
     }
 
     public void OnStartButtonPressed()

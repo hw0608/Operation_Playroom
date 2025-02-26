@@ -12,6 +12,13 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum SceneName
+{
+    MainScene,
+    LoadingScene,
+    GameScene
+}
+
 public class ClientSingleton : MonoBehaviour
 {
     static ClientSingleton instance;
@@ -22,6 +29,8 @@ public class ClientSingleton : MonoBehaviour
     {
         get { return userData; }
     }
+
+    string disconnectScene = "MainScene";
 
     public static ClientSingleton Instance
     {
@@ -63,24 +72,27 @@ public class ClientSingleton : MonoBehaviour
         return false;
     }
 
+    public void SetDisconnectScene(string sceneName)
+    {
+        Debug.Log($"Set Disconnect Scene : {sceneName}");
+        disconnectScene = sceneName;
+    }
+
     private void OnDisconnected(ulong clientId)
     {
         if (clientId != 0 && clientId != NetworkManager.Singleton.LocalClientId)
         {
-            // 누군가 나갔습니다 처리가 필요하다면 여기
-            // 보통은 authid를 가지고 있다가 다시 들어오면 계속 플레이 하도록
             return;
         }
 
-        if (SceneManager.GetActiveScene().name != "MainScene")
+        if (SceneManager.GetActiveScene().name != disconnectScene)
         {
-            SceneManager.LoadScene("MainScene");
+            SceneManager.LoadScene(disconnectScene);
         }
     }
 
     public async Task StartClientAsync(string joinCode)
     {
-
         try
         {
             allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
@@ -127,6 +139,7 @@ public class ClientSingleton : MonoBehaviour
     {
         if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsHost)
         {
+            disconnectScene = SceneName.LoadingScene.ToString();
             NetworkManager.Singleton.Shutdown();
 
             int timer = 10000; // 10초
@@ -138,6 +151,8 @@ public class ClientSingleton : MonoBehaviour
                 if (timer <= 0) break;
             }
         }
+
+        disconnectScene = SceneName.MainScene.ToString();
 
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.SetConnectionData(ip, port);
