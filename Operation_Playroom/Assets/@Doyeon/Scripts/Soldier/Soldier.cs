@@ -36,11 +36,11 @@ public class Soldier : NetworkBehaviour, IFormable
     // 병사 초기화
     public void SoldierInitialize(Transform king, int formationIndex)
     {
-        soldierFormation = GetComponent<SoldierFormation>();
+        soldierFormation = GetComponent<SoldierFormation>(); // 참조
         soldierAttack = GetComponent<SoldierAttack>();
         soldierAnim = GetComponent<SoldierAnim>();
 
-        soldierFormation.SoldieFormationInitialize(king, formationIndex);
+        soldierFormation.SoldierFormationInitialize(king, formationIndex); // 초기화
     }
     public override void OnNetworkSpawn()
     {
@@ -171,7 +171,7 @@ public class Soldier : NetworkBehaviour, IFormable
     }
 
 
-    [ServerRpc] 
+    [ServerRpc(RequireOwnership = false)] // Owner가 아니라도 호출 가능
     private void UpdateStateServerRpc(int newState)
     {
         state.Value = newState; // 서버에서 state.Value를 업데이트 

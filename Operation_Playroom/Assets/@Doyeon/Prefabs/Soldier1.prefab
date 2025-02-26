@@ -2671,6 +2671,7 @@ GameObject:
   - component: {fileID: 6133529242866754072}
   - component: {fileID: 4991585093872070679}
   - component: {fileID: -965113104000827844}
+  - component: {fileID: -7909585105608600797}
   - component: {fileID: 4523277812919666454}
   - component: {fileID: 6276707215954539210}
   - component: {fileID: 4961586210962179185}
@@ -2678,7 +2679,7 @@ GameObject:
   - component: {fileID: 2082774659973095305}
   m_Layer: 0
   m_Name: Soldier1
-  m_TagString: Untagged
+  m_TagString: Soldier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2893,6 +2894,49 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &-7909585105608600797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359416525351218504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1100204920
+    DestinationState: -915017453
+    TransitionDuration: 0.25
+    TriggerNameHash: 1080829965
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1100204920
+    DestinationState: -227766544
+    TransitionDuration: 0.25
+    TriggerNameHash: 1654612129
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1100204920
+    DestinationState: 1078504738
+    TransitionDuration: 0.25
+    TriggerNameHash: 1807440744
+    TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1766689130
+    DestinationState: -915017453
+    TransitionDuration: 0.25
+    TriggerNameHash: 1080829965
+    TransitionIndex: 1
+  m_Animator: {fileID: 4506523155757197530}
 --- !u!195 &4523277812919666454
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2967,6 +3011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad6af22d86835874da85cb55a3d77c87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &2082774659973095305
 MonoBehaviour:
   m_ObjectHideFlags: 0

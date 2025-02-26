@@ -2,6 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
+// 병사의 위치 및 이동 
 [RequireComponent(typeof(NavMeshAgent))]
 public class SoldierFormation : NetworkBehaviour
 {
@@ -23,7 +24,7 @@ public class SoldierFormation : NetworkBehaviour
         soldier = GetComponent<Soldier>();
     }
     // 병사 대형 초기화
-    public void SoldieFormationInitialize(Transform king, int formationIndex)
+    public void SoldierFormationInitialize(Transform king, int formationIndex)
     {
         this.king = king;
         this.formationIndex = formationIndex;
@@ -66,23 +67,6 @@ public class SoldierFormation : NetworkBehaviour
     // 병사 위치
     private Vector3 GetTrianglePosition(int index)
     {
-        //float spacing = 1.5f * scaleFactor; // 병사간 간격
-        //Vector3 kingPosition = king.position;
-
-        //Vector3 forwardOffset = king.forward * -spacing; // 왕 뒤쪽
-        //Vector3 sideOffset = king.right * spacing; // 왕 좌우 
-
-        //switch (index)
-        //{
-        //    case 0:
-        //        return kingPosition - sideOffset; // 왼쪽
-        //    case 1:
-        //        return kingPosition + sideOffset; // 오른쪽
-        //    case 2:
-        //        return kingPosition + forwardOffset; // 뒤쪽 
-        //    default:
-        //        return kingPosition; // 기본 위치
-        //}
         float spacing = 1.5f * scaleFactor;
         Vector3 kingPosition = king.position;
         int row = (index / 2) + 1; // 행
