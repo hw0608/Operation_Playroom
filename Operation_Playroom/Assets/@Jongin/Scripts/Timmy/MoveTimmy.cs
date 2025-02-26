@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -22,30 +24,58 @@ public class MoveTimmy : NetworkBehaviour
     void Update()
     {
         if (!IsServer) return;
-        
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            MoveToPath(pathIndex);
-            isMove = true;
-            animator.SetTrigger("Walk");
-        }
 
-        if (isMove)
+        //if (Input.GetKeyDown(KeyCode.G))
+        //{
+        //    StartCoroutine(CallTimmy());
+        //}
+
+        //if (isMove)
+        //{
+        //    if (HasReachedDestination())
+        //    {
+        //        animator.SetTrigger("Lifting");
+        //        //lifting animation 
+
+        //        isMove = false;
+        //    }
+        //}
+    }
+
+    public void CallTimmy(Action callback)
+    {
+        StartCoroutine(MoveTimmyToPath(callback));
+    }
+
+    IEnumerator MoveTimmyToPath(Action callback)
+    {
+        pathIndex = 0;
+        while (pathIndex < path.Count)
         {
-            if (HasReachedDestination())
+            if (!isMove)
             {
-                animator.SetTrigger("Lifting");
-                //lifting animation 
-
-                isMove = false;
+                MoveToPath(pathIndex);
+                isMove = true;
+                animator.SetTrigger("Walk");
             }
+            else
+            {
+                if (HasReachedDestination())
+                {
+                    animator.SetTrigger("Lifting");
+                    yield return new WaitForSeconds(6);
+                    isMove = false;
+                    pathIndex++;
+                }
+            }
+            yield return null;
         }
+        callback?.Invoke();
     }
 
     void MoveToPath(int index)
     {
         GetComponent<NavMeshAgent>().SetDestination(path[index].position);
-        pathIndex++;
     }
 
     bool HasReachedDestination()

@@ -14,10 +14,10 @@ public class NoiseCheckManager : NetworkBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            AddNoiseGage(2);
-        }
+        //if (Input.GetKeyDown(KeyCode.P))
+        //{
+        //    AddNoiseGage(2);
+        //}
 
         if (noise > 0)
         {
