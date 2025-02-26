@@ -97,10 +97,11 @@ public class LobbyList : MonoBehaviour
             if (e.Reason == LobbyExceptionReason.IncorrectPassword || e.Reason == LobbyExceptionReason.ValidationError)
             {
                 Debug.Log("Invalid Password");
-                GameObject popup = Managers.Resource.Instantiate("MessagePopup");
+                MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
                 if (popup != null)
                 {
-                    popup.GetComponent<MessagePopup>().SetText("Invalid Password");
+                    popup.SetText("Invalid Password");
+                    popup.Show();
                 }     
             }
             else
@@ -139,8 +140,9 @@ public class LobbyList : MonoBehaviour
         }
         else if (password.Length > 0)
         {
-            GameObject popup = Managers.Resource.Instantiate("MessagePopup");
-            popup.GetComponent<MessagePopup>().SetText("password should be at least 8 chars long");
+            MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
+            popup.SetText("password should be at least 8 chars long");
+            popup.Show();
             return;
         }
 

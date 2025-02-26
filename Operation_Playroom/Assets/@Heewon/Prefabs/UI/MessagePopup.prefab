@@ -117,6 +117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   messageText: {fileID: 2465843643680014799}
+  messageArea: {fileID: 3872009601631147983}
 --- !u!1 &2128789749307483492
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,6 +265,7 @@ GameObject:
   - component: {fileID: 3403385480740814845}
   - component: {fileID: 1407067334034165502}
   - component: {fileID: 8786379570702650813}
+  - component: {fileID: 3872009601631147983}
   m_Layer: 5
   m_Name: BG
   m_TagString: Untagged
@@ -330,6 +332,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &3872009601631147983
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4456138171223133203}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5239996249597232057
 GameObject:
   m_ObjectHideFlags: 0
@@ -589,7 +603,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2292973520976045064}
         m_TargetAssemblyTypeName: MessagePopup, Assembly-CSharp
-        m_MethodName: OnCloseButtonPressed
+        m_MethodName: Close
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -721,7 +735,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2292973520976045064}
         m_TargetAssemblyTypeName: MessagePopup, Assembly-CSharp
-        m_MethodName: OnCloseButtonPressed
+        m_MethodName: Close
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
