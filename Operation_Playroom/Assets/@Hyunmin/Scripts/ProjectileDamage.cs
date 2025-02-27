@@ -6,6 +6,7 @@ public class ProjectileDamage : MonoBehaviour
     [SerializeField] int damage = 10;
 
     ulong ownerClientId;
+    GameObject dummy;
 
     public void SetOwner(ulong ownerClientId)
     {
@@ -14,6 +15,11 @@ public class ProjectileDamage : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (other.GetComponent<Projectile>())
+        {
+            dummy = other.gameObject;
+            return;
+        }
         if (other.attachedRigidbody == null)
         {
             return;
@@ -30,6 +36,9 @@ public class ProjectileDamage : MonoBehaviour
         if (other.TryGetComponent<Health>(out Health health))
         {
             health.TakeDamage(damage, ownerClientId);
+
+            Managers.Pool.Push(dummy);
+            Managers.Pool.Push(gameObject);
         }
     }
 }

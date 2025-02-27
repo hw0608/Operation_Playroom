@@ -11,10 +11,10 @@ public class Projectile : MonoBehaviour
     bool Iscollision = false;
 
     Coroutine arrowCoroutine;
-    GameObject trail;
+    TrailRenderer trail;
 
     // 화살 발사 메서드
-    public void Launch(Vector3 shootPoint, Vector3 direction, GameObject trailPrefab = null)
+    public void Launch(Vector3 shootPoint, Vector3 direction, TrailRenderer trailPrefab = null)
     {
         transform.position = shootPoint;
         transform.localRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(-90, 0, 0);
@@ -23,6 +23,8 @@ public class Projectile : MonoBehaviour
         if(trailPrefab != null)
         {
             trail = Instantiate(trailPrefab, transform);
+            trail.Clear();
+
         }
 
         // 발사 루틴 시작
@@ -54,30 +56,13 @@ public class Projectile : MonoBehaviour
     // 벽, 구조물에 충돌 시 호출
     void OnTriggerEnter(Collider other)
     {
-        if (Iscollision) return; // 이미 충돌상태 일때
-        if (other.GetComponent<NetworkObject>()) return; // 플레이어 피격 시
         if (other.GetComponent<Projectile>()) return; // 서버 화살 피격 시
-
-        Iscollision = true;
+        if (other.GetComponent<PlayerController>()) return; // 다른 플레이어 피격 시
 
         if (arrowCoroutine != null)
         {
             StopCoroutine(arrowCoroutine);
+            Managers.Pool.Push(gameObject);
         }
-
-        RemoveArrow();
-    }
-    public void RemoveArrow()
-    {
-        StartCoroutine(RemoveArrowRoutine());
-    }
-    // 화살 삭제 루틴
-    IEnumerator RemoveArrowRoutine()
-    {
-        yield return new WaitForSeconds(3);
-
-        Iscollision = false;
-
-        Managers.Pool.Push(gameObject);
     }
 }

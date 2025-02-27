@@ -36,7 +36,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public abstract void Attack(); // 공격 구현
     public abstract void Interaction(); // 상호작용 구현
     public abstract void HandleInput(); // 키 입력 구현
-    public abstract void SetHP(); // 직업 별 체력적용
 
     // 이동 메서드
     public virtual void Move(CinemachineCamera cam, Rigidbody rb)
@@ -71,9 +70,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
     }
 
     // 피격 메서드
-    public virtual void TakeDamage(float damage, ulong clientId)
+    public virtual void TakeDamage()
     {
-        Debug.Log("Damage");
         StartCoroutine(DamageRoutine());
     }
 
@@ -93,7 +91,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 사망 메서드
     public void Die()
     {
-        Debug.Log("Die");
         SetTriggerAnimationserverRpc("Die");
     }
 

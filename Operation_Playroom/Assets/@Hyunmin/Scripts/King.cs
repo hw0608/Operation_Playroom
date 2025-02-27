@@ -5,20 +5,11 @@ using UnityEngine;
 public class King : Character
 {
     private SoldierSpawner soldierSpawner;
-    
 
     public override void OnNetworkSpawn()
     {
         base.Start(); 
         soldierSpawner = GetComponent<SoldierSpawner>();
-
-        if (IsOwner)
-        {
-            if (soldierSpawner != null)
-            {
-                soldierSpawner.SpawnSoldiersServerRpc(); // 병사들을 초기화하고 배치
-            }
-        }
     }
     void Update()
     {
@@ -49,12 +40,14 @@ public class King : Character
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            // SoldierSpawner가 있을 때만 호출
-            if (soldierSpawner != null)
+            if (IsOwner)
             {
-                soldierSpawner.AddSoldierServerRpc(soldierSpawner.currentSoldierCount + 1);
+                if (soldierSpawner != null)
+                {
+                    soldierSpawner.AddSoldierServerRpc(1);
+                }
             }
-            Debug.Log("F눌림");
+            Debug.Log($"F키 눌림 by {OwnerClientId}");
         }
     }
 
