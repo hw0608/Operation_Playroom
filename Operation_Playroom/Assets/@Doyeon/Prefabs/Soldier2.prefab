@@ -17805,6 +17805,7 @@ GameObject:
   - component: {fileID: 8384845805929768959}
   - component: {fileID: -4813626932012286443}
   - component: {fileID: -7345284614372664898}
+  - component: {fileID: -3941548764843110615}
   - component: {fileID: 9140196470629511608}
   - component: {fileID: 7911474529387494268}
   - component: {fileID: 3587758654492781018}
@@ -17812,7 +17813,7 @@ GameObject:
   - component: {fileID: 4157483476171499738}
   m_Layer: 0
   m_Name: Soldier2
-  m_TagString: Untagged
+  m_TagString: Soldier
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -18027,6 +18028,49 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &-3941548764843110615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8455552684458472438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1100204920
+    DestinationState: -915017453
+    TransitionDuration: 0.25
+    TriggerNameHash: 1080829965
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1100204920
+    DestinationState: -227766544
+    TransitionDuration: 0.25
+    TriggerNameHash: 1654612129
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1100204920
+    DestinationState: 1078504738
+    TransitionDuration: 0.25
+    TriggerNameHash: 1807440744
+    TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1766689130
+    DestinationState: -915017453
+    TransitionDuration: 0.25
+    TriggerNameHash: 1080829965
+    TransitionIndex: 1
+  m_Animator: {fileID: 436856392372184420}
 --- !u!195 &9140196470629511608
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -18115,6 +18159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad6af22d86835874da85cb55a3d77c87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &8509804826014776603
 GameObject:
   m_ObjectHideFlags: 0
