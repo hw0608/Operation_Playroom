@@ -1,33 +1,23 @@
 using UnityEngine;
-using Unity.Netcode;
 
-public class OccupyManager : NetworkBehaviour
+public class OccupyManager : MonoBehaviour
 {
     [SerializeField] GameObject occupyPrefab; // 점령지 프리팹
-    [SerializeField] Transform occupyPoints; // 점령지 위치들
-    [SerializeField] Transform occupyPool;   // 점령지 풀
+    [SerializeField] GameObject occupyPoints; // 점령지 위치
+    [SerializeField] GameObject occupyPool; // 점령지 풀
 
-    public override void OnNetworkSpawn()
+    void Start()
     {
-        if (IsServer)
-        {
-            GenerateOccupy();
-        }
+        GenerateOccupy();
+        Destroy(occupyPoints);
     }
 
-    private void GenerateOccupy()
+    void GenerateOccupy() // 점령지 위치에 프리팹 생성
     {
-        foreach (Transform child in occupyPoints)
+        foreach (Transform child in occupyPoints.transform)
         {
             GameObject occupyInstance = Instantiate(occupyPrefab, child.position, Quaternion.identity);
-            NetworkObject networkObject = occupyInstance.GetComponent<NetworkObject>();
-
-            if (networkObject != null)
-            {
-                networkObject.Spawn(true);
-            }
-
-            occupyInstance.transform.SetParent(occupyPool);
+            occupyInstance.transform.SetParent(occupyPool.transform);
         }
     }
 }
