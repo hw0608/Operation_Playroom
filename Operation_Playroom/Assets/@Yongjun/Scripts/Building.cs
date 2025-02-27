@@ -1,29 +1,42 @@
 using UnityEngine;
 using System.Collections;
+using Unity.Netcode;
 
-public class Building : MonoBehaviour
+public class Building : NetworkBehaviour
 {
-    [SerializeField] int health; // 건물 체력
-    [SerializeField] BuildingScriptableObject buildingData; // 건물 데이터 스크립터블 오브젝트
-    bool isDestruction = false; // 중복철거 방지
+    [SerializeField]
+    NetworkVariable<int> health = new NetworkVariable<int>(
+        0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    void OnEnable() => StartCoroutine(RaiseBuilding(gameObject, 0.2f, 3f));
+    [SerializeField] BuildingScriptableObject buildingData;
 
-    void Start()
+    bool isDestruction = false; // 중복 파괴 방지
+
+    public override void OnNetworkSpawn()
     {
-        health = buildingData.health;
+        if (IsServer)
+        {
+            health.Value = buildingData.health;
+        }
+
+        if (IsClient)
+        {
+            StartCoroutine(RaiseBuilding(gameObject, 0.2f, 3f));
+        }
     }
 
     void Update()
     {
-        if (health <= 0 && !isDestruction)
+        if (!IsServer) return;
+
+        if (health.Value <= 0 && !isDestruction)
         {
             isDestruction = true;
-            DestructionBuilding();
+            DestructionBuildingServerRpc();
         }
     }
 
-    IEnumerator RaiseBuilding(GameObject building, float targetPosY, float duration) // 건물 생성될 때 효과
+    IEnumerator RaiseBuilding(GameObject building, float targetPosY, float duration)
     {
         float elapsedTime = 0f;
         Vector3 startPos = building.transform.position;
@@ -39,7 +52,7 @@ public class Building : MonoBehaviour
         }
 
         building.transform.position = targetPos;
-        
+
         Destroy(buildEffect);
 
         GameObject sparkleEffect = Instantiate(buildingData.sparkleEffect, new Vector3(transform.position.x, 0.5f, transform.position.z), Quaternion.identity);
@@ -47,12 +60,36 @@ public class Building : MonoBehaviour
         Destroy(sparkleEffect);
     }
 
-    void DestructionBuilding() // 건물 파괴
+    [ServerRpc(RequireOwnership = false)]
+    public void TakeDamageServerRpc(int damage)
     {
-        GetComponentInParent<OccupySystem>().ResetOwnership();
-        gameObject.SetActive(false);
+        if (health.Value > 0)
+        {
+            health.Value -= damage;
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void DestructionBuildingServerRpc()
+    {
+        GetComponentInParent<OccupySystem>().ResetOwnershipServerRpc();
+
+        DestructionBuildingClientRpc();
+         
+        NetworkObject networkObject = GetComponent<NetworkObject>();
+        if (networkObject != null)
+        {
+            networkObject.Despawn(true);
+        }
+    }   
+
+    [ClientRpc]
+    void DestructionBuildingClientRpc()
+    {
+        if (IsServer) return;
+
         GameObject destructionEffect = Instantiate(buildingData.destructionEffect, transform.position, Quaternion.identity);
         Destroy(destructionEffect, 3.25f);
-        Destroy(gameObject, 3.25f);
+        gameObject.SetActive(false);
     }
 }
