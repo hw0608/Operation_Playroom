@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class Swordman : Character
 {
-    public float attackCooldown = 0.5f;
+    public float attackCooldown = 2f;
 
-    [SerializeField] GameObject swordHitbox;
     bool attackAble = true;
     IEnumerator attackRoutine;
 
@@ -47,13 +46,6 @@ public class Swordman : Character
         Debug.Log("Interaction");
     }
 
-    // 체력 적용 메서드
-    public override void SetHP()
-    {
-        maxHp = 150;
-        currentHp = maxHp;
-    }
-
     // 칼 공격 코루틴
     IEnumerator SwordAttack()
     {
@@ -61,15 +53,9 @@ public class Swordman : Character
         attackAble = false; // 재공격 비활성화
         SetTriggerAnimationserverRpc("SwordAttack"); // 공격 모션 실행
 
-        // 0.2초 후 0.2초 동안 콜라이더 활성화
-        yield return new WaitForSeconds(0.2f);
-        swordHitbox.GetComponent<Collider>().enabled = true;
-
-        yield return new WaitForSeconds(0.2f);
-        swordHitbox.GetComponent<Collider>().enabled = false;
-
-        // 0.5초 쿨타임
+        // 1.15초 쿨타임
         yield return new WaitForSeconds(attackCooldown);
+
         attackAble = true; // 공격 가능
         SetAvatarLayerWeightserverRpc(0); // 상체 움직임 해제
     }

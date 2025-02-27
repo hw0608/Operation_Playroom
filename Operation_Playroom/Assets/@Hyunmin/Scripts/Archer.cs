@@ -78,15 +78,14 @@ public class Archer : Character
         {
             // 조준점 활성화
             aimCanvas.SetActive(true);
-            arrowObject.SetActive(true);
 
+            // 정면 조준
             transform.rotation = Quaternion.Euler(0, cam.transform.eulerAngles.y, 0);
 
-            // X축(상하 회전)은 정면을 바라보도록 초기화
             xRotation = 0;
 
             aimCamera.transform.position = transform.position + transform.forward * 0.05f + transform.up * 0.13f;
-            aimCamera.transform.rotation = Quaternion.Euler(0, cam.transform.eulerAngles.y, 0); // 정면 바라보기
+            aimCamera.transform.rotation = Quaternion.Euler(0, cam.transform.eulerAngles.y, 0);
 
 
             aimCamera.Priority = 10;
@@ -100,7 +99,6 @@ public class Archer : Character
         if (Input.GetButtonUp("Aim"))
         {
             aimCanvas.SetActive(false);
-            arrowObject.SetActive(false);
 
             SetAvatarLayerWeightserverRpc(0);
 
@@ -138,13 +136,6 @@ public class Archer : Character
         Debug.Log("Interaction");
     }
 
-    // 체력 적용 메서드
-    public override void SetHP()
-    {
-        maxHp = 80;
-        currentHp = maxHp;
-    }
-
     // 1인칭 회전 메서드
     void RotateView()
     {
@@ -167,13 +158,11 @@ public class Archer : Character
     {
         SetTriggerAnimationserverRpc("BowAttack");
         aimCamera.GetComponent<ProjectileLauncher>().ShootArrow(aimCamera.transform);
-        arrowObject.SetActive(false);
         attackable = false;
 
         yield return new WaitForSeconds(0.5f);
 
         SetTriggerAnimationserverRpc("Aim");
-        arrowObject.SetActive(true);
 
         yield return new WaitForSeconds(1f);
 

@@ -27,11 +27,6 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             StartCoroutine(CamRoutine());
-
-            transform.position = new Vector3(0, 0.5f, 0);
-
-            character.SetHP(); // 직업 별 HP 설정
-
         }
 
     }

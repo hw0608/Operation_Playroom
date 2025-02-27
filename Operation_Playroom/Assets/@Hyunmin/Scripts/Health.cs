@@ -11,31 +11,36 @@ public class Health : NetworkBehaviour
     public bool isDead;
 
     public Action<Health> OnDie;
-    public static Action<ulong, int> OnScored;
 
     Character character;
 
-    public void Start()
+    void Start()
     {
         character = GetComponent<Character>();
     }
 
     public override void OnNetworkSpawn()
     {
-        if (!IsServer) { return; }
+        if (!IsServer) return;
 
         currentHealth.Value = maxHealth;
+        //currentHealth.OnValueChanged += OnHealthChanged;
     }
 
     public void TakeDamage(int damage, ulong clientId)
     {
         ModifyHealth(-damage, clientId);
-        character.TakeDamage(damage, clientId);
+        character.TakeDamage();
     }
 
     public void RestoreHealth(int heal, ulong clientId)
     {
         ModifyHealth(heal, clientId);
+    }
+
+    void OnHealthChanged(int previousValue, int newValue)
+    {
+        //throw new NotImplementedException();
     }
 
     void ModifyHealth(int value, ulong clientId)
