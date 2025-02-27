@@ -10150,6 +10150,7 @@ GameObject:
   - component: {fileID: 3330376}
   - component: {fileID: 2378074}
   - component: {fileID: 4964112119848560634}
+  - component: {fileID: 5222778137755706935}
   m_Layer: 0
   m_Name: w_TH_sword_B
   m_TagString: Untagged
@@ -10240,12 +10241,25 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1.35, y: 0.1, z: 0.25}
   m_Center: {x: -0.77, y: 0, z: 0}
+--- !u!114 &5222778137755706935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40e964ed3478a0a4ba21e1fe0ab47b48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 10
 --- !u!1 &172168
 GameObject:
   m_ObjectHideFlags: 0
@@ -11479,7 +11493,7 @@ MonoBehaviour:
   TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
-  SyncPositionY: 0
+  SyncPositionY: 1
   SyncPositionZ: 1
   SyncRotAngleX: 0
   SyncRotAngleY: 1
@@ -11511,8 +11525,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   cam: {fileID: 0}
-  attackCooldown: 0.5
-  swordHitbox: {fileID: 171234}
+  attackCooldown: 2
 --- !u!114 &-3931345857987243654
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ public class ProjectileLauncher : NetworkBehaviour
 {
     [SerializeField] GameObject serverProjectile;
     [SerializeField] GameObject clientProjectile;
-    [SerializeField] GameObject trailprefab;
+    [SerializeField] TrailRenderer trailprefab;
 
     float speed = 3f;
     float gravity = 0.75f;
@@ -23,10 +23,10 @@ public class ProjectileLauncher : NetworkBehaviour
     [ServerRpc]
     void FireServerRpc(Vector3 spawnPoint, Vector3 direction)
     {
-        // 서버에서 실제 발사체 생성
+        // 서버에서 실제 발사체 생성(데미지 처리)
         GameObject arrow = Managers.Pool.Pop(serverProjectile);
+       
         arrow.GetComponent<ProjectileDamage>().SetOwner(OwnerClientId);
-
         arrow.GetComponent<Projectile>().Launch(spawnPoint, direction);
 
         // 클라이언트에 동기화
@@ -36,10 +36,9 @@ public class ProjectileLauncher : NetworkBehaviour
     [ClientRpc]
     void FireClientRpc(Vector3 spawnPoint, Vector3 direction)
     {
-        // 클라이언트에서 더미 화살 생성
-
+        // 클라이언트에서 더미 화살 생성(시각적 처리)
         GameObject arrow = Managers.Pool.Pop(clientProjectile);
-
+      
         arrow.GetComponent<Projectile>().Launch(spawnPoint, direction, trailprefab);
     }
 
