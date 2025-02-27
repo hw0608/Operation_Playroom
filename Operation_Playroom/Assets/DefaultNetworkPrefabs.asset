@@ -15,7 +15,7 @@ MonoBehaviour:
   IsDefault: 1
   List:
   - Override: 0
-    Prefab: {fileID: 8455552684458472438, guid: e5661a765690c9c4b9b5bad7cfb46e99, type: 3}
+    Prefab: {fileID: 6426577121595752613, guid: 73013b60d04609e49bad3d55ee323bf9, type: 3}
     SourcePrefabToOverride: {fileID: 0}
     SourceHashToOverride: 0
     OverridingTargetPrefab: {fileID: 0}
@@ -25,12 +25,17 @@ MonoBehaviour:
     SourceHashToOverride: 0
     OverridingTargetPrefab: {fileID: 0}
   - Override: 0
-    Prefab: {fileID: 6426577121595752613, guid: 73013b60d04609e49bad3d55ee323bf9, type: 3}
+    Prefab: {fileID: 8455552684458472438, guid: e5661a765690c9c4b9b5bad7cfb46e99, type: 3}
     SourcePrefabToOverride: {fileID: 0}
     SourceHashToOverride: 0
     OverridingTargetPrefab: {fileID: 0}
   - Override: 0
-    Prefab: {fileID: 4027571105089689418, guid: ebfee12ee9571f64a873674421cf006e, type: 3}
+    Prefab: {fileID: 182410, guid: 60f6d4bfc4da5014cbda251d40147045, type: 3}
+    SourcePrefabToOverride: {fileID: 0}
+    SourceHashToOverride: 0
+    OverridingTargetPrefab: {fileID: 0}
+  - Override: 0
+    Prefab: {fileID: 9142197980193174957, guid: 52a0871f2048b004992b0e786096820d, type: 3}
     SourcePrefabToOverride: {fileID: 0}
     SourceHashToOverride: 0
     OverridingTargetPrefab: {fileID: 0}
@@ -40,15 +45,7 @@ MonoBehaviour:
     SourceHashToOverride: 0
     OverridingTargetPrefab: {fileID: 0}
   - Override: 0
-    Prefab: {fileID: 182410, guid: 60f6d4bfc4da5014cbda251d40147045, type: 3}
+    Prefab: {fileID: 4027571105089689418, guid: ebfee12ee9571f64a873674421cf006e, type: 3}
     SourcePrefabToOverride: {fileID: 0}
     SourceHashToOverride: 0
     OverridingTargetPrefab: {fileID: 0}
-<<<<<<< HEAD
-  - Override: 0
-    Prefab: {fileID: 9142197980193174957, guid: 52a0871f2048b004992b0e786096820d, type: 3}
-    SourcePrefabToOverride: {fileID: 0}
-    SourceHashToOverride: 0
-    OverridingTargetPrefab: {fileID: 0}
-=======
->>>>>>> parent of 2108622 (push)
