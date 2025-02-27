@@ -6,11 +6,11 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class SoldierFormation : NetworkBehaviour
 {
-    private float scaleFactor = 0.1f; // 왕 병사 스케일
-    [SerializeField] float followDistance = 0.15f; // 왕과의 거리 
+    [SerializeField] float followDistance = 0.1f; // 왕과의 거리 
+    [SerializeField] float warpDistance = 5.0f; // 순간 이동 거리
 
     private NavMeshAgent navAgent;
-    public Transform king; // 왕 유닛 참조
+    private Transform king; // 왕 유닛 참조
     public int formationIndex; // 병사 삼각 대형 위치 인덱스
     private Vector3 lastTargetPosition; // 마지막 목표 위치 
 
@@ -23,6 +23,13 @@ public class SoldierFormation : NetworkBehaviour
         navAgent = GetComponent<NavMeshAgent>();
         soldier = GetComponent<Soldier>();
     }
+    private void Update()
+    { 
+        if (IsServer)
+        {
+            FollowKing();
+        }
+    }
     // 병사 대형 초기화
     public void SoldierFormationInitialize(Transform king, int formationIndex)
     {
@@ -31,26 +38,33 @@ public class SoldierFormation : NetworkBehaviour
     }
     // 왕 따라가기
     public void FollowKing()
-    {
-        if (king == null || navAgent == null || !navAgent.enabled) return;
+    {// 네브메쉬 서버에서만 이동하도록 설정
+        if (!IsServer || king == null || navAgent == null || !navAgent.enabled) return;
 
-        Vector3 targetPosition = GetTrianglePosition(formationIndex);
+        // 왕 좌표 체크
+        Debug.Log($"왕 따라가는 병사 = {name}, 왕 위치 ={king.position}");
+
+        Vector3 directionToKing = (king.position - transform.position).normalized;
+        Vector3 targetPosition = king.position -(directionToKing * followDistance);
+       
 
         float distanceToKing = Vector3.Distance(transform.position, king.position);
 
-        if (distanceToKing > followDistance * 10) // 너무 멀어지면 강제이동
+        if (distanceToKing > warpDistance) // 너무 멀어지면 강제이동
         {
             navAgent.Warp(targetPosition);
             lastTargetPosition = targetPosition;
+            Debug.Log($"병사 Warp : {targetPosition}");
         }
-        else
+        
+     
+        if (Vector3.Distance(lastTargetPosition, targetPosition) > 0.1f) // 일정 거리 차이나면 이동
         {
-            if (Vector3.Distance(lastTargetPosition, targetPosition) > 0.5f) // 일정 거리 차이나면 이동
-            {
-                navAgent.SetDestination(targetPosition);
-                lastTargetPosition = targetPosition;
-            }
+            navAgent.SetDestination(targetPosition);
+            lastTargetPosition = targetPosition;
+            Debug.Log($"병사 Destination : {targetPosition}");
         }
+       
         if (IsMoving())
         {
             soldier.GetComponent<SoldierAnim>().SoldierWalkAnim();
@@ -64,19 +78,7 @@ public class SoldierFormation : NetworkBehaviour
     {
         return navAgent.velocity.sqrMagnitude > 0.01f;
     }
-    // 병사 위치
-    private Vector3 GetTrianglePosition(int index)
-    {
-        float spacing = 1.5f * scaleFactor;
-        Vector3 kingPosition = king.position;
-        int row = (index / 2) + 1; // 행
-        int col = index % 2 == 0 ? -1 : 1; // 열(짝수면 왼쪽, 홀수면 오른쪽)
-
-        Vector3 forwardOffset = king.forward * -spacing * row; // 왕 뒤
-        Vector3 sideOffset = king.right * spacing * col * row; // 왕 좌우
-
-        return kingPosition + forwardOffset + sideOffset;
-    }
+    
     [ServerRpc]
     // 자원 옮기기
     public void MoveToItemServerRpc(Vector3 itemPosition)
