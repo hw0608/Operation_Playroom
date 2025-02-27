@@ -13678,7 +13678,6 @@ GameObject:
   - component: {fileID: 4779212311087517118}
   - component: {fileID: 7808469528344250338}
   - component: {fileID: -2114085265071685415}
-  - component: {fileID: -5585315607025093104}
   - component: {fileID: 3286470966724797656}
   m_Layer: 0
   m_Name: King
@@ -13885,20 +13884,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 841bc958dad9fb644b74ea79dfdc3ebb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  cam: {fileID: 0}
---- !u!114 &-5585315607025093104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9142197980193174957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3924de4d29e470d49be0f55421313312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1

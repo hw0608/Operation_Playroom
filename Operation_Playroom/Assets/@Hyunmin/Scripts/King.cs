@@ -30,11 +30,4 @@ public class King : Character
         // 줍기
         Debug.Log("King Interaction");
     }
-
-    // 체력 적용 메서드
-    public override void SetHP()
-    {
-        maxHp = 150;
-        currentHp = maxHp;
-    }
 }

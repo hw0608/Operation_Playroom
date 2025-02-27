@@ -965,7 +965,7 @@ Transform:
   m_Children:
   - {fileID: 3110798296630975218}
   m_Father: {fileID: 3399826048558614754}
-  m_LocalEulerAnglesHint: {x: -0.00858492, y: 3.2947242, z: 172.72923}
+  m_LocalEulerAnglesHint: {x: 11.053092, y: 0.35679173, z: 160.85786}
 --- !u!1 &468630843999150907
 GameObject:
   m_ObjectHideFlags: 0
@@ -7459,7 +7459,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   serverProjectile: {fileID: 8598686334400172540, guid: 622608291d6ef9841b3a7a127595223c, type: 3}
   clientProjectile: {fileID: 8598686334400172540, guid: 4ad1f9c1c4b2670458bd4fea1800c640, type: 3}
-  trailprefab: {fileID: 7807458964011383569, guid: 2eb3ecaa0e56766419ca733057a072d9, type: 3}
+  trailprefab: {fileID: 5843697658609695856, guid: 2eb3ecaa0e56766419ca733057a072d9, type: 3}
   flightTime: 3
 --- !u!1 &4410012350216309992
 GameObject:
