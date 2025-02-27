@@ -15,7 +15,7 @@ public class ServerSingleton : MonoBehaviour
 
     public Dictionary<ulong, UserData> clientIdToUserData = new Dictionary<ulong, UserData>();
     public Dictionary<string, UserData> authIdToUserData = new Dictionary<string, UserData>();
-    public Dictionary<GameRole, uint> gameRoleToPrefabHash = new Dictionary<GameRole, uint> { { GameRole.King, 2763668601 }, { GameRole.Swordman, 1812290600 }, { GameRole.Archer, 2881064952 } };
+    public Dictionary<GameRole, uint> gameRoleToPrefabHash = new Dictionary<GameRole, uint>();
 
     public Action<string> OnClientLeft;
 
@@ -41,6 +41,33 @@ public class ServerSingleton : MonoBehaviour
 
     public void Init()
     {
+        LoadPrefabHashes();
+    }
+
+    void LoadPrefabHashes()
+    {
+        foreach (var prefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
+        {
+            if (prefab.Prefab != null)
+            {
+                NetworkObject netObj = prefab.Prefab.GetComponent<NetworkObject>();
+
+                if (netObj != null)
+                {
+                    GameRole role = GetRoleFromPrefabName(prefab.Prefab.name);
+                    if (role == GameRole.None) continue;
+                    gameRoleToPrefabHash.Add(role, netObj.PrefabIdHash);
+                }
+            }
+        }
+    }
+
+    GameRole GetRoleFromPrefabName(string prefabName)
+    {
+        if (prefabName.Contains("King")) return GameRole.King;
+        if (prefabName.Contains("Swordman")) return GameRole.Swordman;
+        if (prefabName.Contains("Archer")) return GameRole.Archer;
+        return GameRole.None;
     }
 
     void OnEnable()
