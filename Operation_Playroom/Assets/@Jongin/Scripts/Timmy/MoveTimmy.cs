@@ -25,10 +25,10 @@ public class MoveTimmy : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        //if (Input.GetKeyDown(KeyCode.G))
-        //{
-        //    StartCoroutine(CallTimmy());
-        //}
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            CallTimmy(null);
+        }
 
         //if (isMove)
         //{

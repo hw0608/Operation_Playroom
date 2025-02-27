@@ -1,9 +1,10 @@
 using DG.Tweening;
 using Unity.Cinemachine;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TimmyCameraMove : MonoBehaviour
+public class TimmyCameraMove : NetworkBehaviour
 {
     public Image fadeImage;
     private Color imageColor;
@@ -29,10 +30,23 @@ public class TimmyCameraMove : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.V))
         {
-            StartTimmy();
+            if (!IsServer) return;
+            StartTimmyClientRpc();
         }
     }
-    public void StartTimmy()
+
+    //[ClientRpc]
+    //void ScreenFadeClientRpc(TweenCallback callback)
+    //{
+    //    Sequence screenSequence = DOTween.Sequence();
+    //    screenSequence.Append(DOTween.To(() => imageColor.a, x => SetAlpha(x), 1f, 0.5f));
+    //    screenSequence.AppendCallback(callback);
+    //    screenSequence.AppendInterval(1f);
+    //    screenSequence.Append(DOTween.To(() => imageColor.a, x => SetAlpha(x), 0f, 0.5f));
+    //}
+
+    [ClientRpc]
+    public void StartTimmyClientRpc()
     {
         Sequence timmySequence = DOTween.Sequence();
 
@@ -40,14 +54,20 @@ public class TimmyCameraMove : MonoBehaviour
         timmySequence.Append(DOTween.To(() => imageColor.a, x => SetAlpha(x), 1f, 0.5f));
         timmySequence.AppendCallback(() =>
         {
+            //화면 전환
             ActiveCamera(1);
         });
         timmySequence.AppendInterval(1f);
-
         timmySequence.Append(DOTween.To(() => imageColor.a, x => SetAlpha(x), 0f, 0.5f));
+
+
+
         timmySequence.AppendCallback(() =>
         {
-            sleepTimmy.GetComponent<Animator>().SetTrigger("WakeUp");
+            if (IsServer)
+            {
+                sleepTimmy.GetComponent<Animator>().SetTrigger("WakeUp");
+            }
         });
         timmySequence.AppendInterval(3f);
 
@@ -56,7 +76,10 @@ public class TimmyCameraMove : MonoBehaviour
         timmySequence.AppendCallback(() =>
         {
             //자는 티미 초기화
-            sleepTimmy.GetComponent<Animator>().SetTrigger("Sleep");
+            if (IsServer)
+            {
+                sleepTimmy.GetComponent<Animator>().SetTrigger("Sleep");
+            }
             sleepTimmy.SetActive(false);
             moveTimmy.SetActive(true);
             ActiveCamera(2);
@@ -68,12 +91,16 @@ public class TimmyCameraMove : MonoBehaviour
         //티미 움직이기
         timmySequence.AppendCallback(() =>
         {
-            moveTimmy.GetComponent<MoveTimmy>().CallTimmy(FinishTimmy);
+            if (IsServer)
+            {
+                moveTimmy.GetComponent<MoveTimmy>().CallTimmy(FinishTimmyClientRpc);
+            }
         });
 
     }
 
-    public void FinishTimmy()
+    [ClientRpc]
+    public void FinishTimmyClientRpc()
     {
         Sequence timmySequence = DOTween.Sequence();
 
