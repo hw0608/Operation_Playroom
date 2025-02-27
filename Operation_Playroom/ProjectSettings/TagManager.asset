@@ -5,9 +5,6 @@ TagManager:
   serializedVersion: 3
   tags:
   - Resource
-  - Soldier
-  - Enemy
-  - Item
   layers:
   - Default
   - TransparentFX

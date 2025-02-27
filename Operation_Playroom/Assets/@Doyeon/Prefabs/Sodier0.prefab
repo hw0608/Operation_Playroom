@@ -12811,7 +12811,6 @@ GameObject:
   - component: {fileID: 3666530833600930793}
   - component: {fileID: -2948124943629556422}
   - component: {fileID: 5775923114450896119}
-  - component: {fileID: -5248358744743968754}
   - component: {fileID: 2725128521521554699}
   - component: {fileID: 5249191851835175860}
   - component: {fileID: -3169565250331930496}
@@ -12819,7 +12818,7 @@ GameObject:
   - component: {fileID: -4354640495958639738}
   m_Layer: 0
   m_Name: Sodier0
-  m_TagString: Soldier
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13034,49 +13033,6 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &-5248358744743968754
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6426577121595752613}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  TransitionStateInfoList:
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1100204920
-    DestinationState: -915017453
-    TransitionDuration: 0.25
-    TriggerNameHash: 1080829965
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1100204920
-    DestinationState: -227766544
-    TransitionDuration: 0.25
-    TriggerNameHash: 1654612129
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1100204920
-    DestinationState: 1078504738
-    TransitionDuration: 0.25
-    TriggerNameHash: 1807440744
-    TransitionIndex: 3
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -1766689130
-    DestinationState: -915017453
-    TransitionDuration: 0.25
-    TriggerNameHash: 1080829965
-    TransitionIndex: 1
-  m_Animator: {fileID: 206433871909098837}
 --- !u!195 &2725128521521554699
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -13091,7 +13047,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 10
+  m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -13151,7 +13107,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad6af22d86835874da85cb55a3d77c87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &-4354640495958639738
 MonoBehaviour:
   m_ObjectHideFlags: 0
