@@ -60,8 +60,6 @@ public class Soldier : NetworkBehaviour, IFormable
 
     private void Start()
     {
-        character = GetComponent<Character>();
-
         if (IsOwner)
         {
             SetState(0);

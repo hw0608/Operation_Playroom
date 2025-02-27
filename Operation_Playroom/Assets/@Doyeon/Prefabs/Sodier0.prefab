@@ -13012,7 +13012,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkTransformExpanded: 0
-  AuthorityMode: 0
+  AuthorityMode: 1
   TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
@@ -13087,11 +13087,11 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
+  m_Speed: 0.2
+  m_Acceleration: 0.5
   avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 10
+  m_AngularSpeed: 90
+  m_StoppingDistance: 0.2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -13120,7 +13120,7 @@ MonoBehaviour:
     m_InternalValue: 80
   team:
     m_InternalValue: 0
-  king: {fileID: 0}
+  king: {fileID: 3391316076526803293, guid: 52a0871f2048b004992b0e786096820d, type: 3}
   isSoldierDie: 0
 --- !u!114 &-3169565250331930496
 MonoBehaviour:
@@ -13136,7 +13136,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   followDistance: 0.15
-  king: {fileID: 3391316076526803293, guid: 52a0871f2048b004992b0e786096820d, type: 3}
+  warpDistance: 2
+  updateInterval: 0.2
   formationIndex: 0
   itemCollectRange: 1.5
 --- !u!114 &-2040289650883397625
