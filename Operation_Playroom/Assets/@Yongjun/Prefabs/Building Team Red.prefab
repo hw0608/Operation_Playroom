@@ -11,6 +11,10 @@ GameObject:
   - component: {fileID: 5354764330188872879}
   - component: {fileID: 6291256353235427619}
   - component: {fileID: 2913858521376639270}
+<<<<<<< HEAD
+=======
+  - component: {fileID: 6018407627860885273}
+>>>>>>> yj
   - component: {fileID: 4746419861959351039}
   m_Layer: 0
   m_Name: Building Team Red
@@ -87,6 +91,34 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+<<<<<<< HEAD
+=======
+--- !u!114 &6018407627860885273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6715654517453632122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2160623048
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+>>>>>>> yj
 --- !u!114 &4746419861959351039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,5 +131,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e877a9eea3fd944eafa8aea6bde0ed5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   buildingData: {fileID: 11400000, guid: 2240b267c512f574d8a4edd7fb6ca780, type: 2}
   health: 0
+=======
+  ShowTopMostFoldoutHeaderGroup: 1
+  health:
+    m_InternalValue: 0
+  buildingData: {fileID: 11400000, guid: 2240b267c512f574d8a4edd7fb6ca780, type: 2}
+  effectData: {fileID: 11400000, guid: 969bfc46ede4f0845865192b752a855c, type: 2}
+>>>>>>> yj

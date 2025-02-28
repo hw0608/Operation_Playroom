@@ -12,7 +12,23 @@ public class OccupySystem : MonoBehaviour
     [SerializeField] Image blueTeamResourceCountImage;
     [SerializeField] OccupyScriptableObject occupyData; // 점령지 데이터 스크립터블 오브젝트
 
+<<<<<<< HEAD
     void Update() => DetectResources();
+=======
+    void Update()
+    {
+        if (IsServer || IsClient)
+            DetectResources();
+    }
+    public override void OnNetworkSpawn()
+    {
+        if (!IsServer)
+        {
+            redTeamResourceCount.OnValueChanged += (oldValue, newValue) => UpdateVisuals();
+            blueTeamResourceCount.OnValueChanged += (oldValue, newValue) => UpdateVisuals();
+        }
+    }
+>>>>>>> yj
 
     void DetectResources() // 점령지 내 자원 감지
     {
@@ -23,9 +39,30 @@ public class OccupySystem : MonoBehaviour
         {
             if (collider.CompareTag("Resource"))
             {
+<<<<<<< HEAD
                 HandleResource(collider);
                 CheckOwnership();
                 UpdateVisuals();
+=======
+                ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
+                Owner owner = collider.GetComponent<ResourceData>().CurrentOwner;
+                DetectResourceServerRpc(resourceId, owner);
+            }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void DetectResourceServerRpc(ulong resourceId, Owner owner)
+    {
+        if (currentOwner != Owner.Neutral) return;
+
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(resourceId, out NetworkObject resourceObject))
+        {
+            ResourceData resourceData = resourceObject.GetComponent<ResourceData>();
+            if (resourceData != null && resourceData.CurrentOwner == owner)
+            {
+                HandleResource(resourceObject.GetComponent<Collider>());
+>>>>>>> yj
             }
         }
     }
@@ -64,9 +101,25 @@ public class OccupySystem : MonoBehaviour
     {
         ResetFillAmount();
 
+<<<<<<< HEAD
         GameObject buildingPrefab = newOwner == Owner.Red ? occupyData.buildingPrefabTeamRed : occupyData.buildingPrefabTeamBlue;
         GameObject buildingInstance = Instantiate(buildingPrefab, new Vector3(transform.position.x, -0.3f, transform.position.z), Quaternion.Euler(-90f, 0f, 0f));
         buildingInstance.transform.SetParent(transform);
+=======
+        GameObject prefab = (newOwner == Owner.Red) ? occupyData.buildingPrefabTeamRed : occupyData.buildingPrefabTeamBlue;
+
+        GameObject building = Instantiate(prefab, new Vector3(0f, -40f, 0f), Quaternion.Euler(-90f, 0f, 0f));
+        building.transform.localPosition = new Vector3(0f, -40f, 0f);
+
+        NetworkObject networkObject = building.GetComponent<NetworkObject>();
+        if (networkObject != null)
+        {
+            networkObject.Spawn();
+            networkObject.TrySetParent(transform.GetComponent<NetworkObject>());
+        }
+
+        InstantiateBuildingClientRpc(newOwner);
+>>>>>>> yj
     }
 
     void UpdateVisuals() // 자원 적재 시각 효과
