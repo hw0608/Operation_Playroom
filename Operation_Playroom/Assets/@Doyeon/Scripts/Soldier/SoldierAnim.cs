@@ -16,28 +16,25 @@ public class SoldierAnim : NetworkBehaviour
     }
     public void SoldierIdleAnim()
     {
-        if (IsOwner)
-        {
-            SoldierIdleAnimServerRpc();
-        }
+        SoldierIdleAnimServerRpc();
+        
     }
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SoldierIdleAnimServerRpc()
     {
+        Debug.Log("병사 Idle 실행");
         networkAnimator.Animator.SetBool("Idle", true);
         networkAnimator.Animator.SetBool("Walk", false);
         networkAnimator.Animator.SetBool("Die", false);
     }
     public void SoldierWalkAnim()
     {
-        if (IsOwner)
-        {
-            SoldierWalkAnimServerRpc();
-        }
+        SoldierWalkAnimServerRpc();
     }
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SoldierWalkAnimServerRpc()
     {
+        Debug.Log("병사 Walk 실행");
         if (networkAnimator == null) return;
         networkAnimator.Animator.SetBool("Idle", false);
         networkAnimator.Animator.SetBool("Walk", true);
@@ -45,12 +42,10 @@ public class SoldierAnim : NetworkBehaviour
     }
     public void SoldierAttackAnim()
     {
-        if (IsOwner)
-        {
-            SoldierAttackAnimServerRpc();
-        }
+        SoldierAttackAnimServerRpc();
+        
     }
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SoldierAttackAnimServerRpc()
     {
         if (networkAnimator == null) return;
@@ -58,12 +53,9 @@ public class SoldierAnim : NetworkBehaviour
     }
     public void SoldierHitAnim()
     {
-        if (IsOwner)
-        {
-            SoldierCollectAnimServerRpc();
-        }
+        SoldierCollectAnimServerRpc();
     }
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SoldierHitAnimServerRpc()
     {
         if (networkAnimator == null) return;
@@ -71,12 +63,11 @@ public class SoldierAnim : NetworkBehaviour
     }
     public void SoldierCollectAnim()
     {
-        if (IsOwner)
-        {
-            SoldierCollectAnimServerRpc();
-        }
+        
+        SoldierCollectAnimServerRpc();
+        
     }
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SoldierCollectAnimServerRpc()
     {
         if (networkAnimator == null) return;
@@ -84,9 +75,9 @@ public class SoldierAnim : NetworkBehaviour
     }
     public void SoldierDieAnim()
     {
-        SoldierCollectAnimServerRpc();
+        SoldierDieAnimServerRpc();
     }
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void SoldierDieAnimServerRpc()
     {
         if (networkAnimator == null) return;

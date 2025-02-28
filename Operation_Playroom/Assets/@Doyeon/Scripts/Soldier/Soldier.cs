@@ -235,5 +235,13 @@ public class Soldier : NetworkBehaviour, IFormable
         if (isSoldierDie) return;
 
         SetState(4);
+
+        // NetworkObject 비활성화 및 제거
+        NetworkObject netObj = GetComponent<NetworkObject>();
+        if (netObj != null && netObj.IsSpawned)
+        {
+            netObj.Despawn();
+        }
+        isSoldierDie = true;
     }
 }
