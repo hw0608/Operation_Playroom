@@ -11,15 +11,15 @@ public class SoldierSpawner : NetworkBehaviour
     {
         get
         {
-            //if (_instance == null)
-            //{
-            //    GameObject go = new GameObject("SoldierPool");
-            //    _instance = go.AddComponent<SoldierPool>();
-            //    DontDestroyOnLoad(go);
-                
-            //    if (_instance == null)
-            //        Debug.LogError("병사풀이 존재하지 않습니다");
-            //}
+            if (_instance == null)
+            {
+                GameObject go = new GameObject("SoldierSpawner");
+                _instance = go.AddComponent<SoldierSpawner>();
+                DontDestroyOnLoad(go);
+
+                if (_instance == null)
+                    Debug.LogError("병사풀이 존재하지 않습니다");
+            }
             return _instance;
         }
     }
@@ -37,18 +37,18 @@ public class SoldierSpawner : NetworkBehaviour
     private int currentSoldierCount;
     private float scaleFactor = 0.1f; // 왕 병사 스케일
 
-    public override void OnNetworkSpawn()
+    public override void OnNetworkSpawn() // 네트워크 오브젝트 스폰되며 호출
     {
         if (_instance == null)
         {
             _instance = this;
         }
-        if (IsServer)
+        if (IsServer) // Host 에서만 아래 작업을 수행 
         {
             Debug.Log("서버에서 병사 스폰");
-            InitializePool();
-            currentSoldierCount = initialSoldierCount;
-            SpawnSoldiersServerRpc();
+            InitializePool(); // 병사 풀 초기화
+            currentSoldierCount = initialSoldierCount; // 초기 병사 수 설정
+            SpawnSoldiersServerRpc(); // 초기 병사 스폰
         }
     }
     // 병사 풀 초기화
@@ -58,17 +58,17 @@ public class SoldierSpawner : NetworkBehaviour
 
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject soldier = Instantiate(soldierPrefab);
-            //soldier.SetActive(false);
+            GameObject soldier = Instantiate(soldierPrefab); // 병사 풀 사이즈 만큼 미리 생성
+            soldier.SetActive(false);
 
             NetworkObject networkObject = soldier.GetComponent<NetworkObject>();
             if (networkObject != null)
             {
-                networkObject.Spawn();
-                networkObject.Despawn();
+                networkObject.Spawn(); // 네트워크에 동기화
+                networkObject.Despawn(); // 네트워크에 비활성화
             }
 
-            poolQueue.Enqueue(soldier);
+            poolQueue.Enqueue(soldier); // 풀에 저장
         }
     }
     private GameObject GetFromPool()
@@ -77,20 +77,20 @@ public class SoldierSpawner : NetworkBehaviour
 
         if (poolQueue.Count > 0)
         {
-            GameObject soldier = poolQueue.Dequeue();
-            soldier.SetActive(true);
+            GameObject soldier = poolQueue.Dequeue(); // 병사 꺼내기 
+            soldier.SetActive(true); // 병사 활성화
 
             NetworkObject netObj = soldier.GetComponent<NetworkObject>();
-            if (netObj != null && !netObj.IsSpawned)
+            if (netObj != null && !netObj.IsSpawned) 
             {
-                netObj.Spawn();
+                netObj.Spawn(); // 네트워크에 동기화
             }
 
             return soldier;
         }
-        else
+        else // 만약 풀에 병사가 없다면
         {
-            GameObject soldier = Instantiate(soldierPrefab);
+            GameObject soldier = Instantiate(soldierPrefab); // 새 병사 생성
             NetworkObject netObj = soldier.GetComponent<NetworkObject>();
 
             if (netObj != null && !netObj.IsSpawned)
@@ -114,7 +114,7 @@ public class SoldierSpawner : NetworkBehaviour
         poolQueue.Enqueue(soldier);
     }
 
-
+    // 초기 병사 스폰
     [ServerRpc(RequireOwnership = false)]
     public void SpawnSoldiersServerRpc()
     {
@@ -122,31 +122,32 @@ public class SoldierSpawner : NetworkBehaviour
 
         for (int i = 0; i < initialSoldierCount; i++)
         {
-            GameObject soldier = SoldierSpawner.Instance.GetFromPool(); 
-            soldier.transform.position = GetTrianglePosition(formationIndex); 
-            soldier.transform.rotation = Quaternion.identity;
+            GameObject soldier = SoldierSpawner.Instance.GetFromPool(); // 풀에서 병사 가져오기
+            soldier.transform.position = GetTrianglePosition(formationIndex);  // 병사 배치 계산
+            soldier.transform.rotation = Quaternion.identity; // 병사 회전 0
 
             Debug.Log($"[초기 병사 스폰] 병사 {i} 위치: {soldier.transform.position}");
 
             NetworkObject networkObject = soldier.GetComponent<NetworkObject>(); 
             if (networkObject != null && !networkObject.IsSpawned)
             {
-                networkObject.Spawn(); // 모든 클라이언트에 동기화
+                networkObject.Spawn(); // 네트워크 동기화
             }
-
-            SoldierFormation formation = soldier.GetComponent<SoldierFormation>(); // 병사 포메이션 초기화
+            // 병사 포메이션 초기화
+            SoldierFormation formation = soldier.GetComponent<SoldierFormation>(); 
             if (formation != null)
             {
                 formation.SoldierFormationInitialize(kingTransform, formationIndex);
             }
-
-            IFormable formableSoldier = soldier.GetComponent<IFormable>(); // 병사 초기화
+            // 병사 초기화
+            IFormable formableSoldier = soldier.GetComponent<IFormable>(); 
             if (formableSoldier != null)
             {
                 formableSoldier.SoldierInitialize(kingTransform, formationIndex);
                 formationIndex++;
             }
-            spawnSoldier.Add(soldier); // 초기 병사 추가 
+            spawnSoldier.Add(soldier);
+            // 초기 병사 추가 
         }
 
     }
