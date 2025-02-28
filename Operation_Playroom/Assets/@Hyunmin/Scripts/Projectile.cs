@@ -23,11 +23,18 @@ public class Projectile : MonoBehaviour
         if(trailPrefab != null)
         {
             trail = Instantiate(trailPrefab, transform);
+            trail.enabled = false;
             trail.Clear();
+            trail.enabled = true;
 
         }
 
         // 발사 루틴 시작
+        if(arrowCoroutine != null)
+        {
+            StopCoroutine(arrowCoroutine);
+            arrowCoroutine = null;
+        }
         arrowCoroutine = StartCoroutine(ArrowParabolaRoutine(direction));
     }
 
@@ -53,15 +60,10 @@ public class Projectile : MonoBehaviour
         Managers.Pool.Push(gameObject);
     }
 
-    // 벽, 구조물에 충돌 시 호출
     void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Projectile>()) return; // 서버 화살 피격 시
-        if (other.GetComponent<PlayerController>()) return; // 다른 플레이어 피격 시
-
-        if (arrowCoroutine != null)
+        if (!other.GetComponent<Projectile>() && !other.GetComponent<NetworkBehaviour>())
         {
-            StopCoroutine(arrowCoroutine);
             Managers.Pool.Push(gameObject);
         }
     }

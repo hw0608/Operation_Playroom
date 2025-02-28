@@ -33,6 +33,12 @@ public class Health : NetworkBehaviour
         character.TakeDamage();
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void TakeDamageServerRpc(int damage, ulong clientId)
+    {
+        TakeDamage(damage, clientId);
+    }
+
     public void RestoreHealth(int heal, ulong clientId)
     {
         ModifyHealth(heal, clientId);

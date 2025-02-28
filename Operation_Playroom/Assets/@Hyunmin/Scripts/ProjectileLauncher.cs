@@ -15,8 +15,7 @@ public class ProjectileLauncher : NetworkBehaviour
 
     public void ShootArrow(Transform shootPoint)
     {
-        if (!IsOwner) return;
-
+        FireDummyProjectile(shootPoint.position, shootPoint.forward);
         FireServerRpc(shootPoint.position, shootPoint.forward);
     }
 
@@ -27,6 +26,7 @@ public class ProjectileLauncher : NetworkBehaviour
         GameObject arrow = Managers.Pool.Pop(serverProjectile);
        
         arrow.GetComponent<ProjectileDamage>().SetOwner(OwnerClientId);
+
         arrow.GetComponent<Projectile>().Launch(spawnPoint, direction);
 
         // 클라이언트에 동기화
@@ -37,8 +37,16 @@ public class ProjectileLauncher : NetworkBehaviour
     void FireClientRpc(Vector3 spawnPoint, Vector3 direction)
     {
         // 클라이언트에서 더미 화살 생성(시각적 처리)
+        if(IsOwner) return;
+
+        FireDummyProjectile(spawnPoint, direction);
+    }
+
+    void FireDummyProjectile(Vector3 spawnPoint, Vector3 direction)
+    {
         GameObject arrow = Managers.Pool.Pop(clientProjectile);
-      
+        arrow.GetComponent<ProjectileOnDestroy>().SetOwner(OwnerClientId);
+
         arrow.GetComponent<Projectile>().Launch(spawnPoint, direction, trailprefab);
     }
 

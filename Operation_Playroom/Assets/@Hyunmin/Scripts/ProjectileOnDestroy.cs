@@ -1,10 +1,8 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class ProjectileDamage : MonoBehaviour
+public class ProjectileOnDestroy : MonoBehaviour
 {
-    [SerializeField] int damage = 10;
-
     ulong ownerClientId;
 
     public void SetOwner(ulong ownerClientId)
@@ -24,10 +22,7 @@ public class ProjectileDamage : MonoBehaviour
 
         if (other.TryGetComponent<Health>(out Health health))
         {
-            health.TakeDamage(damage, ownerClientId);
-
             Managers.Pool.Push(gameObject);
         }
-
     }
 }

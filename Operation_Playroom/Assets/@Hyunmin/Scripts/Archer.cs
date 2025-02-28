@@ -20,7 +20,7 @@ public class Archer : Character
     public override void Attack()
     {
         // 화살 발사
-        if (isAiming && attackable)
+        if (isAiming && attackAble)
         {
             StartCoroutine(ShootAndReloadRoutine());
         }
@@ -158,7 +158,7 @@ public class Archer : Character
     {
         SetTriggerAnimationserverRpc("BowAttack");
         aimCamera.GetComponent<ProjectileLauncher>().ShootArrow(aimCamera.transform);
-        attackable = false;
+        attackAble = false;
 
         yield return new WaitForSeconds(0.5f);
 
@@ -166,7 +166,7 @@ public class Archer : Character
 
         yield return new WaitForSeconds(1f);
 
-        attackable = true;
+        attackAble = true;
     }
 
 }

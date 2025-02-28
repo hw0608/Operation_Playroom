@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Swordman : Character
 {
-    public float attackCooldown = 2f;
+    [SerializeField] GameObject swordHitbox;
+    public float attackCooldown = 1f;
 
-    bool attackAble = true;
     IEnumerator attackRoutine;
 
     // 공격 메서드
@@ -49,14 +49,35 @@ public class Swordman : Character
     // 칼 공격 코루틴
     IEnumerator SwordAttack()
     {
+        Debug.Log("sword");
+        swordHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId);
         SetAvatarLayerWeightserverRpc(1); // 상체 움직임으로 설정
         attackAble = false; // 재공격 비활성화
         SetTriggerAnimationserverRpc("SwordAttack"); // 공격 모션 실행
 
-        // 1.15초 쿨타임
-        yield return new WaitForSeconds(attackCooldown);
+        yield return new WaitForSeconds(0.4f);
+
+        EnableHitboxServerRpc(true);
+
+        yield return new WaitForSeconds(0.2f);
+
+        EnableHitboxServerRpc(false);
+
+        yield return new WaitForSeconds(0.4f);
 
         attackAble = true; // 공격 가능
         SetAvatarLayerWeightserverRpc(0); // 상체 움직임 해제
+    }
+
+    [ServerRpc]
+    void EnableHitboxServerRpc(bool state)
+    {
+        EnableHitboxClientRpc(state);
+    }
+
+    [ClientRpc]
+    void EnableHitboxClientRpc(bool state)
+    {
+        swordHitbox.GetComponent<Collider>().enabled = state;
     }
 }

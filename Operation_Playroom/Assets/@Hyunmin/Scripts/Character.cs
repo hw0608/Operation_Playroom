@@ -11,7 +11,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     bool isGrounded;
     Vector3 velocity;
 
-    protected bool attackable;
+    protected bool attackAble;
     protected float maxHp = 100;
     protected float currentHp;
     protected float moveSpeed = 5;
@@ -28,7 +28,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
 
-        attackable = true;
+        attackAble = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false; 
     }
@@ -79,12 +79,12 @@ public abstract class Character : NetworkBehaviour, ICharacter
     {
         SetAvatarLayerWeightserverRpc(1);
         SetTriggerAnimationserverRpc("Damage");
-        attackable = false;
+        attackAble = false;
 
         yield return new WaitForSeconds(0.5f);
 
         SetAvatarLayerWeightserverRpc(0);
-        attackable = true;
+        attackAble = true;
 
     }
 
