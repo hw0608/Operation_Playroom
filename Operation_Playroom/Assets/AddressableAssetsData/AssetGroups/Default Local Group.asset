@@ -15,8 +15,20 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: c55a1a6dc211d9c46bb936f060bb0b5d
   m_SerializeEntries:
+  - m_GUID: db0a8ef031523b8438278825bc4b2d01
+    m_Address: Test
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dfdfa2209fab998478e33380cd0033d9
     m_Address: MessagePopup
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ebfee12ee9571f64a873674421cf006e
+    m_Address: PlayerTest
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
