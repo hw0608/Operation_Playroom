@@ -6,7 +6,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class SoldierFormation : NetworkBehaviour
 {
-    [SerializeField] float followDistance = 0.1f; // 왕과의 거리 
+    [SerializeField] float followDistance = 0.2f; // 왕과의 거리 
     [SerializeField] float warpDistance = 5.0f; // 순간 이동 거리
 
     private NavMeshAgent navAgent;
@@ -24,11 +24,13 @@ public class SoldierFormation : NetworkBehaviour
         soldier = GetComponent<Soldier>();
     }
     private void Update()
-    { 
-        if (IsServer)
-        {
+    {
+        //if (IsServer)
+        //{ }
+            //Debug.Log($"왕 따라가는 병사 = {name}{transform.position}, 왕 위치 = {king.position}");
             FollowKing();
-        }
+        
+        
     }
     // 병사 대형 초기화
     public void SoldierFormationInitialize(Transform king, int formationIndex)
@@ -39,10 +41,10 @@ public class SoldierFormation : NetworkBehaviour
     // 왕 따라가기
     public void FollowKing()
     {// 네브메쉬 서버에서만 이동하도록 설정
-        if (!IsServer || king == null || navAgent == null || !navAgent.enabled) return;
+        if (king == null || navAgent == null || !navAgent.enabled) return;
 
         // 왕 좌표 체크
-        Debug.Log($"왕 따라가는 병사 = {name}, 왕 위치 ={king.position}");
+        //Debug.Log($"왕 따라가는 병사 = {name}, 왕 위치 ={king.position}");
 
         Vector3 directionToKing = (king.position - transform.position).normalized;
         Vector3 targetPosition = king.position -(directionToKing * followDistance);
@@ -67,16 +69,20 @@ public class SoldierFormation : NetworkBehaviour
        
         if (IsMoving())
         {
+            Debug.Log("병사 걷는 중");
             soldier.GetComponent<SoldierAnim>().SoldierWalkAnim();
         }
         else
         {
+            Debug.Log("병사 Idle 중");
             soldier.GetComponent<SoldierAnim>().SoldierIdleAnim();
         }
     }
     public bool IsMoving() 
     {
-        return navAgent.velocity.sqrMagnitude > 0.01f;
+        Debug.Log("움직임");
+        //return navAgent.velocity.magnitude > 0.01f;
+        return !navAgent.isStopped;
     }
     
     [ServerRpc]

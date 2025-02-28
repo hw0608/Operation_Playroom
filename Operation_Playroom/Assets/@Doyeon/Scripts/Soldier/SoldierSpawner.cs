@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,6 +9,8 @@ public class SoldierSpawner : NetworkBehaviour
 {
     private static SoldierSpawner _instance;
     public static SoldierSpawner Instance
+    //{ get { return _instance; } }
+
     {
         get
         {
@@ -51,10 +54,17 @@ public class SoldierSpawner : NetworkBehaviour
             SpawnSoldiersServerRpc(); // 초기 병사 스폰
         }
     }
+    //void Update()
+    //{
+    //    if (IsOwner && Input.GetKeyDown(KeyCode.Space))
+    //    {
+    //        SpawnSoldiersServerRpc(NetworkManager.Singleton.LocalClientId);
+    //    }
+    //}
     // 병사 풀 초기화
     private void InitializePool()
     {
-        //if (!IsServer) return;
+        if (!IsServer) return;
 
         for (int i = 0; i < poolSize; i++)
         {
@@ -65,7 +75,8 @@ public class SoldierSpawner : NetworkBehaviour
             if (networkObject != null)
             {
                 networkObject.Spawn(); // 네트워크에 동기화
-                networkObject.Despawn(); // 네트워크에 비활성화
+                
+                //networkObject.Despawn(); // 네트워크에 비활성화
             }
 
             poolQueue.Enqueue(soldier); // 풀에 저장
@@ -102,6 +113,7 @@ public class SoldierSpawner : NetworkBehaviour
             return soldier;
         }
     }
+    // 풀에 병사 반환
     private void ReturnToPool(GameObject soldier)
     {
         NetworkObject netObj = soldier.GetComponent<NetworkObject>();
@@ -132,6 +144,7 @@ public class SoldierSpawner : NetworkBehaviour
             if (networkObject != null && !networkObject.IsSpawned)
             {
                 networkObject.Spawn(); // 네트워크 동기화
+                //networkObject.SpawnWithOwnership(ownerId);
             }
             // 병사 포메이션 초기화
             SoldierFormation formation = soldier.GetComponent<SoldierFormation>(); 
@@ -151,6 +164,7 @@ public class SoldierSpawner : NetworkBehaviour
         }
 
     }
+
     [ServerRpc(RequireOwnership = false)]
     public void AddSoldierServerRpc(int count)
     {
@@ -224,4 +238,24 @@ public class SoldierSpawner : NetworkBehaviour
             currentSoldierCount = spawnSoldier.Count;
         }
     }
+    public override void OnDestroy()
+    {
+        Debug.Log($"{gameObject.name} Destroy!");
+        _instance = null;
+    }
+
+    // Despawn 시점 딜레이 추가
+    private IEnumerator SoldierDelayedDestroy(GameObject soldier)
+    {
+        NetworkObject netObj = soldier.GetComponent<NetworkObject>();
+        if (netObj != null && netObj.IsSpawned)
+        {
+            netObj.Despawn();
+        }
+
+        yield return new WaitForEndOfFrame(); // 1프레임 딜레이
+
+        Destroy(soldier);
+    }
+
 }

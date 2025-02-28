@@ -13678,8 +13678,8 @@ GameObject:
   - component: {fileID: 4779212311087517118}
   - component: {fileID: 7808469528344250338}
   - component: {fileID: -2114085265071685415}
-  - component: {fileID: 3286470966724797656}
   - component: {fileID: 5142026032379993717}
+  - component: {fileID: 3395692607525363661}
   m_Layer: 0
   m_Name: King
   m_TagString: Untagged
@@ -13889,31 +13889,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   cam: {fileID: 0}
---- !u!114 &3286470966724797656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9142197980193174957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b3e3358360bcc641b70ae7262cf9ed2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  soldierPrefabs:
-  - {fileID: 6426577121595752613, guid: 73013b60d04609e49bad3d55ee323bf9, type: 3}
-  - {fileID: 1359416525351218504, guid: 304c9e8defe958e4c8f0f311e8f2c463, type: 3}
-  - {fileID: 8455552684458472438, guid: e5661a765690c9c4b9b5bad7cfb46e99, type: 3}
-  soldierSpawnPoints:
-  - {fileID: 1283136843100589984}
-  - {fileID: 2240534511158010121}
-  - {fileID: 2533511996648890681}
-  kingTransform: {fileID: 3391316076526803293}
-  initialSoldierCount: 3
-  maxSoldierCount: 10
-  currentSoldierCount: 0
 --- !u!114 &5142026032379993717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13931,6 +13906,24 @@ MonoBehaviour:
   currentHealth:
     m_InternalValue: 0
   isDead: 0
+--- !u!114 &3395692607525363661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9142197980193174957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b3e3358360bcc641b70ae7262cf9ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  soldierPrefab: {fileID: 6426577121595752613, guid: 73013b60d04609e49bad3d55ee323bf9, type: 3}
+  poolSize: 10
+  kingTransform: {fileID: 3391316076526803293}
+  initialSoldierCount: 3
+  maxSoldierCount: 10
 --- !u!1 &9155472280922709860
 GameObject:
   m_ObjectHideFlags: 0
