@@ -15,6 +15,7 @@ public class MoveTimmy : NetworkBehaviour
     NavMeshAgent agent;
     Animator animator;
     bool isMove = false;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -27,7 +28,7 @@ public class MoveTimmy : NetworkBehaviour
 
         //if (Input.GetKeyDown(KeyCode.G))
         //{
-        //    StartCoroutine(CallTimmy());
+        //    CallTimmy(null);
         //}
 
         //if (isMove)
