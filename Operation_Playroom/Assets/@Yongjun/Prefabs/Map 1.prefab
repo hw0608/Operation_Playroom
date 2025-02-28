@@ -1442,7 +1442,7 @@ Transform:
   m_GameObject: {fileID: 693718527878835286}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.08, y: -0.75, z: 6.12391}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -12983,6 +12983,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2537458332345589364}
+  - component: {fileID: 1390476260298395477}
   - component: {fileID: 3208501018968676222}
   m_Layer: 0
   m_Name: OccupyManager
@@ -13006,6 +13007,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3080309288043191951}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1390476260298395477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7804858268032770235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1978038745
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &3208501018968676222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13018,9 +13044,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29cebe653d156c44bbca325b3eef2e6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   occupyPrefab: {fileID: 7100101677297156222, guid: 8f3a8221ecf4ff04d93548ba274bb3b5, type: 3}
-  occupyPoints: {fileID: 1244387013285867632}
-  occupyPool: {fileID: 8997936046406485304}
+  occupyPoints: {fileID: 5360280828274512152}
+  occupyPool: {fileID: 0}
 --- !u!1 &7821216222912432580
 GameObject:
   m_ObjectHideFlags: 0
@@ -14511,6 +14538,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2789377059190130855}
+  - component: {fileID: 2286701561652232099}
   m_Layer: 0
   m_Name: OccupyPool
   m_TagString: Untagged
@@ -14533,6 +14561,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3080309288043191951}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2286701561652232099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8997936046406485304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &9002988555331738066
 GameObject:
   m_ObjectHideFlags: 0

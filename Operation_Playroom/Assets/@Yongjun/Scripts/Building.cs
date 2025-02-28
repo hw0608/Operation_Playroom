@@ -9,6 +9,7 @@ public class Building : NetworkBehaviour
         0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     [SerializeField] BuildingScriptableObject buildingData;
+    [SerializeField] EffectScriptableObject effectData;
 
     bool isDestruction = false; // 중복 파괴 방지
 
@@ -21,7 +22,7 @@ public class Building : NetworkBehaviour
 
         if (IsClient)
         {
-            StartCoroutine(RaiseBuilding(gameObject, 0.2f, 3f));
+            StartCoroutine(RaiseBuilding(3f));
         }
     }
 
@@ -36,28 +37,56 @@ public class Building : NetworkBehaviour
         }
     }
 
-    IEnumerator RaiseBuilding(GameObject building, float targetPosY, float duration)
+    IEnumerator RaiseBuilding(float duration)
     {
         float elapsedTime = 0f;
-        Vector3 startPos = building.transform.position;
-        Vector3 targetPos = new Vector3(startPos.x, targetPosY, startPos.z);
+        Vector3 startPos = transform.localPosition;
+        Vector3 targetPos = new Vector3(0f, 10f, 0f);
 
-        GameObject buildEffect = Instantiate(buildingData.buildEffect, new Vector3(transform.position.x, 0.2f, transform.position.z), Quaternion.identity);
+        GameObject buildEffect = Instantiate(effectData.buildEffect, transform.position, Quaternion.identity, transform);
+        buildEffect.transform.SetParent(transform, true);
+        buildEffect.transform.localPosition = new Vector3(0f, 0f, 1.5f);
 
         while (elapsedTime < duration)
         {
-            building.transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime / duration);
+            transform.localPosition = Vector3.Lerp(startPos, targetPos, elapsedTime / duration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-
-        building.transform.position = targetPos;
-
+        transform.localPosition = targetPos;
         Destroy(buildEffect);
 
-        GameObject sparkleEffect = Instantiate(buildingData.sparkleEffect, new Vector3(transform.position.x, 0.5f, transform.position.z), Quaternion.identity);
+        GameObject sparkleEffect = Instantiate(effectData.sparkleEffect, transform.position, Quaternion.identity);
+        sparkleEffect.transform.SetParent(transform, true);
+        sparkleEffect.transform.localPosition = Vector3.zero;
         yield return new WaitForSeconds(0.5f);
         Destroy(sparkleEffect);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void DestructionBuildingServerRpc()
+    {
+        GetComponent<OccupySystem>().ResetOwnershipServerRpc();
+
+        DestructionBuildingClientRpc();
+
+        NetworkObject networkObject = GetComponent<NetworkObject>();
+        if (networkObject != null)
+        {
+            networkObject.Despawn(true);
+        }
+    }
+
+    [ClientRpc]
+    void DestructionBuildingClientRpc()
+    {
+        if (IsServer) return;
+
+        GameObject destructionEffect = Instantiate(effectData.destructionEffect, transform.position, Quaternion.identity);
+        destructionEffect.transform.SetParent(transform, true);
+        destructionEffect.transform.localPosition = Vector3.zero;
+        Destroy(destructionEffect, 3.25f);
+        gameObject.SetActive(false);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -67,29 +96,5 @@ public class Building : NetworkBehaviour
         {
             health.Value -= damage;
         }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    void DestructionBuildingServerRpc()
-    {
-        GetComponentInParent<OccupySystem>().ResetOwnershipServerRpc();
-
-        DestructionBuildingClientRpc();
-         
-        NetworkObject networkObject = GetComponent<NetworkObject>();
-        if (networkObject != null)
-        {
-            networkObject.Despawn(true);
-        }
-    }   
-
-    [ClientRpc]
-    void DestructionBuildingClientRpc()
-    {
-        if (IsServer) return;
-
-        GameObject destructionEffect = Instantiate(buildingData.destructionEffect, transform.position, Quaternion.identity);
-        Destroy(destructionEffect, 3.25f);
-        gameObject.SetActive(false);
     }
 }

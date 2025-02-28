@@ -22,7 +22,7 @@ public class OccupySystem : NetworkBehaviour
 
     void Update()
     {
-        if (IsServer)
+        if (IsServer || IsClient)
             DetectResources();
     }
     public override void OnNetworkSpawn()
@@ -44,7 +44,24 @@ public class OccupySystem : NetworkBehaviour
         {
             if (collider.CompareTag("Resource"))
             {
-                HandleResource(collider);
+                ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
+                Owner owner = collider.GetComponent<ResourceData>().CurrentOwner;
+                DetectResourceServerRpc(resourceId, owner);
+            }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void DetectResourceServerRpc(ulong resourceId, Owner owner)
+    {
+        if (currentOwner != Owner.Neutral) return;
+
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(resourceId, out NetworkObject resourceObject))
+        {
+            ResourceData resourceData = resourceObject.GetComponent<ResourceData>();
+            if (resourceData != null && resourceData.CurrentOwner == owner)
+            {
+                HandleResource(resourceObject.GetComponent<Collider>());
             }
         }
     }
@@ -117,12 +134,15 @@ public class OccupySystem : NetworkBehaviour
         ResetFillAmount();
 
         GameObject prefab = (newOwner == Owner.Red) ? occupyData.buildingPrefabTeamRed : occupyData.buildingPrefabTeamBlue;
-        GameObject building = Instantiate(prefab, new Vector3(transform.position.x, -0.3f, transform.position.z), Quaternion.Euler(-90f, 0f, 0f));
+
+        GameObject building = Instantiate(prefab, new Vector3(0f, -40f, 0f), Quaternion.Euler(-90f, 0f, 0f));
+        building.transform.localPosition = new Vector3(0f, -40f, 0f);
 
         NetworkObject networkObject = building.GetComponent<NetworkObject>();
         if (networkObject != null)
         {
             networkObject.Spawn();
+            networkObject.TrySetParent(transform.GetComponent<NetworkObject>());
         }
 
         InstantiateBuildingClientRpc(newOwner);
