@@ -1,20 +1,19 @@
+using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading.Tasks;
 
-public class OccupySystem : MonoBehaviour
+public class OccupySystem : NetworkBehaviour
 {
-    [SerializeField] int redTeamResourceCount = 0; // 적재한 자원
-    [SerializeField] int blueTeamResourceCount = 0;
+    [SerializeField] NetworkVariable<int> redTeamResourceCount = new NetworkVariable<int>(0); // 적재한 자원
+    [SerializeField] NetworkVariable<int> blueTeamResourceCount = new NetworkVariable<int>(0);
     const int resourceFillCount = 3; // 채워야 할 자원
     Owner currentOwner = Owner.Neutral; // 점령지 초기 상태
     [SerializeField] Image redTeamResourceCountImage; // 이미지 위치
     [SerializeField] Image blueTeamResourceCountImage;
     [SerializeField] OccupyScriptableObject occupyData; // 점령지 데이터 스크립터블 오브젝트
 
-<<<<<<< HEAD
-    void Update() => DetectResources();
-=======
+
     void Update()
     {
         if (IsServer || IsClient)
@@ -28,7 +27,7 @@ public class OccupySystem : MonoBehaviour
             blueTeamResourceCount.OnValueChanged += (oldValue, newValue) => UpdateVisuals();
         }
     }
->>>>>>> yj
+
 
     void DetectResources() // 점령지 내 자원 감지
     {
@@ -39,11 +38,7 @@ public class OccupySystem : MonoBehaviour
         {
             if (collider.CompareTag("Resource"))
             {
-<<<<<<< HEAD
-                HandleResource(collider);
-                CheckOwnership();
-                UpdateVisuals();
-=======
+
                 ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
                 Owner owner = collider.GetComponent<ResourceData>().CurrentOwner;
                 DetectResourceServerRpc(resourceId, owner);
@@ -62,7 +57,6 @@ public class OccupySystem : MonoBehaviour
             if (resourceData != null && resourceData.CurrentOwner == owner)
             {
                 HandleResource(resourceObject.GetComponent<Collider>());
->>>>>>> yj
             }
         }
     }
@@ -73,8 +67,8 @@ public class OccupySystem : MonoBehaviour
 
         if (owner == Owner.Neutral) return;
 
-        if (owner == Owner.Red) redTeamResourceCount++;
-        else if (owner == Owner.Blue) blueTeamResourceCount++;
+        if (owner == Owner.Red) redTeamResourceCount.Value++;
+        else if (owner == Owner.Blue) blueTeamResourceCount.Value++;
 
         Destroy(collider.gameObject);
     }
@@ -83,8 +77,8 @@ public class OccupySystem : MonoBehaviour
     {
         if (currentOwner == Owner.Neutral)
         {
-            if (redTeamResourceCount >= resourceFillCount) ChangeOwnership(Owner.Red);
-            else if (blueTeamResourceCount >= resourceFillCount) ChangeOwnership(Owner.Blue);
+            if (redTeamResourceCount.Value >= resourceFillCount) ChangeOwnership(Owner.Red);
+            else if (blueTeamResourceCount.Value >= resourceFillCount) ChangeOwnership(Owner.Blue);
         }
     }
 
@@ -101,11 +95,6 @@ public class OccupySystem : MonoBehaviour
     {
         ResetFillAmount();
 
-<<<<<<< HEAD
-        GameObject buildingPrefab = newOwner == Owner.Red ? occupyData.buildingPrefabTeamRed : occupyData.buildingPrefabTeamBlue;
-        GameObject buildingInstance = Instantiate(buildingPrefab, new Vector3(transform.position.x, -0.3f, transform.position.z), Quaternion.Euler(-90f, 0f, 0f));
-        buildingInstance.transform.SetParent(transform);
-=======
         GameObject prefab = (newOwner == Owner.Red) ? occupyData.buildingPrefabTeamRed : occupyData.buildingPrefabTeamBlue;
 
         GameObject building = Instantiate(prefab, new Vector3(0f, -40f, 0f), Quaternion.Euler(-90f, 0f, 0f));
@@ -118,14 +107,13 @@ public class OccupySystem : MonoBehaviour
             networkObject.TrySetParent(transform.GetComponent<NetworkObject>());
         }
 
-        InstantiateBuildingClientRpc(newOwner);
->>>>>>> yj
+        //InstantiateBuildingClientRpc(newOwner);
     }
 
     void UpdateVisuals() // 자원 적재 시각 효과
     {
-        float redTeamFillAmount = Mathf.Clamp((float)redTeamResourceCount / resourceFillCount, 0f, 1f);
-        float blueTeamFillAmount = Mathf.Clamp((float)blueTeamResourceCount / resourceFillCount, 0f, 1f);
+        float redTeamFillAmount = Mathf.Clamp((float)redTeamResourceCount.Value / resourceFillCount, 0f, 1f);
+        float blueTeamFillAmount = Mathf.Clamp((float)blueTeamResourceCount.Value / resourceFillCount, 0f, 1f);
 
         redTeamResourceCountImage.fillAmount = redTeamFillAmount;
         blueTeamResourceCountImage.fillAmount = blueTeamFillAmount;
@@ -139,7 +127,8 @@ public class OccupySystem : MonoBehaviour
         blueTeamResourceCountImage.fillAmount = 0f;
     }
 
-    public void ResetOwnership() // 건물 파괴 시 소유권 초기화
+    [ServerRpc(RequireOwnership = false)]
+    public void ResetOwnershipServerRpc() // 건물 파괴 시 소유권 초기화
     {
         ResetFillAmount();
 
@@ -147,7 +136,7 @@ public class OccupySystem : MonoBehaviour
 
         GetComponent<Renderer>().material.color = new Color(0, 0, 0);
 
-        redTeamResourceCount = 0;
-        blueTeamResourceCount = 0;
+        redTeamResourceCount.Value = 0;
+        blueTeamResourceCount.Value = 0;
     }
 }

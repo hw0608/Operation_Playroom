@@ -1,24 +1,21 @@
 using UnityEngine;
 using System.Collections;
+using Unity.Netcode;
 
-public class Building : MonoBehaviour
+public class Building : NetworkBehaviour
 {
-    [SerializeField] int health; // 건물 체력
+    [SerializeField] NetworkVariable<int> health; // 건물 체력
     [SerializeField] BuildingScriptableObject buildingData; // 건물 데이터 스크립터블 오브젝트
     bool isDestruction = false; // 중복철거 방지
 
-<<<<<<< HEAD
-    void OnEnable() => StartCoroutine(RaiseBuilding(gameObject, 0.2f, 3f));
-=======
-    [SerializeField] BuildingScriptableObject buildingData;
+
+    //[SerializeField] BuildingScriptableObject buildingData;
     [SerializeField] EffectScriptableObject effectData;
->>>>>>> yj
+
 
     void Start()
     {
-<<<<<<< HEAD
-        health = buildingData.health;
-=======
+
         if (IsServer)
         {
             health.Value = buildingData.health;
@@ -28,23 +25,19 @@ public class Building : MonoBehaviour
         {
             StartCoroutine(RaiseBuilding(3f));
         }
->>>>>>> yj
     }
 
     void Update()
     {
-        if (health <= 0 && !isDestruction)
+        if (health.Value <= 0 && !isDestruction)
         {
             isDestruction = true;
-            DestructionBuilding();
+            DestructionBuildingServerRpc();
         }
     }
 
-<<<<<<< HEAD
-    IEnumerator RaiseBuilding(GameObject building, float targetPosY, float duration) // 건물 생성될 때 효과
-=======
+
     IEnumerator RaiseBuilding(float duration)
->>>>>>> yj
     {
         float elapsedTime = 0f;
         Vector3 startPos = transform.localPosition;
@@ -60,13 +53,9 @@ public class Building : MonoBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-<<<<<<< HEAD
 
-        building.transform.position = targetPos;
-        
-=======
         transform.localPosition = targetPos;
->>>>>>> yj
+
         Destroy(buildEffect);
 
         GameObject sparkleEffect = Instantiate(effectData.sparkleEffect, transform.position, Quaternion.identity);
@@ -76,17 +65,7 @@ public class Building : MonoBehaviour
         Destroy(sparkleEffect);
     }
 
-<<<<<<< HEAD
-    void DestructionBuilding() // 건물 파괴
-    {
-        GetComponentInParent<OccupySystem>().ResetOwnership();
-        gameObject.SetActive(false);
-        GameObject destructionEffect = Instantiate(buildingData.destructionEffect, transform.position, Quaternion.identity);
-        Destroy(destructionEffect, 3.25f);
-        Destroy(gameObject, 3.25f);
-    }
-}
-=======
+
     [ServerRpc(RequireOwnership = false)]
     void DestructionBuildingServerRpc()
     {
@@ -122,4 +101,4 @@ public class Building : MonoBehaviour
         }
     }
 }
->>>>>>> yj
+
