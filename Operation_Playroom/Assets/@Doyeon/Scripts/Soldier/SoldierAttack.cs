@@ -26,7 +26,7 @@ public class SoldierAttack : MonoBehaviour
         if (!soldier.enemyTarget.Value.TryGet(out enemyNetObj) || enemyNetObj == null)
         {
             // 적이 없으면 상태 복귀
-            soldier.SetState(0);
+            //soldier.SetState(0);
             return;
         }
 
