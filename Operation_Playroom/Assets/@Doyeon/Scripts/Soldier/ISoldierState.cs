@@ -6,21 +6,55 @@ public interface ISoldierState
     void EnterState(Soldier soldier); 
     void Execute(Soldier soldier); 
 }
-// 왕 따라가기
-public class FollowingState : ISoldierState
+// 병사 Idle
+public class IdleState : ISoldierState
 {
     public void EnterState(Soldier soldier)
     {
         if (soldier.IsServer)
         {
-            soldier.GetComponent<SoldierAnim>().SoldierWalkAnim();
+            soldier.GetComponent<SoldierAnim>().SoldierIdleAnim();
         }
+    }
+
+    public void Execute(Soldier soldier)
+    {
+        
+    }
+}
+// 왕 따라가기
+public class FollowingState : ISoldierState
+{
+    private Transform king;  // 왕의 위치를 저장
+
+    public FollowingState(Transform king)
+    {
+        this.king = king;
+    }
+    public void EnterState(Soldier soldier)
+    {
+        //if (soldier.IsServer)
+        //{
+        //    soldier.GetComponent<SoldierAnim>().SoldierWalkAnim();
+        //}
     }
     public void Execute(Soldier soldier)
     {   
         if (soldier.IsServer)
         {
-            soldier.GetComponent<SoldierFormation>().FollowKing();
+            SoldierFormation soldierFormation = soldier.GetComponent<SoldierFormation>();
+
+            soldierFormation.SoldierFormationInitialize(king, soldierFormation.formationIndex);
+            soldierFormation.FollowKing();
+
+            if (soldierFormation.IsMoving())
+            {
+                soldier.GetComponent<SoldierAnim>().SoldierWalkAnim();
+            }
+            else
+            {
+                soldier.GetComponent<SoldierAnim>().SoldierIdleAnim();
+            }
         }
     }
 }
@@ -103,7 +137,6 @@ public class ReturningState : ISoldierState
             {
                 // 자원 전달 및 상태 전환
                 DeliverResource(soldier);
-                soldier.SetState(0);
             }
         }
     }

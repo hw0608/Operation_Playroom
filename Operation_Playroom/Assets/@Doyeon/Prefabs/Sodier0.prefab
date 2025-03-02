@@ -12813,10 +12813,10 @@ GameObject:
   - component: {fileID: 5775923114450896119}
   - component: {fileID: -5248358744743968754}
   - component: {fileID: 2725128521521554699}
-  - component: {fileID: 5249191851835175860}
-  - component: {fileID: -3169565250331930496}
-  - component: {fileID: -4354640495958639738}
-  - component: {fileID: -2040289650883397625}
+  - component: {fileID: -341137895251166194}
+  - component: {fileID: -100356947494878995}
+  - component: {fileID: 1441513002521550262}
+  - component: {fileID: 7765754232355335868}
   m_Layer: 0
   m_Name: Sodier0
   m_TagString: Soldier
@@ -13099,7 +13099,7 @@ NavMeshAgent:
   m_BaseOffset: 0.2
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &5249191851835175860
+--- !u!114 &-341137895251166194
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13112,6 +13112,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  cam: {fileID: 0}
+  formationIndex:
+    m_InternalValue: 0
   state:
     m_InternalValue: 0
   maxHp:
@@ -13120,9 +13123,11 @@ MonoBehaviour:
     m_InternalValue: 80
   team:
     m_InternalValue: 0
+  followDistance: 0.2
+  warpDistance: 5
   king: {fileID: 3391316076526803293, guid: 52a0871f2048b004992b0e786096820d, type: 3}
   isSoldierDie: 0
---- !u!114 &-3169565250331930496
+--- !u!114 &-100356947494878995
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13131,15 +13136,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 6426577121595752613}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3cd55453c1ca5dc4b85047e9f9ecb31b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b3e3358360bcc641b70ae7262cf9ed2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  followDistance: 0.2
-  warpDistance: 2
-  formationIndex: 0
-  itemCollectRange: 1.5
---- !u!114 &-4354640495958639738
+  soldierPrefab: {fileID: 6426577121595752613}
+  poolSize: 10
+  kingTransform: {fileID: 3391316076526803293, guid: 52a0871f2048b004992b0e786096820d, type: 3}
+  initialSoldierCount: 3
+  maxSoldierCount: 10
+--- !u!114 &1441513002521550262
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13153,7 +13159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRange: 2
   attackCooldown: 1.5
---- !u!114 &-2040289650883397625
+--- !u!114 &7765754232355335868
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
