@@ -16,33 +16,40 @@ public class MoveTimmy : NetworkBehaviour
     Animator animator;
     bool isMove = false;
 
-    void Start()
-    {
-        agent = GetComponent<NavMeshAgent>();
-        animator = GetComponent<Animator>();
-    }
+    public NetworkVariable<bool> timmyActive = new NetworkVariable<bool>(true);
 
-    void Update()
+    Vector3 startPos;
+    Quaternion startRot;
+    private void Start()
+    {
+        timmyActive.OnValueChanged += OnSetActiveSelf;
+        gameObject.SetActive(false);
+    }
+    public void OnSetActiveSelf(bool oldValue, bool newValue)
+    {
+        gameObject.SetActive(newValue);
+    }
+    public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
+        base.OnNetworkSpawn();
+        agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
 
-        //if (Input.GetKeyDown(KeyCode.G))
-        //{
-        //    CallTimmy(null);
-        //}
-
-        //if (isMove)
-        //{
-        //    if (HasReachedDestination())
-        //    {
-        //        animator.SetTrigger("Lifting");
-        //        //lifting animation 
-
-        //        isMove = false;
-        //    }
-        //}
+        timmyActive.Value = false;
+        startPos = transform.position;
+        startRot = transform.rotation;
+        //temp
+        path.Add(GameObject.Find("Cube").transform);
+        path.Add(GameObject.Find("Cube (1)").transform);
+        path.Add(GameObject.Find("Cube (2)").transform);
     }
 
+    public void ResetTimmy()
+    {
+        transform.position = startPos;
+        transform.rotation = startRot;
+    }
     public void CallTimmy(Action callback)
     {
         StartCoroutine(MoveTimmyToPath(callback));
@@ -76,7 +83,7 @@ public class MoveTimmy : NetworkBehaviour
 
     void MoveToPath(int index)
     {
-        GetComponent<NavMeshAgent>().SetDestination(path[index].position);
+        agent.SetDestination(path[index].position);
     }
 
     bool HasReachedDestination()

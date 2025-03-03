@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TimmyCameraMove : NetworkBehaviour
+public class TimmyDirection : NetworkBehaviour
 {
     public Image fadeImage;
     private Color imageColor;
@@ -12,40 +12,27 @@ public class TimmyCameraMove : NetworkBehaviour
     public CinemachineCamera[] cameras;
     private int activeCameraIndex = 0;
 
-    public GameObject sleepTimmy;
-    public GameObject moveTimmy;
+    public GameObject sleepTimmyPrefab;
+    public GameObject moveTimmyPrefab;
 
-    public Vector3 startPos;
-    public Quaternion startRot;
+    SleepTimmy sleepTimmy;
+    MoveTimmy moveTimmy;
 
+    
     public NetworkVariable<float> fadeAlpha = new NetworkVariable<float>(0);
-    public NetworkVariable<bool> sleepTimmyActive = new NetworkVariable<bool>(true);
-    public NetworkVariable<bool> moveTimmyActive = new NetworkVariable<bool>(false);
     public NetworkVariable<int> cameraIndex = new NetworkVariable<int>(0);
     void Start()
     {
+
         imageColor = fadeImage.color;
         imageColor.a = 0; // 시작 시 투명
         fadeImage.color = imageColor;
-        startPos = moveTimmy.transform.position;
-        startRot = moveTimmy.transform.rotation;
-        sleepTimmyActive.Value = sleepTimmy.activeSelf;
-        moveTimmyActive.Value = moveTimmy.activeSelf;
 
         cameraIndex.OnValueChanged += ((oldValue, newValue) =>
         {
             ActiveCamera(newValue);
         });
 
-        sleepTimmyActive.OnValueChanged += ((oldValue, newValue) =>
-        {
-            sleepTimmy.SetActive(newValue);
-        });
-
-        moveTimmyActive.OnValueChanged += ((oldValue, newValue) =>
-        {
-            moveTimmy.SetActive(newValue);
-        });
 
         fadeAlpha.OnValueChanged += ((oldValue, newValue) =>
         {
@@ -58,7 +45,27 @@ public class TimmyCameraMove : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.V))
         {
+            if (IsServer)
+            {
+                Debug.Log("server");
+
+                GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
+                sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
+                sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();    
+
+                GameObject moveTimmyObject = Instantiate(moveTimmyPrefab);
+                moveTimmyObject.GetComponent<NetworkObject>().Spawn();
+                moveTimmy = moveTimmyObject.GetComponent<MoveTimmy>();
+            }
+
             if (!IsServer) return;
+            //StartTimmy();
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (!IsServer) return;
+            //moveTimmy.SetActive(true);
             StartTimmy();
         }
     }
@@ -66,8 +73,8 @@ public class TimmyCameraMove : NetworkBehaviour
     public void StartTimmy()
     {
         Sequence timmySequence = DOTween.Sequence();
-
-        //티미 일어나는 연출
+        
+        //Fade in
         timmySequence.Append(DOTween.To(() => fadeAlpha.Value, x => SetAlpha(x), 1f, 0.5f));
         timmySequence.AppendCallback(() =>
         {
@@ -75,12 +82,13 @@ public class TimmyCameraMove : NetworkBehaviour
             cameraIndex.Value = 1;
         });
         timmySequence.AppendInterval(1f);
+        //fade out
         timmySequence.Append(DOTween.To(() => fadeAlpha.Value, x => SetAlpha(x), 0f, 0.5f));
 
 
         timmySequence.AppendCallback(() =>
         {
-            sleepTimmy.GetComponent<Animator>().SetTrigger("WakeUp");
+            sleepTimmy.animator.SetTrigger("WakeUp");
         });
         timmySequence.AppendInterval(3f);
 
@@ -90,10 +98,11 @@ public class TimmyCameraMove : NetworkBehaviour
         {
             //자는 티미 초기화 후 끄기
             sleepTimmy.GetComponent<Animator>().SetTrigger("Sleep");
-            sleepTimmyActive.Value = false;
-            moveTimmyActive.Value = true;
+            sleepTimmy.timmyActive.Value = false;
+            moveTimmy.timmyActive.Value = true;
             cameraIndex.Value = 2;
         });
+
         timmySequence.AppendInterval(1f);
 
         timmySequence.Append(DOTween.To(() => fadeAlpha.Value, x => SetAlpha(x), 0f, 0.5f));
@@ -105,6 +114,7 @@ public class TimmyCameraMove : NetworkBehaviour
         });
 
     }
+
     public void FinishTimmy()
     {
         Sequence timmySequence = DOTween.Sequence();
@@ -114,10 +124,9 @@ public class TimmyCameraMove : NetworkBehaviour
         timmySequence.AppendCallback(() =>
         {
             cameraIndex.Value = 0;
-            sleepTimmyActive.Value=true;
-            moveTimmyActive.Value = false;
-            moveTimmy.transform.position = startPos;
-            moveTimmy.transform.rotation = startRot;
+            sleepTimmy.timmyActive.Value = true;
+            moveTimmy.timmyActive.Value = false;
+            moveTimmy.ResetTimmy();
         });
         timmySequence.AppendInterval(1f);
 
