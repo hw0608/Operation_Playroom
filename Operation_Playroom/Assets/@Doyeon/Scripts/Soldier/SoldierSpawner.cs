@@ -7,45 +7,23 @@ using UnityEngine;
 // 병사 생성 및 초기화 
 public class SoldierSpawner : NetworkBehaviour
 {
-    private static SoldierSpawner _instance;
-    public static SoldierSpawner Instance
-    //{ get { return _instance; } }
-
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                GameObject go = new GameObject("SoldierSpawner");
-                _instance = go.AddComponent<SoldierSpawner>();
-                DontDestroyOnLoad(go);
-
-                if (_instance == null)
-                    Debug.LogError("병사풀이 존재하지 않습니다");
-            }
-            return _instance;
-        }
-    }
     // 풀관련
     [SerializeField] private GameObject soldierPrefab;
     [SerializeField] private int poolSize = 10;
-    private Queue<GameObject> poolQueue = new Queue<GameObject>();
+    private Queue<GameObject> poolQueue = new Queue<GameObject>(); // 오브젝트 풀
 
     // 스폰 관련
     [SerializeField] Transform kingTransform;
     [SerializeField] int initialSoldierCount = 3; // 초기 병사 수
     [SerializeField] int maxSoldierCount = 10; // 최대 병사 수 
 
-    private List<GameObject> spawnSoldier = new List<GameObject>();
+    private List<GameObject> spawnSoldier = new List<GameObject>(); // 현재 활성화된 병사 리스트 
     private int currentSoldierCount;
     private float scaleFactor = 0.1f; // 왕 병사 스케일
 
     public override void OnNetworkSpawn() // 네트워크 오브젝트 스폰되며 호출
     {
-        if (_instance == null)
-        {
-            _instance = this;
-        }
+        
         if (IsServer) // Host 에서만 아래 작업을 수행 
         {
             Debug.Log("서버에서 병사 스폰");
@@ -54,14 +32,18 @@ public class SoldierSpawner : NetworkBehaviour
             SpawnSoldiersServerRpc(); // 초기 병사 스폰
         }
     }
-    //void Update()
-    //{
-    //    if (IsOwner && Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        SpawnSoldiersServerRpc(NetworkManager.Singleton.LocalClientId);
-    //    }
-    //}
-    // 병사 풀 초기화
+   
+    // 병사 풀 초기화(서버 실행)
+    public void InitializeSpawner(Transform king)
+    {
+        if (!IsServer) return; // 서버에서만 실행
+
+        kingTransform = king;
+        Debug.Log($"{king.name}의 SoldierSpawner 초기화");
+
+        InitializePool();
+        SpawnSoldiersServerRpc();
+    }
     private void InitializePool()
     {
         if (!IsServer) return;
@@ -75,13 +57,26 @@ public class SoldierSpawner : NetworkBehaviour
             if (networkObject != null)
             {
                 networkObject.Spawn(); // 네트워크에 동기화
-                
-                //networkObject.Despawn(); // 네트워크에 비활성화
+
+                networkObject.Despawn(false); // 풀에 반환
             }
 
             poolQueue.Enqueue(soldier); // 풀에 저장
         }
     }
+    // 초기 병사 스폰 (서버 실행)
+    private void SpawnInitialSoldiers()
+    {
+        for (int i = 0; i < initialSoldierCount; i++)
+        {
+            GameObject soldier = GetFromPool();
+            soldier.transform.position = GetTrianglePosition(i);
+            soldier.transform.rotation = Quaternion.identity;
+
+            spawnSoldier.Add(soldier);
+        }
+    }
+
     private GameObject GetFromPool()
     {
         //if (!IsServer) return null;
@@ -132,9 +127,9 @@ public class SoldierSpawner : NetworkBehaviour
     {
         int formationIndex = 0;
 
-        for (int i = 0; i < initialSoldierCount; i++)
+        for (int i = 0; i < initialSoldierCount; i++) // 병사 3 스폰
         {
-            GameObject soldier = SoldierSpawner.Instance.GetFromPool(); // 풀에서 병사 가져오기
+            GameObject soldier = GetFromPool(); // 풀에서 병사 가져오기
             soldier.transform.position = GetTrianglePosition(formationIndex);  // 병사 배치 계산
             soldier.transform.rotation = Quaternion.identity; // 병사 회전 0
 
@@ -153,7 +148,7 @@ public class SoldierSpawner : NetworkBehaviour
                 formation.SoldierFormationInitialize(kingTransform, formationIndex);
             }
             // 병사 초기화
-            IFormable formableSoldier = soldier.GetComponent<IFormable>(); 
+            Soldier formableSoldier = soldier.GetComponent<Soldier>(); 
             if (formableSoldier != null)
             {
                 formableSoldier.SoldierInitialize(kingTransform, formationIndex);
@@ -162,9 +157,44 @@ public class SoldierSpawner : NetworkBehaviour
             spawnSoldier.Add(soldier);
             // 초기 병사 추가 
         }
-
+        InitializeSoldiersClientRpc();
+    }
+    // 클라이언트에 병사 초기화 요청
+    [ClientRpc]
+    private void InitializeSoldiersClientRpc()
+    {
+        foreach (GameObject soldier in spawnSoldier)
+        {
+            Soldier formableSoldier = soldier.GetComponent<Soldier>();
+            if (formableSoldier != null)
+            {
+                formableSoldier.SoldierInitialize(kingTransform, formableSoldier.formationIndex.Value);
+            }
+        }
+    }
+    // 병사 죽으면 풀로 반환 (서버 실행)
+    [ServerRpc(RequireOwnership = false)]
+    public void SoldierDiedServerRpc(NetworkObjectReference soldierRef)
+    {
+        if (soldierRef.TryGet(out NetworkObject soldierNetObj))
+        {
+            GameObject soldier = soldierNetObj.gameObject;
+            ReturnToPool(soldier);
+            SoldierDiedClientRpc(soldierNetObj.NetworkObjectId);
+        }
     }
 
+    [ClientRpc]
+    private void SoldierDiedClientRpc(ulong soldierId)
+    {
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(soldierId, out NetworkObject soldierNetObj))
+        {
+            GameObject soldier = soldierNetObj.gameObject;
+            soldier.SetActive(false);
+            spawnSoldier.Remove(soldier);
+        }
+    }
+    // 특정 조건 충족시 병사 추가 (서버 실행)
     [ServerRpc(RequireOwnership = false)]
     public void AddSoldierServerRpc(int count)
     {
@@ -176,7 +206,7 @@ public class SoldierSpawner : NetworkBehaviour
             return;
         }
 
-        GameObject soldier = SoldierSpawner.Instance.GetFromPool();
+        GameObject soldier = GetFromPool();
         soldier.transform.position = GetTrianglePosition(spawnSoldier.Count);
         soldier.transform.rotation = Quaternion.identity;
 
@@ -192,7 +222,7 @@ public class SoldierSpawner : NetworkBehaviour
             formation.SoldierFormationInitialize(kingTransform, spawnSoldier.Count);
         }
 
-        IFormable formableSoldier = soldier.GetComponent<IFormable>(); // 병사 초기화
+        Soldier formableSoldier = soldier.GetComponent<Soldier>(); // 병사 초기화
         if (formableSoldier != null)
         {
             formableSoldier.SoldierInitialize(kingTransform, spawnSoldier.Count);
@@ -203,7 +233,7 @@ public class SoldierSpawner : NetworkBehaviour
 
         currentSoldierCount = spawnSoldier.Count;
     }
-   
+
     [ClientRpc]
     private void InitializeFormationClientRpc(ulong networkObjectId, int formationIndex)
     {
@@ -241,21 +271,6 @@ public class SoldierSpawner : NetworkBehaviour
     public override void OnDestroy()
     {
         Debug.Log($"{gameObject.name} Destroy!");
-        _instance = null;
+        
     }
-
-    // Despawn 시점 딜레이 추가
-    private IEnumerator SoldierDelayedDestroy(GameObject soldier)
-    {
-        NetworkObject netObj = soldier.GetComponent<NetworkObject>();
-        if (netObj != null && netObj.IsSpawned)
-        {
-            netObj.Despawn();
-        }
-
-        yield return new WaitForEndOfFrame(); // 1프레임 딜레이
-
-        Destroy(soldier);
-    }
-
 }

@@ -18,19 +18,17 @@ public class SoldierFormation : NetworkBehaviour
 
     private Soldier soldier;
     [SerializeField] private float itemCollectRange = 1.5f;  // 자원 수집 범위
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        navAgent = GetComponent<NavMeshAgent>();
-        soldier = GetComponent<Soldier>();
+        if (IsOwner)
+        {
+            navAgent = GetComponent<NavMeshAgent>();
+        }
     }
+
     private void Update()
     {
-        //if (IsServer)
-        //{ }
-            //Debug.Log($"왕 따라가는 병사 = {name}{transform.position}, 왕 위치 = {king.position}");
-            FollowKing();
-        
-        
+        FollowKing();
     }
     // 병사 대형 초기화
     public void SoldierFormationInitialize(Transform king, int formationIndex)
@@ -42,9 +40,6 @@ public class SoldierFormation : NetworkBehaviour
     public void FollowKing()
     {// 네브메쉬 서버에서만 이동하도록 설정
         if (king == null || navAgent == null || !navAgent.enabled) return;
-
-        // 왕 좌표 체크
-        //Debug.Log($"왕 따라가는 병사 = {name}, 왕 위치 ={king.position}");
 
         Vector3 directionToKing = (king.position - transform.position).normalized;
         Vector3 targetPosition = king.position -(directionToKing * followDistance);
@@ -65,24 +60,26 @@ public class SoldierFormation : NetworkBehaviour
             navAgent.SetDestination(targetPosition);
             lastTargetPosition = targetPosition;
             Debug.Log($"병사 Destination : {targetPosition}");
+            GetComponent<SoldierAnim>().SoldierWalkAnim();
         }
        
-        if (IsMoving())
-        {
-            Debug.Log("병사 걷는 중");
-            soldier.GetComponent<SoldierAnim>().SoldierWalkAnim();
-        }
-        else
-        {
-            Debug.Log("병사 Idle 중");
-            soldier.GetComponent<SoldierAnim>().SoldierIdleAnim();
-        }
+        //if (IsMoving())
+        //{
+        //    Debug.Log("병사 걷는 중");
+        //    soldier.GetComponent<SoldierAnim>().SoldierWalkAnim();
+        //}
+        //else
+        //{
+        //    Debug.Log("병사 Idle 중");
+        //    soldier.GetComponent<SoldierAnim>().SoldierIdleAnim();
+        //}
     }
     public bool IsMoving() 
     {
         Debug.Log("움직임");
         //return navAgent.velocity.magnitude > 0.01f;
-        return !navAgent.isStopped;
+        //return !navAgent.isStopped;
+        return navAgent.remainingDistance > navAgent.stoppingDistance && !navAgent.pathPending;
     }
     
     [ServerRpc]
@@ -97,7 +94,7 @@ public class SoldierFormation : NetworkBehaviour
         if (Vector3.Distance(transform.position, itemPosition) < itemCollectRange)
         {
             isCarryingItem = true;
-            soldier.SetState(3); 
+            //soldier.SetState(3); 
         }
     }
     [ServerRpc]
