@@ -35,7 +35,14 @@ public class KingTest : Character
         // E 버튼 누르면
         if (Input.GetKeyDown(KeyCode.E))
         {
-            CommandSoldierToPickupItem();
+            if (FindNearestItem() == null)
+            {
+                CommandSoldierToAdvance();
+            }
+            else
+            {
+                CommandSoldierToPickupItem();
+            }
             Debug.Log("King E눌림");
         }
         // Q 버튼 누르면
@@ -75,7 +82,6 @@ public class KingTest : Character
             {
                 soldier.TryPickupItem(item);
                 item.gameObject.layer = 0;
-                break;
             }
         }
     }
@@ -85,6 +91,19 @@ public class KingTest : Character
         foreach(SoldierTest soldier in soldiers)
         {
             soldier.ResetState();
+        }
+    }
+
+    void CommandSoldierToAdvance()
+    {
+        foreach(SoldierTest soldier in soldiers)
+        {
+            if (soldier.isHoldingItem || soldier.CurrentState.Value != State.Idle && soldier.CurrentState.Value != State.Following)
+            {
+                continue;
+            }
+
+            soldier.Attack();
         }
     }
 
@@ -99,53 +118,6 @@ public class KingTest : Character
     {
         // 줍기
         Debug.Log("King Interaction");
-    }
-    
-    [ServerRpc]
-    private void CommandSoldiersServerRpc()
-    {
-        // 주변 병사들을 찾아서 행동 지시
-        GameObject[] soldiers = GameObject.FindGameObjectsWithTag("Soldier");
-        foreach (var soldierObj in soldiers)
-        {
-            Soldier soldier = soldierObj.GetComponent<Soldier>(); // 탐색한 콜라이더 중 soldier 컴포넌트를 가진 오브젝트만 가지고 옴 
-            if (soldier != null && soldier.currentState is FollowingState) // 병사가 명령을 받을 수 있는 상태라면 
-            {
-                float distance = Vector3.Distance(transform.position, soldier.transform.position);
-                if (distance <= 5)
-                {
-                    // 주변 적 확인
-                    GameObject enemy = FindNearestEnemy(); // 주변 적 찾는 함수 호출
-                    if (enemy != null)
-                    {
-                        soldier.SetState(1, enemy.GetComponent<NetworkObject>().NetworkObjectId); // 적이 있을 경우 AttackingState로 변경
-                    }
-                    else
-                    {
-                        // 주변 자원 확인
-                        GameObject item = FindNearestItem();
-                        if (item != null)
-                        {
-                            soldier.SetState(2, item.GetComponent<NetworkObject>().NetworkObjectId); // 자원이 있다면..
-                        }
-                    }
-                }
-            }
-        }
-    }
-    [ServerRpc]
-    private void RetreatSoldiersServerRpc()
-    {
-        // 공격 중인 병사들에게 후퇴 명령
-        GameObject[] attackingSoldiers = GameObject.FindGameObjectsWithTag("Soldier");
-        foreach (var attackingSoldierObj in attackingSoldiers)
-        {
-            Soldier soldier = attackingSoldierObj.GetComponent<Soldier>();
-            if (soldier != null && soldier.currentState is AttackingState) // 공격 중인 병사 들 
-            {
-                soldier.SetState(0, 0); // 따라오라
-            }
-        }
     }
 
     // 적을 찾는 메서드 (범위 내 가장 가까운 적)

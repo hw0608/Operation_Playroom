@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
@@ -34,12 +35,12 @@ public class SoldierTest : Character
 
     public override void Attack()
     {
-        throw new System.NotImplementedException();
+
     }
 
     public override void HandleInput()
     {
-        throw new System.NotImplementedException();
+
     }
 
     public override void Interaction()
