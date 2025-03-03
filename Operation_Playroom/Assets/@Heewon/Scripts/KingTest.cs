@@ -103,7 +103,12 @@ public class KingTest : Character
                 continue;
             }
 
-            soldier.Attack();
+            GameObject enemy = FindNearestEnemy();
+
+            if (enemy != null)
+            {
+                soldier.TryAttack(enemy);
+            }
         }
     }
 
@@ -123,7 +128,7 @@ public class KingTest : Character
     // 적을 찾는 메서드 (범위 내 가장 가까운 적)
     private GameObject FindNearestEnemy()
     {
-        Collider[] enemies = Physics.OverlapSphere(transform.position, 1f, LayerMask.GetMask("Enemy")); // 나중에 콜라이더로 수정
+        Collider[] enemies = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, 1f, LayerMask.GetMask("Enemy")); // 나중에 콜라이더로 수정
         GameObject nearestEnemy = null; // 가장 가까운 적을 저장할 오브젝트
         float minDistance = Mathf.Infinity; // 가장 가까운 거리를 저장. 초기 값은 무한대로 설정
 

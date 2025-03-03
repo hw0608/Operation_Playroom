@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Globalization;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -22,20 +23,32 @@ public class SoldierTest : Character
     float sqrStoppingDistance;
 
     [SerializeField] Transform itemContainer;
-    Transform targetItem;
+    [SerializeField] GameObject spearHitbox;
+    GameObject target;
     public bool isHoldingItem;
-    
+    public bool isAttacking;
+
+    Coroutine attackRoutine;
+
     public NetworkVariable<State> CurrentState
     {
         get { return currentState; }
-        set {
+        set
+        {
             currentState = value;
         }
     }
 
     public override void Attack()
     {
-
+        if (attackAble)
+        {
+            if (attackRoutine != null)
+            {
+                StopCoroutine(attackRoutine);
+            }
+            attackRoutine = StartCoroutine(SpearAttack());
+        }
     }
 
     public override void HandleInput()
@@ -67,6 +80,40 @@ public class SoldierTest : Character
         currentState.OnValueChanged -= HandleAnimation;
     }
 
+    IEnumerator SpearAttack()
+    {
+        RotateToDestination();
+        spearHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId);
+        SetAvatarLayerWeightserverRpc(1);
+        attackAble = false;
+        SetTriggerAnimationserverRpc("SpearAttack");
+
+        yield return new WaitForSeconds(0.4f);
+
+        EnableHitboxServerRpc(true);
+
+        yield return new WaitForSeconds(0.2f);
+
+        EnableHitboxServerRpc(false);
+
+        yield return new WaitForSeconds(0.4f);
+
+        attackAble = true;
+        SetAvatarLayerWeightserverRpc(0);
+    }
+
+    [ServerRpc]
+    void EnableHitboxServerRpc(bool state)
+    {
+        EnableHitboxClientRpc(state);
+    }
+
+    [ClientRpc]
+    void EnableHitboxClientRpc(bool state)
+    {
+        spearHitbox.GetComponent<Collider>().enabled = state;
+    }
+
     void HandleAnimation(State previousValue, State newValue)
     {
         float speed = newValue == State.Following || newValue == State.MoveToward ? 1f : 0f;
@@ -82,63 +129,117 @@ public class SoldierTest : Character
     private void Update()
     {
         if (!IsOwner) { return; }
+        if (king == null) { return; }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        float sqrDistance = agent.stoppingDistance * agent.stoppingDistance;
+        float distanceToKing = Vector3.SqrMagnitude(transform.position - king.position);
+        bool isNearKing = distanceToKing <= sqrStoppingDistance * 1.2f;
+        bool isFarKing = distanceToKing > sqrStoppingDistance * 1.5f;
+        bool hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
+
+        RotateToDestination();
+
+        switch (CurrentState.Value)
         {
-            Debug.Log($"{agent.remainingDistance} , {agent.stoppingDistance} , {agent.destination}"); 
+            case State.Idle:
+                IdleState(isFarKing);
+                break;
+            case State.Following:
+                FollowingState(isNearKing);
+                break;
+            case State.MoveToward:
+                MoveTowardState(hasArrived);
+                break;
+        }
+    }
+
+    // 바라보는 각도 계산
+    void RotateToDestination()
+    {
+        if (CurrentState.Value == State.Idle) { return; }
+
+        Vector2 forward = new Vector2(transform.position.z, transform.position.x);
+        Vector2 steeringTarget = new Vector2(agent.steeringTarget.z, agent.steeringTarget.x);
+        Vector2 dir = steeringTarget - forward;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.eulerAngles = Vector3.up * angle;
+    }
+
+    void IdleState(bool isFarKing)
+    {
+        if (isFarKing)
+        {
+            FollowKing();
+        }
+    }
+
+    void FollowingState(bool isNearKing)
+    {
+        if (isNearKing && agent.velocity.sqrMagnitude < 0.01f)
+        {
+            currentState.Value = State.Idle;
+            agent.velocity = Vector3.zero;
+        }
+        else
+        {
+            FollowKing();
+        }
+    }
+
+    void FollowKing()
+    {
+        currentState.Value = State.Following;
+        agent.SetDestination(king.position);
+    }
+
+    void MoveTowardState(bool hasArrived)
+    {
+        if (target == null)
+        {
+            currentState.Value = State.Following;
+            agent.SetDestination(king.position);
         }
 
-        if (king != null)
+        if (target.CompareTag("Item"))
         {
-            float distanceToKing = Vector3.SqrMagnitude(transform.position - king.position);
-            bool isNearKing = distanceToKing <= sqrStoppingDistance * 1.2f;
+            HandleItemPickup(hasArrived);
+        }
+        else
+        {
+            HandleEnemyAttack(hasArrived);
+        }
+    }
 
-            if (currentState.Value != State.Idle)
+    void HandleItemPickup(bool hasArrived)
+    {
+        if (!isHoldingItem && hasArrived)
+        {
+            PickupItem();
+        }
+        else if (isHoldingItem)
+        {
+            if (hasArrived)
             {
-                // 바라보는 각도 계산
-                Vector2 forward = new Vector2(transform.position.z, transform.position.x);
-                Vector2 steeringTarget = new Vector2(agent.steeringTarget.z, agent.steeringTarget.x);
-                Vector2 dir = steeringTarget - forward;
-                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                transform.eulerAngles = Vector3.up * angle;
+                GiveItem();
             }
-
-            if (CurrentState.Value == State.Following && isNearKing && agent.velocity.sqrMagnitude < 0.01f)
+            else
             {
-                CurrentState.Value = State.Idle;
-                agent.velocity = Vector3.zero;
-            }
-            else if (CurrentState.Value == State.Following || (CurrentState.Value == State.Idle && distanceToKing > sqrStoppingDistance * 1.5f))
-            {
-                CurrentState.Value = State.Following;
+                if (networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName("Holding") && 
+                    networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) return;
                 agent.SetDestination(king.position);
             }
-            else if (CurrentState.Value == State.MoveToward)
-            {
-                if (targetItem == null)
-                {
-                    currentState.Value = State.Following;
-                    agent.SetDestination(king.position);
-                }
+        }
+    }
 
-                if (!isHoldingItem && agent.remainingDistance <= agent.stoppingDistance + float.Epsilon)
-                {
-                    PickupItem();
-                }
-
-                else if (isHoldingItem)
-                {
-                    if (agent.remainingDistance <= agent.stoppingDistance + float.Epsilon)
-                    {
-                        GiveItem();
-                    }
-                    else
-                    {
-                        if (networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) return;
-                        agent.SetDestination(king.position);
-                    }
-                }
-            }
+    void HandleEnemyAttack(bool hasArrived)
+    {
+        if (hasArrived)
+        {
+            Attack();
+        }
+        else
+        {
+            agent.SetDestination(target.transform.position);
         }
     }
 
@@ -146,21 +247,21 @@ public class SoldierTest : Character
     {
         Debug.Log("TryPickupItem");
         currentState.Value = State.MoveToward;
-        targetItem = item.transform;
+        target = item;
         agent.stoppingDistance = 0.1f;
-        agent.SetDestination(targetItem.position);
+        agent.SetDestination(target.transform.position);
     }
 
     void PickupItem()
     {
         isHoldingItem = true;
-        targetItem.SetParent(itemContainer);
-        targetItem.transform.localPosition = Vector3.zero;
+        target.transform.SetParent(itemContainer);
+        target.transform.localPosition = Vector3.zero;
         SetAvatarLayerWeightserverRpc(1);
         SetTriggerAnimationserverRpc("Holding");
         agent.stoppingDistance = 0.3f;
         agent.SetDestination(king.position);
-        
+
     }
 
     void GiveItem()
@@ -168,6 +269,15 @@ public class SoldierTest : Character
         //SetAvatarLayerWeightserverRpc(0);
         currentState.Value = State.Idle;
         //isHoldingItem = false;
+    }
+
+    public void TryAttack(GameObject enemy)
+    {
+        Debug.Log("TryAttack");
+        currentState.Value = State.MoveToward;
+        target = enemy;
+        agent.stoppingDistance = 0.1f;
+        agent.SetDestination(target.transform.position);
     }
 
     public void ResetState()
