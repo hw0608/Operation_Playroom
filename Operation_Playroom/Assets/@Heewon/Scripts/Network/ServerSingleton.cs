@@ -56,6 +56,7 @@ public class ServerSingleton : MonoBehaviour
                 {
                     GameRole role = GetRoleFromPrefabName(prefab.Prefab.name);
                     if (role == GameRole.None) continue;
+                    if (gameRoleToPrefabHash.ContainsKey(role)) continue;
                     gameRoleToPrefabHash.Add(role, netObj.PrefabIdHash);
                 }
             }
