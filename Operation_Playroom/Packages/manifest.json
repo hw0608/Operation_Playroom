@@ -18,7 +18,6 @@
     "com.unity.netcode.gameobjects": "2.2.0",
     "com.unity.render-pipelines.universal": "17.0.3",
     "com.unity.services.ccd.management": "2.1.0",
-    "com.unity.services.multiplay": "1.2.5",
     "com.unity.services.multiplayer": "1.1.1",
     "com.unity.shadergraph": "17.0.3",
     "com.unity.test-framework": "1.4.5",

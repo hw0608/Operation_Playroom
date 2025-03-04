@@ -12,7 +12,6 @@ public class SleepTimmy : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
-        base.OnNetworkSpawn();
         animator = GetComponent<Animator>();
         timmyActive.Value = true;
     }

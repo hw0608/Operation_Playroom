@@ -9,7 +9,7 @@ public class OccupyGizmos : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        float radius = 0.35f;
+        float radius = 0.15f;
 
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(transform.position, radius);

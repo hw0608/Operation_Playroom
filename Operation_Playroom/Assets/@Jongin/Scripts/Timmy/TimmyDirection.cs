@@ -42,31 +42,6 @@ public class TimmyDirection : NetworkBehaviour
     private void Update()
     {
 
-        //if (Input.GetKeyDown(KeyCode.V))
-        //{
-        //    if (IsServer)
-        //    {
-        //        Debug.Log("server");
-
-        //        GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
-        //        sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
-        //        sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();    
-
-        //        GameObject moveTimmyObject = Instantiate(moveTimmyPrefab);
-        //        moveTimmyObject.GetComponent<NetworkObject>().Spawn();
-        //        moveTimmy = moveTimmyObject.GetComponent<MoveTimmy>();
-        //    }
-
-        //    if (!IsServer) return;
-        //    //StartTimmy();
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.C))
-        //{
-        //    if (!IsServer) return;
-        //    //moveTimmy.SetActive(true);
-        //    StartTimmy();
-        //}
     }
 
     public void StartTimmy()
