@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c602bc8341290040b479f29073127fa, type: 3}
   m_Name: OccupyData
   m_EditorClassIdentifier: 
-  buildingPrefabTeamRed: {fileID: 6715654517453632122, guid: e9ae5b3be7e38504db6f08f4a0db641f, type: 3}
-  buildingPrefabTeamBlue: {fileID: 6715654517453632122, guid: 2a3ad2630ac881446ab26e48514540c9, type: 3}
+  buildingPrefabTeamRed: {fileID: 6421879673209478227, guid: 3914c805c98199540995a4dafe247dcb, type: 3}
+  buildingPrefabTeamBlue: {fileID: 4853673393836859384, guid: 6e02ae7fb3d27cf4f9dcd8543a2be3f3, type: 3}

@@ -23,7 +23,6 @@ public class TimmyDirection : NetworkBehaviour
     public NetworkVariable<int> cameraIndex = new NetworkVariable<int>(0);
     void Start()
     {
-
         imageColor = fadeImage.color;
         imageColor.a = 0; // 시작 시 투명
         fadeImage.color = imageColor;
@@ -43,31 +42,31 @@ public class TimmyDirection : NetworkBehaviour
     private void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            if (IsServer)
-            {
-                Debug.Log("server");
+        //if (Input.GetKeyDown(KeyCode.V))
+        //{
+        //    if (IsServer)
+        //    {
+        //        Debug.Log("server");
 
-                GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
-                sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
-                sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();    
+        //        GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
+        //        sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
+        //        sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();    
 
-                GameObject moveTimmyObject = Instantiate(moveTimmyPrefab);
-                moveTimmyObject.GetComponent<NetworkObject>().Spawn();
-                moveTimmy = moveTimmyObject.GetComponent<MoveTimmy>();
-            }
+        //        GameObject moveTimmyObject = Instantiate(moveTimmyPrefab);
+        //        moveTimmyObject.GetComponent<NetworkObject>().Spawn();
+        //        moveTimmy = moveTimmyObject.GetComponent<MoveTimmy>();
+        //    }
 
-            if (!IsServer) return;
-            //StartTimmy();
-        }
+        //    if (!IsServer) return;
+        //    //StartTimmy();
+        //}
 
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            if (!IsServer) return;
-            //moveTimmy.SetActive(true);
-            StartTimmy();
-        }
+        //if (Input.GetKeyDown(KeyCode.C))
+        //{
+        //    if (!IsServer) return;
+        //    //moveTimmy.SetActive(true);
+        //    StartTimmy();
+        //}
     }
 
     public void StartTimmy()
