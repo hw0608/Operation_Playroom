@@ -6,7 +6,7 @@ using Unity.Netcode.Components;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
-using static ReturningState;
+
 
 public enum SoldierState
 {
