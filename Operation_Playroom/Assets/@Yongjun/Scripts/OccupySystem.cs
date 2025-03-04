@@ -146,8 +146,7 @@ public class OccupySystem : NetworkBehaviour
     [ClientRpc]
     void InstantiateBuildingClientRpc(Owner newOwner) // 건물 건설 클라RPC
     {
-        if (IsServer) return;
-        ResetFillAmount();
+        ResetFillAmountClient();
     }
 
     void UpdateVisuals() // 자원 적재 시각 효과
@@ -161,9 +160,17 @@ public class OccupySystem : NetworkBehaviour
 
     async void ResetFillAmount() // 자원 적재 시각 효과 초기화
     {
-        await Task.Delay(10);
+        await Task.Delay(100);
         redTeamResourceCountImage.fillAmount = 0f;
         blueTeamResourceCountImage.fillAmount = 0f;
+    }
+
+    void ResetFillAmountClient() // 자원 적재 시각 효과 초기화 클라이언트
+    {
+        if (redTeamResourceCountImage != null && blueTeamResourceCountImage != null)
+        {
+            ResetFillAmount();
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]
