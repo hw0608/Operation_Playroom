@@ -15520,6 +15520,8 @@ GameObject:
   - component: {fileID: 2248921539787516692}
   - component: {fileID: 8584243286825825602}
   - component: {fileID: 8213975747523946636}
+  - component: {fileID: 981276222956811405}
+  - component: {fileID: 3814636924336807641}
   m_Layer: 0
   m_Name: w_halberd
   m_TagString: Untagged
@@ -15595,6 +15597,40 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &981276222956811405
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7270544927865333249}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 2.6628284, y: 0.18884148, z: 0.62743896}
+  m_Center: {x: -0.5545233, y: 0.0018207158, z: 0.014419104}
+--- !u!114 &3814636924336807641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7270544927865333249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b4994377d86ff46908021730e6e1f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 10
 --- !u!1 &7312613167900621414
 GameObject:
   m_ObjectHideFlags: 0
@@ -18116,6 +18152,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   cam: {fileID: 0}
   itemContainer: {fileID: 2959140947267073897}
+  spearHitbox: {fileID: 7270544927865333249}
+  isHoldingItem: 0
+  isAttacking: 0
 --- !u!1 &8509804826014776603
 GameObject:
   m_ObjectHideFlags: 0

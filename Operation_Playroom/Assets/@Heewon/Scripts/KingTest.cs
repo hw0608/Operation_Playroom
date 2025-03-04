@@ -27,11 +27,12 @@ public class KingTest : Character
     // 키 입력 메서드
     public override void HandleInput()
     {
-        // 공격
-        if (Input.GetButtonDown("Attack"))
-        {
-            Attack();
-        }
+        //// 공격
+        //if (Input.GetButtonDown("Attack"))
+        //{
+        //    Attack();
+        //}
+
         // E 버튼 누르면
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -52,25 +53,17 @@ public class KingTest : Character
             Debug.Log("Q눌림");
         }
 
-        /*
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.V))
         {
-            if (IsOwner)
-            {
-                if (soldierSpawner != null)
-                {
-                    soldierSpawner.AddSoldierServerRpc(1);
-                }
-            }
-            Debug.Log($"F키 눌림 by {OwnerClientId}");
+            soldierSpawner.SpawnSoldiers(1);
         }
-        */
     }
 
     void CommandSoldierToPickupItem()
     {
         foreach(SoldierTest soldier in soldiers)
         {
+            // 아이템을 가져오라는 명령을 받을 수 없는 상태
             if (soldier.isHoldingItem || soldier.CurrentState.Value != State.Idle && soldier.CurrentState.Value != State.Following)
             {
                 continue;
@@ -80,6 +73,7 @@ public class KingTest : Character
 
             if (item != null)
             {
+                // TODO: 수정
                 soldier.TryPickupItem(item);
                 item.gameObject.layer = 0;
             }
@@ -103,7 +97,12 @@ public class KingTest : Character
                 continue;
             }
 
-            soldier.Attack();
+            GameObject enemy = FindNearestEnemy();
+
+            if (enemy != null)
+            {
+                soldier.TryAttack(enemy);
+            }
         }
     }
 
@@ -123,7 +122,7 @@ public class KingTest : Character
     // 적을 찾는 메서드 (범위 내 가장 가까운 적)
     private GameObject FindNearestEnemy()
     {
-        Collider[] enemies = Physics.OverlapSphere(transform.position, 1f, LayerMask.GetMask("Enemy")); // 나중에 콜라이더로 수정
+        Collider[] enemies = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, 1f, LayerMask.GetMask("Enemy")); // 나중에 콜라이더로 수정
         GameObject nearestEnemy = null; // 가장 가까운 적을 저장할 오브젝트
         float minDistance = Mathf.Infinity; // 가장 가까운 거리를 저장. 초기 값은 무한대로 설정
 
