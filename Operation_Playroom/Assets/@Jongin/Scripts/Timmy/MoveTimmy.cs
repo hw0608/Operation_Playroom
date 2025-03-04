@@ -8,6 +8,9 @@ using static Define;
 public class MoveTimmy : NetworkBehaviour
 {
     public List<Transform> path = new List<Transform>();
+    public NetworkVariable<bool> timmyActive = new NetworkVariable<bool>(true);
+    public GameObject[] BuildingDummy;
+
     ETimmyState timmyState = ETimmyState.Sleep;
 
     int pathIndex = 0;
@@ -15,8 +18,6 @@ public class MoveTimmy : NetworkBehaviour
     NavMeshAgent agent;
     Animator animator;
     bool isMove = false;
-
-    public NetworkVariable<bool> timmyActive = new NetworkVariable<bool>(true);
 
     Vector3 startPos;
     Quaternion startRot;
@@ -71,14 +72,32 @@ public class MoveTimmy : NetworkBehaviour
                 if (HasReachedDestination())
                 {
                     animator.SetTrigger("Lifting");
-                    yield return new WaitForSeconds(6);
+                    yield return new WaitForSeconds(1.5f);
+                    SetBuildingDummyClientRpc(pathIndex);
+                    yield return new WaitForSeconds(4.5f);
                     isMove = false;
                     pathIndex++;
                 }
             }
             yield return null;
         }
+        ResetBuildingDummyClientRpc();
         callback?.Invoke();
+    }
+
+    [ClientRpc]
+    void SetBuildingDummyClientRpc(int pathIndex)
+    {
+        BuildingDummy[pathIndex].SetActive(true);
+    } 
+
+    [ClientRpc]
+    void ResetBuildingDummyClientRpc()
+    {
+        for(int i = 0; i< BuildingDummy.Length; i++)
+        {
+            BuildingDummy[i].SetActive(false);
+        }
     }
 
     void MoveToPath(int index)
