@@ -13,15 +13,12 @@ public class Swordman : Character
     public override void Attack()
     {
         // 검 휘두르며 공격
-        if (attackAble)
+        if (attackRoutine != null)
         {
-            if (attackRoutine != null)
-            {
-                StopCoroutine(attackRoutine);
-            }
-            attackRoutine = SwordAttack();
-            StartCoroutine(SwordAttack());
+            StopCoroutine(attackRoutine);
         }
+        attackRoutine = SwordAttack();
+        StartCoroutine(SwordAttack());
     }
 
     // 키 입력 메서드
@@ -30,7 +27,11 @@ public class Swordman : Character
         // 공격
         if (Input.GetButtonDown("Attack"))
         {
-            Attack();
+            // 검 휘두르며 공격
+            if (attackAble)
+            {
+                Attack();
+            }
         }
         // 줍기
         if (Input.GetButtonDown("Interact"))
@@ -42,8 +43,17 @@ public class Swordman : Character
     // 상호작용 메서드
     public override void Interaction()
     {
-        // 줍기
-        Debug.Log("Interaction");
+        // 아이템을 들고 있으면
+        if (isHoldingItem)
+        {
+            Drop();
+            attackAble = true;
+        }
+        else
+        {
+            PickUp();
+            attackAble = false;
+        }
     }
 
     // 칼 공격 코루틴

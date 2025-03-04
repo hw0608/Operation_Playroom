@@ -36,6 +36,8 @@ public class Health : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void TakeDamageServerRpc(int damage, ulong clientId)
     {
+        if (!IsServer) return;
+
         TakeDamage(damage, clientId);
     }
 
