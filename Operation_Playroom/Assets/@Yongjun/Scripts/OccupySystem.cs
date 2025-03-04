@@ -1,18 +1,26 @@
-using System.Threading.Tasks;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
+using Unity.Netcode;
 
 public class OccupySystem : NetworkBehaviour
 {
-    [SerializeField] NetworkVariable<int> redTeamResourceCount = new NetworkVariable<int>(0); // 적재한 자원
-    [SerializeField] NetworkVariable<int> blueTeamResourceCount = new NetworkVariable<int>(0);
-    const int resourceFillCount = 3; // 채워야 할 자원
-    Owner currentOwner = Owner.Neutral; // 점령지 초기 상태
-    [SerializeField] Image redTeamResourceCountImage; // 이미지 위치
-    [SerializeField] Image blueTeamResourceCountImage;
-    [SerializeField] OccupyScriptableObject occupyData; // 점령지 데이터 스크립터블 오브젝트
+    // 적재한 자원
+    [SerializeField] NetworkVariable<int> redTeamResourceCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> blueTeamResourceCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    // 채워야 할 자원
+    const int resourceFillCount = 3;
+
+    // 점령지 초기 상태
+    Owner currentOwner = Owner.Neutral;
+
+    // 이미지 위치
+    [SerializeField] Image redTeamResourceCountImage;
+    [SerializeField] Image blueTeamResourceCountImage;
+
+    // 점령지 데이터 스크립터블 오브젝트
+    [SerializeField] OccupyScriptableObject occupyData;
 
     void Update()
     {
@@ -28,17 +36,15 @@ public class OccupySystem : NetworkBehaviour
         }
     }
 
-
     void DetectResources() // 점령지 내 자원 감지
     {
         if (currentOwner != Owner.Neutral) return;
 
-        Collider[] colliders = Physics.OverlapSphere(transform.position, gameObject.transform.localScale.x / 2);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, transform.localScale.x / 2);
         foreach (Collider collider in colliders)
         {
             if (collider.CompareTag("Resource"))
             {
-
                 ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
                 Owner owner = collider.GetComponent<ResourceData>().CurrentOwner;
                 DetectResourceServerRpc(resourceId, owner);
@@ -47,7 +53,7 @@ public class OccupySystem : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void DetectResourceServerRpc(ulong resourceId, Owner owner)
+    void DetectResourceServerRpc(ulong resourceId, Owner owner) // 점령지 내 자원 감지 서버RPC
     {
         if (currentOwner != Owner.Neutral) return;
 
@@ -63,35 +69,62 @@ public class OccupySystem : NetworkBehaviour
 
     void HandleResource(Collider collider) // 감지된 자원 적재
     {
-        Owner owner = collider.gameObject.GetComponent<ResourceData>().CurrentOwner;
+        if (!IsServer) return;
 
-        if (owner == Owner.Neutral) return;
+        ResourceData resourceData = collider.GetComponent<ResourceData>();
+        if (resourceData == null || resourceData.CurrentOwner == Owner.Neutral) return;
 
+        ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
+        HandleResourceServerRpc(resourceId, resourceData.CurrentOwner);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void HandleResourceServerRpc(ulong resourceId, Owner owner) // 감지된 자원 적재 서버RPC
+    {
         if (owner == Owner.Red) redTeamResourceCount.Value++;
         else if (owner == Owner.Blue) blueTeamResourceCount.Value++;
 
-        Destroy(collider.gameObject);
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(resourceId, out NetworkObject resourceObject))
+        {
+            resourceObject.Despawn();
+        }
+
+        CheckOwnership();
+        UpdateVisuals();
     }
 
     void CheckOwnership() // 점령지 소유권 검사
     {
         if (currentOwner == Owner.Neutral)
         {
-            if (redTeamResourceCount.Value >= resourceFillCount) ChangeOwnership(Owner.Red);
-            else if (blueTeamResourceCount.Value >= resourceFillCount) ChangeOwnership(Owner.Blue);
+            if (redTeamResourceCount.Value >= resourceFillCount)
+                ChangeOwnershipServerRpc(Owner.Red);
+            else if (blueTeamResourceCount.Value >= resourceFillCount)
+                ChangeOwnershipServerRpc(Owner.Blue);
         }
     }
 
-    void ChangeOwnership(Owner newOwner) // 중립 점령지의 소유권을 팀으로 변경
+    [ServerRpc(RequireOwnership = false)]
+    void ChangeOwnershipServerRpc(Owner newOwner) // 중립 점령지의 소유권을 팀으로 변경 서버RPC
     {
         currentOwner = newOwner;
+        GetComponent<Renderer>().material.color = (newOwner == Owner.Red) ? Color.red : Color.blue;
 
-        GetComponent<Renderer>().material.color = newOwner == Owner.Red ? Color.red : Color.blue;
-
-        InstantiateBuilding(newOwner);
+        InstantiateBuildingServerRpc(newOwner);
+        ChangeOwnershipClientRpc(newOwner);
     }
 
-    void InstantiateBuilding(Owner newOwner) // 건물 건설
+    [ClientRpc]
+    void ChangeOwnershipClientRpc(Owner newOwner) // 중립 점령지의 소유권을 팀으로 변경 클라RPC
+    {
+        if (IsServer) return;
+
+        currentOwner = newOwner;
+        GetComponent<Renderer>().material.color = (newOwner == Owner.Red) ? Color.red : Color.blue;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void InstantiateBuildingServerRpc(Owner newOwner) // 건물 건설 서버RPC
     {
         ResetFillAmount();
 
@@ -107,33 +140,37 @@ public class OccupySystem : NetworkBehaviour
             networkObject.TrySetParent(transform.GetComponent<NetworkObject>());
         }
 
-        //InstantiateBuildingClientRpc(newOwner);
+        InstantiateBuildingClientRpc(newOwner);
+    }
+
+    [ClientRpc]
+    void InstantiateBuildingClientRpc(Owner newOwner) // 건물 건설 클라RPC
+    {
+        if (IsServer) return;
+        ResetFillAmount();
     }
 
     void UpdateVisuals() // 자원 적재 시각 효과
     {
-        float redTeamFillAmount = Mathf.Clamp((float)redTeamResourceCount.Value / resourceFillCount, 0f, 1f);
-        float blueTeamFillAmount = Mathf.Clamp((float)blueTeamResourceCount.Value / resourceFillCount, 0f, 1f);
+        float redFill = Mathf.Clamp((float)redTeamResourceCount.Value / resourceFillCount, 0f, 1f);
+        float blueFill = Mathf.Clamp((float)blueTeamResourceCount.Value / resourceFillCount, 0f, 1f);
 
-        redTeamResourceCountImage.fillAmount = redTeamFillAmount;
-        blueTeamResourceCountImage.fillAmount = blueTeamFillAmount;
+        redTeamResourceCountImage.fillAmount = redFill;
+        blueTeamResourceCountImage.fillAmount = blueFill;
     }
 
     async void ResetFillAmount() // 자원 적재 시각 효과 초기화
     {
         await Task.Delay(10);
-
         redTeamResourceCountImage.fillAmount = 0f;
         blueTeamResourceCountImage.fillAmount = 0f;
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void ResetOwnershipServerRpc() // 건물 파괴 시 소유권 초기화
+    public void ResetOwnershipServerRpc() // 건물 파괴 시 소유권 초기화 서버RPC
     {
         ResetFillAmount();
-
         currentOwner = Owner.Neutral;
-
         GetComponent<Renderer>().material.color = new Color(0, 0, 0);
 
         redTeamResourceCount.Value = 0;

@@ -4,18 +4,18 @@ using Unity.Netcode;
 
 public class Building : NetworkBehaviour
 {
-    [SerializeField] NetworkVariable<int> health; // 건물 체력
-    [SerializeField] BuildingScriptableObject buildingData; // 건물 데이터 스크립터블 오브젝트
-    bool isDestruction = false; // 중복철거 방지
+    // 건물 체력
+    [SerializeField] NetworkVariable<int> health = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-
-    //[SerializeField] BuildingScriptableObject buildingData;
+    // 스크립터블 오브젝트
+    [SerializeField] BuildingScriptableObject buildingData;
     [SerializeField] EffectScriptableObject effectData;
+    
+    // 중복 철거 방지
+    bool isDestruction = false;
 
-
-    void Start()
+    public override void OnNetworkSpawn()
     {
-
         if (IsServer)
         {
             health.Value = buildingData.health;
@@ -29,13 +29,14 @@ public class Building : NetworkBehaviour
 
     void Update()
     {
+        if (!IsServer) return;
+
         if (health.Value <= 0 && !isDestruction)
         {
             isDestruction = true;
             DestructionBuildingServerRpc();
         }
     }
-
 
     IEnumerator RaiseBuilding(float duration)
     {
@@ -53,9 +54,7 @@ public class Building : NetworkBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-
         transform.localPosition = targetPos;
-
         Destroy(buildEffect);
 
         GameObject sparkleEffect = Instantiate(effectData.sparkleEffect, transform.position, Quaternion.identity);
@@ -64,7 +63,6 @@ public class Building : NetworkBehaviour
         yield return new WaitForSeconds(0.5f);
         Destroy(sparkleEffect);
     }
-
 
     [ServerRpc(RequireOwnership = false)]
     void DestructionBuildingServerRpc()
@@ -101,4 +99,3 @@ public class Building : NetworkBehaviour
         }
     }
 }
-
