@@ -33,17 +33,13 @@ public class MoveTimmy : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
-        base.OnNetworkSpawn();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
         timmyActive.Value = false;
         startPos = transform.position;
         startRot = transform.rotation;
-        //temp
-        path.Add(GameObject.Find("Cube").transform);
-        path.Add(GameObject.Find("Cube (1)").transform);
-        path.Add(GameObject.Find("Cube (2)").transform);
+
     }
 
     public void ResetTimmy()
