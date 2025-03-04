@@ -20,10 +20,8 @@ public class Archer : Character
     public override void Attack()
     {
         // 화살 발사
-        if (isAiming && attackAble)
-        {
-            StartCoroutine(ShootAndReloadRoutine());
-        }
+        StartCoroutine(ShootAndReloadRoutine());
+
     }
 
     // 이동 메서드
@@ -76,6 +74,8 @@ public class Archer : Character
         // 조준 시작
         if (Input.GetButtonDown("Aim"))
         {
+            if (isHoldingItem) return;
+
             // 조준점 활성화
             aimCanvas.SetActive(true);
 
@@ -98,6 +98,8 @@ public class Archer : Character
         // 조준 해제
         if (Input.GetButtonUp("Aim"))
         {
+            if (isHoldingItem) return;
+
             aimCanvas.SetActive(false);
 
             SetAvatarLayerWeightserverRpc(0);
@@ -115,7 +117,10 @@ public class Archer : Character
             // 발사
             if (Input.GetButtonDown("Attack"))
             {
-                Attack();
+                if (isAiming && attackAble)
+                {
+                    Attack();
+                }
 
                 transform.rotation = lastAimRotation;
                 currentRotation = lastAimRotation;
@@ -132,8 +137,17 @@ public class Archer : Character
     // 상호작용 메서드
     public override void Interaction()
     {
-        // 줍기
-        Debug.Log("Interaction");
+        // 아이템을 들고 있으면
+        if (isHoldingItem)
+        {
+            Drop();
+            attackAble = true;
+        }
+        else
+        {
+            PickUp();
+            attackAble = false;
+        }
     }
 
     // 1인칭 회전 메서드

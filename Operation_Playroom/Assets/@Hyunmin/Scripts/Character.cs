@@ -1,17 +1,26 @@
+using Mono.Cecil;
 using System.Collections;
+using System.Linq;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
+using Unity.Transforms;
 using UnityEngine;
 
 public abstract class Character : NetworkBehaviour, ICharacter
 {
     [HideInInspector] public CinemachineFreeLookModifier cam;
 
+    [SerializeField] GameObject targetItem;
+    [SerializeField] GameObject weaponObject;
+
     bool isGrounded;
     Vector3 velocity;
+    float detectItemRange = 0.7f;
+
 
     protected bool attackAble;
+    protected bool isHoldingItem;
     protected float maxHp = 100;
     protected float currentHp;
     protected float moveSpeed = 5;
@@ -19,9 +28,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     protected Animator animator;
     protected NetworkAnimator networkAnimator;
     protected Quaternion currentRotation;
-
-
-
 
     public virtual void Start()
     {
@@ -75,6 +81,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         StartCoroutine(DamageRoutine());
     }
 
+    // 데미지 루틴
     IEnumerator DamageRoutine()
     {
         SetAvatarLayerWeightserverRpc(1);
@@ -92,6 +99,78 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public void Die()
     {
         SetTriggerAnimationserverRpc("Die");
+    }
+
+    // 아이템 줍기 메서드
+    public void PickUp()
+    {
+        targetItem = FindNearestItem();
+        if (targetItem != null)
+        {
+            PickupItem();
+        }
+    }
+
+    // 아이템 내려놓기 메서드
+    public void Drop()
+    {
+        if (targetItem == null) return;
+
+        DropItem();
+    }
+
+    // 자원 찾기 (범위 내 가장 가까운 자원)
+    GameObject FindNearestItem()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, detectItemRange);
+        Collider[] item = colliders.Where(col => col.CompareTag("Item")).ToArray();
+
+        GameObject nearestItem = null; // 가까운 자원을 저장할 오브젝트
+        float minDistance = Mathf.Infinity; // 가장 가까운 거리를 저장, 초기값은 무한대 
+
+        foreach (Collider resource in item) // 탐색된 모든 자원 순회하며
+        {
+            float distance = Vector3.Distance(transform.position, resource.transform.position); // 왕과 각 자원간 거리 계산
+            if (distance < minDistance) // 현재 계산된거리가 최소 거리보다 작으면
+            {
+                minDistance = distance; // 최소거리에 현재 계산 거리 업데이트
+                nearestItem = resource.gameObject; // 오브젝트에 자원 저장
+            }
+        }
+        return nearestItem; // 최소거리자원 오브젝트 반환
+    }
+
+    // 아이템을 줍는 메서드
+    void PickupItem()
+    {
+        // 무기 감추기 및 들고있는 상태
+        weaponObject.SetActive(false);
+        isHoldingItem = true;
+
+        // 아이템 오브젝트 위치시킴
+        targetItem.transform.SetParent(gameObject.transform);
+        targetItem.transform.localPosition = new Vector3(0, 2f, 0);
+
+        // 줍는 애니메이션
+        SetAvatarLayerWeightserverRpc(1);
+        SetTriggerAnimationserverRpc("Holding");
+    }
+
+    // 아이템을 내려놓는 메서드
+    void DropItem()
+    {
+        // 무기 보이기 및 들고 있지 않은 상태
+        weaponObject.SetActive(true);
+        isHoldingItem = false;
+
+        // 아이템 오브젝트 내려놓기
+        targetItem.transform.SetParent(null);
+        targetItem.transform.position = transform.position + transform.up * 0.08f + transform.forward * 0.25f; // 앞에 내려놓기
+        targetItem = null;
+
+        // 애니메이션 해제
+        SetAvatarLayerWeightserverRpc(0);
+        SetTriggerAnimationserverRpc("Idle");
     }
 
     // 애니메이션 Trigger 메서드

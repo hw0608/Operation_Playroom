@@ -20,15 +20,18 @@ public class WeaponDamage : MonoBehaviour
         {
             if (ownerClientId == obj.OwnerClientId)
             {
-                Debug.Log("Network? ==");
                 return;
             }
         }
-
-        if (other.TryGetComponent<Health>(out Health health))
+        if (!isCollision)
         {
-            if (!isCollision)
+            isCollision = true;
+
+            // 충돌한 객체가 Health를 가지고 있으면 데미지 처리
+            if (other.TryGetComponent<Health>(out Health health))
             {
+                // 서버에서 데미지 처리
+                if (health.IsServer) return;
                 StartCoroutine(SwordDamageRoutine(health));
             }
         }
@@ -39,10 +42,12 @@ public class WeaponDamage : MonoBehaviour
         isCollision = true;
         if (health.IsServer)
         {
+            Debug.Log("Client Attack");
             health.TakeDamage(damage, ownerClientId);
         }
-        else
+        else if(health.IsClient)
         {
+            Debug.Log("Server Attack");
             health.TakeDamageServerRpc(damage, ownerClientId);
         }
 

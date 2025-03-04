@@ -8647,6 +8647,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   cam: {fileID: 0}
+  targetItem: {fileID: 0}
+  weaponObject: {fileID: 171234}
   swordHitbox: {fileID: 171234}
   attackCooldown: 2
 --- !u!114 &-3931345857987243654
