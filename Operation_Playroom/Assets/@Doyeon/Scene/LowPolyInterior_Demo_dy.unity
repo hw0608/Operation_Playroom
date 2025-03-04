@@ -2196,7 +2196,7 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 0.08, z: 0}
   Damping: {x: 0.5, y: 0.5}
   Lookahead:
     Enabled: 0
@@ -2226,14 +2226,14 @@ MonoBehaviour:
   Radius: 10
   Orbits:
     Top:
-      Radius: 2
-      Height: 5
+      Radius: 0.4
+      Height: 0.47
     Center:
-      Radius: 4
-      Height: 2.25
+      Radius: 0.4
+      Height: 0.23
     Bottom:
-      Radius: 2.5
-      Height: 0.1
+      Radius: 0.2
+      Height: 0.01
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
@@ -2279,7 +2279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Priority:
-    Enabled: 0
+    Enabled: 1
     m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
@@ -2290,7 +2290,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60
+    FieldOfView: 59.4
     OrthographicSize: 5
     NearClipPlane: 0.01
     FarClipPlane: 1000
@@ -5092,7 +5092,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 60
+  field of view: 59.4
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -10304,9 +10304,9 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 315136621}
+  - {fileID: 428141327}
   - {fileID: 1136385243}
   - {fileID: 1763400289}
   - {fileID: 1404928541}
   - {fileID: 1135732033}
   - {fileID: 1989220367}
-  - {fileID: 428141327}
