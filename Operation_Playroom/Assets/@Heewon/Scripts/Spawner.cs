@@ -5,7 +5,6 @@ using UnityEngine;
 public class Spawner : NetworkBehaviour
 {
     [SerializeField] GameObject soldierPrefab;
-    List<NetworkObject> soldiers = new List<NetworkObject>();
 
     public void SpawnSoldiers(int count)
     {

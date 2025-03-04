@@ -27,11 +27,12 @@ public class KingTest : Character
     // 키 입력 메서드
     public override void HandleInput()
     {
-        // 공격
-        if (Input.GetButtonDown("Attack"))
-        {
-            Attack();
-        }
+        //// 공격
+        //if (Input.GetButtonDown("Attack"))
+        //{
+        //    Attack();
+        //}
+
         // E 버튼 누르면
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -52,25 +53,17 @@ public class KingTest : Character
             Debug.Log("Q눌림");
         }
 
-        /*
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.V))
         {
-            if (IsOwner)
-            {
-                if (soldierSpawner != null)
-                {
-                    soldierSpawner.AddSoldierServerRpc(1);
-                }
-            }
-            Debug.Log($"F키 눌림 by {OwnerClientId}");
+            soldierSpawner.SpawnSoldiers(1);
         }
-        */
     }
 
     void CommandSoldierToPickupItem()
     {
         foreach(SoldierTest soldier in soldiers)
         {
+            // 아이템을 가져오라는 명령을 받을 수 없는 상태
             if (soldier.isHoldingItem || soldier.CurrentState.Value != State.Idle && soldier.CurrentState.Value != State.Following)
             {
                 continue;
@@ -80,6 +73,7 @@ public class KingTest : Character
 
             if (item != null)
             {
+                // TODO: 수정
                 soldier.TryPickupItem(item);
                 item.gameObject.layer = 0;
             }

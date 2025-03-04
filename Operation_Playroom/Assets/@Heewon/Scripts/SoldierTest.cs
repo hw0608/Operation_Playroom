@@ -135,7 +135,10 @@ public class SoldierTest : Character
         float distanceToKing = Vector3.SqrMagnitude(transform.position - king.position);
         bool isNearKing = distanceToKing <= sqrStoppingDistance * 1.2f;
         bool isFarKing = distanceToKing > sqrStoppingDistance * 1.5f;
-        bool hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
+        bool hasArrived = false;
+        
+        if (target != null)
+            hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
 
         RotateToDestination();
 
@@ -194,6 +197,7 @@ public class SoldierTest : Character
 
     void MoveTowardState(bool hasArrived)
     {
+        // TODO: 수정
         if (target == null)
         {
             currentState.Value = State.Following;
@@ -220,6 +224,7 @@ public class SoldierTest : Character
         {
             if (hasArrived)
             {
+                // TODO: 수정
                 GiveItem();
             }
             else
