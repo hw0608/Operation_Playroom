@@ -63,7 +63,7 @@ public class Soldier : Character
     public override void OnNetworkSpawn()
     {
         Debug.Log($"[Soldier] 네트워크 스폰 완료! ID: {NetworkObjectId}");
-
+        if (!IsOwner) return;
         navAgent = GetComponent<NavMeshAgent>();
         SoldierInitialize(king, formationIndex.Value);
         navAgent = GetComponent<NavMeshAgent>();
@@ -167,6 +167,7 @@ public class Soldier : Character
     //}
     public void SoldierInitialize(Transform king, int formationIndx)
     {
+        if (!IsOwner) return;
         formationIndex.Value = formationIndx;
         this.king = king;
         if (king == null)
