@@ -42,12 +42,10 @@ public class WeaponDamage : MonoBehaviour
         isCollision = true;
         if (health.IsServer)
         {
-            Debug.Log("Client Attack");
             health.TakeDamage(damage, ownerClientId);
         }
         else if(health.IsClient)
         {
-            Debug.Log("Server Attack");
             health.TakeDamageServerRpc(damage, ownerClientId);
         }
 
