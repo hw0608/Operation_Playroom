@@ -63,7 +63,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         // 애니메이션 적용
         float speed = moveDirection.magnitude > 0.1f ? 1f : 0f;
-        SetFloatAnimationserverRpc("Move", speed, 0.1f, Time.deltaTime);
+        SetFloatAnimationserverRpc("Move", speed);
 
         // 일정 움직임이 있을때만 회전값 변경
         if (moveDirection.magnitude > 0.1f)
@@ -182,9 +182,9 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     // 애니메이션 Float 메서드
     [ServerRpc(RequireOwnership = false)]
-    public void SetFloatAnimationserverRpc(string name, float value, float dampTime, float deltaTime)
+    public void SetFloatAnimationserverRpc(string name, float value)
     {
-        networkAnimator.Animator.SetFloat(name, value, dampTime, deltaTime);
+        networkAnimator.Animator.SetFloat(name, value);
     }
 
     // 애니메이션 상체 웨이트 메서드
