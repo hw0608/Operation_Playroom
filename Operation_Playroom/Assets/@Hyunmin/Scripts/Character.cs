@@ -1,10 +1,8 @@
-using Mono.Cecil;
 using System.Collections;
 using System.Linq;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
-using Unity.Transforms;
 using UnityEngine;
 
 public abstract class Character : NetworkBehaviour, ICharacter
@@ -13,6 +11,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     [SerializeField] GameObject targetItem;
     [SerializeField] GameObject weaponObject;
+
+    public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     bool isGrounded;
     Vector3 velocity;
@@ -36,7 +36,11 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         attackAble = true;
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false; 
+        Cursor.visible = false;
+
+        if (IsOwner) {
+            team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
+        }
     }
 
     public abstract void Attack(); // 공격 구현
