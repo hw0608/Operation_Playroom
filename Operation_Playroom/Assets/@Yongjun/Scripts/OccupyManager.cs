@@ -20,7 +20,8 @@ public class OccupyManager : NetworkBehaviour
     {
         foreach (Transform child in occupyPoints)
         {
-            GameObject occupyInstance = Instantiate(occupyPrefab, child.position, Quaternion.identity);
+            //GameObject occupyInstance = Instantiate(occupyPrefab, child.position, Quaternion.identity);
+            GameObject occupyInstance = Managers.Resource.Instantiate("Occupy");
 
             NetworkObject networkObject = occupyInstance.GetComponent<NetworkObject>();
 
@@ -29,6 +30,7 @@ public class OccupyManager : NetworkBehaviour
                 networkObject.Spawn(true);
                 networkObject.TrySetParent(occupyPool.GetComponent<NetworkObject>());
             }
+            occupyInstance.transform.position = child.position; 
             occupyInstance.transform.SetParent(occupyPool, false);
         }
     }

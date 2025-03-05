@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8527184916580544155}
   - component: {fileID: 7733762231398601578}
   - component: {fileID: 6194737114883597350}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Resource (Test Ver)
   m_TagString: Resource
   m_Icon: {fileID: 0}
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 0
+  GlobalObjectIdHash: 3674396803
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
