@@ -245,6 +245,7 @@ public class LobbyRoom : NetworkBehaviour
         List<UserData> userDatas = new List<UserData>();
 
         List<int> availableRoles = Enum.GetValues(typeof(GameRole)).Cast<int>().ToList();
+        availableRoles.Remove((int)GameRole.None);
         availableRoles = availableRoles.OrderBy(x => UnityEngine.Random.value).ToList();
 
         int idx = 0;
