@@ -15,6 +15,24 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: c55a1a6dc211d9c46bb936f060bb0b5d
   m_SerializeEntries:
+  - m_GUID: 0fd3c3c86dfe1744d8c57249e89c4323
+    m_Address: Swordman
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 190cb11855cfccf4aaf0d6de5a95d5d2
+    m_Address: King
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 60f6d4bfc4da5014cbda251d40147045
+    m_Address: Archer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: db0a8ef031523b8438278825bc4b2d01
     m_Address: Test
     m_ReadOnly: 0

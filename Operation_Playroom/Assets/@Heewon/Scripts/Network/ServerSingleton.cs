@@ -46,29 +46,13 @@ public class ServerSingleton : MonoBehaviour
 
     void LoadPrefabHashes()
     {
-        foreach (var prefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
-        {
-            if (prefab.Prefab != null)
-            {
-                NetworkObject netObj = prefab.Prefab.GetComponent<NetworkObject>();
+        uint kingPrefabHash = Managers.Resource.Load<GameObject>("King").GetComponent<NetworkObject>().PrefabIdHash;
+        uint archerPrefabHash = Managers.Resource.Load<GameObject>("Archer").GetComponent<NetworkObject>().PrefabIdHash;
+        uint swordmanPrefabHash = Managers.Resource.Load<GameObject>("Swordman").GetComponent<NetworkObject>().PrefabIdHash;
 
-                if (netObj != null)
-                {
-                    GameRole role = GetRoleFromPrefabName(prefab.Prefab.name);
-                    if (role == GameRole.None) continue;
-                    if (gameRoleToPrefabHash.ContainsKey(role)) continue;
-                    gameRoleToPrefabHash.Add(role, netObj.PrefabIdHash);
-                }
-            }
-        }
-    }
-
-    GameRole GetRoleFromPrefabName(string prefabName)
-    {
-        if (prefabName.Contains("King")) return GameRole.King;
-        if (prefabName.Contains("Swordman")) return GameRole.Swordman;
-        if (prefabName.Contains("Archer")) return GameRole.Archer;
-        return GameRole.None;
+        gameRoleToPrefabHash.Add(GameRole.King, kingPrefabHash);
+        gameRoleToPrefabHash.Add(GameRole.Archer, archerPrefabHash);
+        gameRoleToPrefabHash.Add(GameRole.Swordman, swordmanPrefabHash);
     }
 
     void OnEnable()
@@ -143,6 +127,7 @@ public class ServerSingleton : MonoBehaviour
             OnUserLeft?.Invoke(authIdToUserData[authId]);
 
             clientIdToUserData.Remove(clientId);
+
             authIdToUserData.Remove(authId);
 
             OnClientLeft?.Invoke(authId);
