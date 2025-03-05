@@ -88,7 +88,7 @@ public class KingTest : Character
         }
     }
 
-    void CommandSoldierToAdvance()
+    public void CommandSoldierToAdvance()
     {
         foreach(SoldierTest soldier in soldiers)
         {
