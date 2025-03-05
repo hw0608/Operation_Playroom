@@ -6,7 +6,7 @@ using Unity.Netcode.Components;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
-using static ReturningState;
+
 
 public enum SoldierState
 {
@@ -41,8 +41,7 @@ public class Soldier : Character
 
     // 상태 및 HP 관리
     public NetworkVariable<int> state = new NetworkVariable<int>();
-    public new NetworkVariable<float> maxHp = new NetworkVariable<float>(80f);
-    public new NetworkVariable<float> currentHp = new NetworkVariable<float>(80f);
+    
 
     // 아이템 타겟, 팀 정보
     public NetworkVariable<NetworkObjectReference> itemTarget = new NetworkVariable<NetworkObjectReference>();
@@ -256,8 +255,8 @@ public class Soldier : Character
 
     public void SetHP()
     {
-        maxHp.Value = 80;
-        currentHp.Value = maxHp.Value;
+        //maxHp.Value = 80;
+        //currentHp.Value = maxHp.Value;
     }
 
     public void CollectItem(Transform item)

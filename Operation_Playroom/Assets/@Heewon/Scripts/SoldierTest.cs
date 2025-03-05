@@ -155,7 +155,13 @@ public class SoldierTest : Character
                 break;
         }
     }
+    void FindAttackEnemy()
+    {
+        if (CurrentState.Value == State.Attack || CurrentState.Value == State.MoveToward) return;
 
+        Collider[] hits = Physics.OverlapSphere(transform.position, 5f, LayerMask.GetMask("Enemy"));
+
+    }
     // 바라보는 각도 계산
     void RotateToDestination()
     {
@@ -192,6 +198,7 @@ public class SoldierTest : Character
     void FollowKing()
     {
         currentState.Value = State.Following;
+        
         agent.SetDestination(king.position);
     }
 
