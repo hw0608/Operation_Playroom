@@ -255,7 +255,7 @@ public class LobbyRoom : NetworkBehaviour
             updatedPlayer.role = availableRoles[idx];
             players[i] = updatedPlayer;
 
-            idx = (idx + 1) % System.Enum.GetValues(typeof(GameRole)).Length;
+            idx = (idx + 1) % 3;
         }
 
         userDatas = ServerSingleton.Instance.authIdToUserData.Values.ToList();

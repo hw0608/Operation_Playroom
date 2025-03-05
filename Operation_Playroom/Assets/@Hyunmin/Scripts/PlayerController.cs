@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using TMPro;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -52,8 +51,6 @@ public class PlayerController : NetworkBehaviour
         if (IsServer)
         {
             OnPlayerSpawn?.Invoke(this);
-            transform.position = new Vector3(0, 0.5f, 0);
-
         }
 
         if (!IsOwner) return;

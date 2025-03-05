@@ -19,10 +19,10 @@ public enum GameTeam
 
 public enum GameRole
 {
-    None,
     King,
     Swordman,
-    Archer
+    Archer,
+    None
 }
 
 public enum Map
