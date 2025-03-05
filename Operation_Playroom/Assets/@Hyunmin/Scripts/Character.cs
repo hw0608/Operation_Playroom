@@ -29,6 +29,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
     protected NetworkAnimator networkAnimator;
     protected Quaternion currentRotation;
 
+    Coroutine damageRoutine;
+
     public virtual void Start()
     {
         animator = GetComponent<Animator>();
@@ -82,21 +84,35 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 피격 메서드
     public virtual void TakeDamage()
     {
-        StartCoroutine(DamageRoutine());
+        if (damageRoutine != null)
+        {
+            StopCoroutine(damageRoutine);
+        }
+        damageRoutine = StartCoroutine(DamageRoutine());
     }
 
     // 데미지 루틴
     IEnumerator DamageRoutine()
     {
-        SetAvatarLayerWeightserverRpc(1);
-        SetTriggerAnimationserverRpc("Damage");
+        SetAvatarLayerWeight(1);
+        SetTriggerAnimation("Damage");
         attackAble = false;
 
         yield return new WaitForSeconds(0.5f);
 
-        SetAvatarLayerWeightserverRpc(0);
+        SetAvatarLayerWeight(0);
         attackAble = true;
+        damageRoutine = null;
+    }
 
+    void SetAvatarLayerWeight(int value)
+    {
+        networkAnimator.Animator.SetLayerWeight(1, value);
+    }
+
+    void SetTriggerAnimation(string name)
+    {
+        networkAnimator.SetTrigger(name);
     }
 
     // 사망 메서드
