@@ -46,7 +46,6 @@ public class Soldier : Character
     // 아이템 타겟, 팀 정보
     public NetworkVariable<NetworkObjectReference> itemTarget = new NetworkVariable<NetworkObjectReference>();
     public NetworkVariable<NetworkObjectReference> enemyTarget = new NetworkVariable<NetworkObjectReference>();
-    public NetworkVariable<int> team = new NetworkVariable<int>();
 
     [SerializeField] float followDistance = 0.2f; // 왕과의 거리 
     [SerializeField] float warpDistance = 5.0f; // 순간 이동 거리

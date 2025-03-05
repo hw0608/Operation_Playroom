@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class WeaponDamage : MonoBehaviour
+public class WeaponDamage : NetworkBehaviour
 {
     [SerializeField] int damage = 10;
 
@@ -27,30 +27,26 @@ public class WeaponDamage : MonoBehaviour
         {
             isCollision = true;
 
-            // 충돌한 객체가 Health를 가지고 있으면 데미지 처리
             if (other.TryGetComponent<Health>(out Health health))
             {
-                // 서버에서 데미지 처리
-                if (health.IsServer) return;
-                StartCoroutine(SwordDamageRoutine(health));
+                if (health.IsServer)
+                {
+                    Debug.Log("IsServer Damage");
+                    health.TakeDamage(damage, ownerClientId);
+                }
+                else
+                {
+                    Debug.Log("else Damage");
+                    health.TakeDamageServerRpc(damage, ownerClientId);
+                }
+                StartCoroutine(ResetCollisionRoutine());
             }
         }
     }
 
-    IEnumerator SwordDamageRoutine(Health health)
+    IEnumerator ResetCollisionRoutine()
     {
-        isCollision = true;
-        if (health.IsServer)
-        {
-            health.TakeDamage(damage, ownerClientId);
-        }
-        else if(health.IsClient)
-        {
-            health.TakeDamageServerRpc(damage, ownerClientId);
-        }
-
         yield return new WaitForSeconds(0.5f);
-
         isCollision = false;
     }
 }

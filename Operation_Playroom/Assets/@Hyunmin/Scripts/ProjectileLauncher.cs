@@ -7,8 +7,6 @@ public class ProjectileLauncher : NetworkBehaviour
     [SerializeField] GameObject serverProjectile;
     [SerializeField] GameObject clientProjectile;
 
-    float speed = 3f;
-    float gravity = 0.75f;
     public float flightTime = 3f;
 
 
