@@ -21,27 +21,45 @@ public class TimmyDirection : NetworkBehaviour
     
     public NetworkVariable<float> fadeAlpha = new NetworkVariable<float>(0);
     public NetworkVariable<int> cameraIndex = new NetworkVariable<int>(0);
-    void Start()
+    public override void OnNetworkSpawn()
     {
         imageColor = fadeImage.color;
         imageColor.a = 0; // 시작 시 투명
         fadeImage.color = imageColor;
 
-        cameraIndex.OnValueChanged += ((oldValue, newValue) =>
-        {
-            ActiveCamera(newValue);
-        });
+        cameraIndex.OnValueChanged -= ActiveCamera;
+        cameraIndex.OnValueChanged += ActiveCamera;
 
-
-        fadeAlpha.OnValueChanged += ((oldValue, newValue) =>
-        {
-            imageColor.a = newValue;
-            fadeImage.color = imageColor;
-        });
+        fadeAlpha.OnValueChanged -= ChangeImageAlpha;
+        fadeAlpha.OnValueChanged += ChangeImageAlpha;
     }
+
+    public override void OnNetworkDespawn()
+    {
+        cameraIndex.OnValueChanged -= ActiveCamera;
+        fadeAlpha.OnValueChanged -= ChangeImageAlpha;
+    }
+
+
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (IsServer)
+            {
+                Debug.Log("server");
 
+                GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
+                sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
+                sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();
+
+                GameObject moveTimmyObject = Instantiate(moveTimmyPrefab);
+                moveTimmyObject.GetComponent<NetworkObject>().Spawn();
+                moveTimmy = moveTimmyObject.GetComponent<MoveTimmy>();
+
+                StartTimmy();
+            }
+        }
     }
 
     public void StartTimmy()
@@ -112,14 +130,20 @@ public class TimmyDirection : NetworkBehaviour
         fadeAlpha.Value = alpha;
     }
 
-    public void ActiveCamera(int cameraIndex)
+    public void ChangeImageAlpha(float oldValue, float newValue)
+    {
+        imageColor.a = newValue;
+        fadeImage.color = imageColor;
+    }
+
+    public void ActiveCamera(int oldIndex,int newIndex)
     {
         foreach (var camera in cameras)
         {
             camera.Priority = 0;
         }
 
-        cameras[cameraIndex].Priority = 10;
-        activeCameraIndex = cameraIndex;
+        cameras[newIndex].Priority = 10;
+        activeCameraIndex = newIndex;
     }
 }

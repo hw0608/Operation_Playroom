@@ -12,7 +12,7 @@ public class TitleSceneUI : MonoBehaviour
     [SerializeField] TMP_InputField joinCodeInputField;
 
     [SerializeField] TMP_Text findMatchStatusText;
-    [SerializeField] TMP_Text findButtonText;
+    //[SerializeField] TMP_Text findButtonText;
 
     bool isMatchmaking;
     bool isCancelling;
@@ -60,13 +60,13 @@ public class TitleSceneUI : MonoBehaviour
             isCancelling = false;
             isMatchmaking = false;
             findMatchStatusText.text = "";
-            findButtonText.text = "Find Match";
+            //findButtonText.text = "Find Match";
         }
         else
         {
             //match
             findMatchStatusText.text = "Searching...";
-            findButtonText.text = "Cancel";
+            //findButtonText.text = "Cancel";
             isMatchmaking = true;
             isCancelling = false;
 
@@ -84,7 +84,7 @@ public class TitleSceneUI : MonoBehaviour
             default:
                 isMatchmaking = false;
                 findMatchStatusText.text = "error" + result;
-                findButtonText.text = "Find Match";
+                //findButtonText.text = "Find Match";
                 break;
         }
         isMatchmaking = false;
