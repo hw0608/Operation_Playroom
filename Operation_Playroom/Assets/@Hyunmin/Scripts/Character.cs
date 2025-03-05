@@ -40,7 +40,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        if (IsOwner) {
+        if (IsOwner) 
+        {
             team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
         }
     }
@@ -118,7 +119,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 사망 메서드
     public void Die()
     {
-        SetTriggerAnimationserverRpc("Die");
+        Debug.Log("Die");
+        SetTriggerAnimation("Die");
     }
 
     // 아이템 줍기 메서드
