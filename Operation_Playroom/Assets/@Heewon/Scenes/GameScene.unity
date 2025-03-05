@@ -1827,6 +1827,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RedMainCamp
       objectReference: {fileID: 0}
+    - target: {fileID: 7188684744482222565, guid: 493a8bfeb5e0d3944912c415d966279f, type: 3}
+      propertyPath: role
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8944582029856936438, guid: 493a8bfeb5e0d3944912c415d966279f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.844
@@ -1866,6 +1870,10 @@ PrefabInstance:
     - target: {fileID: 8944582029856936438, guid: 493a8bfeb5e0d3944912c415d966279f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9175710630097570141, guid: 493a8bfeb5e0d3944912c415d966279f, type: 3}
+      propertyPath: role
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2205,6 +2213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 0
+  role: 0
 --- !u!1001 &524960075
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4354,6 +4363,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 1
+  role: 0
 --- !u!1001 &1047422910
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4543,6 +4553,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 0
+  role: 0
 --- !u!1 &1085410353
 GameObject:
   m_ObjectHideFlags: 0
@@ -5192,6 +5203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 0
+  role: 0
 --- !u!1001 &1232818364
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6254,6 +6266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 1
+  role: 0
 --- !u!1001 &1520816488
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7790,6 +7803,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 1
+  role: 0
 --- !u!1001 &1914110901
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8466,6 +8480,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1418287699386211300, guid: a6bce41fe1276fc4796967c7f8407e3a, type: 3}
+      propertyPath: role
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6360913807031413750, guid: a6bce41fe1276fc4796967c7f8407e3a, type: 3}
+      propertyPath: role
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7827217294158200499, guid: a6bce41fe1276fc4796967c7f8407e3a, type: 3}
       propertyPath: m_Name
       value: BlueMainCamp

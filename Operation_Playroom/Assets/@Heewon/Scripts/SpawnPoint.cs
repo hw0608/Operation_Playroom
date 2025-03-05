@@ -1,38 +1,40 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SpawnPoint : MonoBehaviour
 {
-    static Dictionary<GameTeam, List<GameObject>> spawnPoints = new Dictionary<GameTeam, List<GameObject>>();
+    static Dictionary<GameTeam, List<SpawnPoint>> spawnPoints = new Dictionary<GameTeam, List<SpawnPoint>>();
     [SerializeField] GameTeam team;
+    [SerializeField] GameRole role;
 
     private void OnEnable()
     {
         if (spawnPoints.ContainsKey(team))
-            spawnPoints[team].Add(gameObject);
+        {
+            spawnPoints[team].Add(this);
+        }
         else
         {
-            spawnPoints.Add(team, new List<GameObject> { gameObject });
+            spawnPoints.Add(team, new List<SpawnPoint> { this });
         }
     }
 
-    private void OnDisable()
-    {
-        spawnPoints[team].Remove(gameObject);
-    }
-
-    public static Vector3 GetRandomSpawnPoint(GameTeam team)
+    public static Vector3 GetSpawnPoint(GameTeam team, GameRole role)
     {
         if (spawnPoints.Count == 0)
         {
             return Vector3.zero;
         }
 
-        int idx = Random.Range(0, spawnPoints.Count);
-        Vector3 randomPoint = spawnPoints[team][idx].transform.position;
-        spawnPoints[team][idx].gameObject.SetActive(false);
+        Vector3 spawnPos = Vector3.zero;
+        var result = spawnPoints[team].Where(x => x.role == role).ToList();
+        if (result.Count > 0)
+        {
+            spawnPos = result[0].transform.position;
+        }
 
-        return randomPoint;
+        return spawnPos;
     }
 
     private void OnDrawGizmosSelected()
