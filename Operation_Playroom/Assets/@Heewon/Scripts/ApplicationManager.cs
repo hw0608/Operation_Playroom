@@ -19,7 +19,16 @@ public class ApplicationManager : MonoBehaviour
         if (isDedicatedServer)
         {
             appData = new ApplicationData();
-            Managers.Resource.LoadAllAsync<GameObject>("default", null);
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            Managers.Resource.LoadAllAsync<GameObject>("default", (name, loadCount, totalCount) =>
+            {
+                if (loadCount >= totalCount)
+                {
+                    tcs.SetResult(true);
+                }
+            });
+
+            await tcs.Task;
 
             ServerSingleton.Instance.Init();
             await ServerSingleton.Instance.CreateServer();
