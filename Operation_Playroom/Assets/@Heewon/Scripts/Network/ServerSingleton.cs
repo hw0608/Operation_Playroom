@@ -113,7 +113,7 @@ public class ServerSingleton : MonoBehaviour
         {
             response.CreatePlayerObject = true;
             response.PlayerPrefabHash = gameRoleToPrefabHash[userData.userGamePreferences.gameRole];
-            response.Position = SpawnPoint.GetRandomSpawnPoint(userData.userGamePreferences.gameTeam);
+            response.Position = SpawnPoint.GetSpawnPoint(userData.userGamePreferences.gameTeam, userData.userGamePreferences.gameRole);
             response.Rotation = Quaternion.identity;
         }
     }
