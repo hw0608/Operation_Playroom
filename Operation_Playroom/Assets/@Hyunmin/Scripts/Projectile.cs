@@ -11,26 +11,24 @@ public class Projectile : MonoBehaviour
     bool Iscollision = false;
 
     Coroutine arrowCoroutine;
-    TrailRenderer trail;
+    [SerializeField] TrailRenderer trail;
 
     // 화살 발사 메서드
-    public void Launch(Vector3 shootPoint, Vector3 direction, TrailRenderer trailPrefab = null)
+    public void Launch(Vector3 shootPoint, Vector3 direction)
     {
         transform.position = shootPoint;
         transform.localRotation = Quaternion.LookRotation(direction) * Quaternion.Euler(-90, 0, 0);
 
         // 궤적 생성
-        if(trailPrefab != null)
+        if(trail != null)
         {
-            trail = Instantiate(trailPrefab, transform);
-            trail.enabled = false;
+            trail.gameObject.SetActive(true);
+            trail.transform.position = transform.position;
             trail.Clear();
-            trail.enabled = true;
-
         }
 
         // 발사 루틴 시작
-        if(arrowCoroutine != null)
+        if (arrowCoroutine != null)
         {
             StopCoroutine(arrowCoroutine);
             arrowCoroutine = null;
@@ -56,7 +54,7 @@ public class Projectile : MonoBehaviour
 
             yield return null;
         }
-        Destroy(trail);
+        //Managers.Pool.Push(trail);
         Managers.Pool.Push(gameObject);
     }
 

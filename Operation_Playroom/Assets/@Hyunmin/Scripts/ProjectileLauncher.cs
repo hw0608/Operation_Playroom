@@ -6,7 +6,6 @@ public class ProjectileLauncher : NetworkBehaviour
 {
     [SerializeField] GameObject serverProjectile;
     [SerializeField] GameObject clientProjectile;
-    [SerializeField] TrailRenderer trailprefab;
 
     float speed = 3f;
     float gravity = 0.75f;
@@ -47,7 +46,7 @@ public class ProjectileLauncher : NetworkBehaviour
         GameObject arrow = Managers.Pool.Pop(clientProjectile);
         arrow.GetComponent<ProjectileOnDestroy>().SetOwner(OwnerClientId);
 
-        arrow.GetComponent<Projectile>().Launch(spawnPoint, direction, trailprefab);
+        arrow.GetComponent<Projectile>().Launch(spawnPoint, direction);
     }
 
 }
