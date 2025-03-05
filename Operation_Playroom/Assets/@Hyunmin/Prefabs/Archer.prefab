@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 419716}
   - component: {fileID: 9553400}
-  - component: {fileID: 8836815669838192413}
+  - component: {fileID: 42939401033754939}
   - component: {fileID: -7515905400544672292}
   - component: {fileID: 4244218131759594287}
   - component: {fileID: 8311993732526940022}
@@ -66,7 +66,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &8836815669838192413
+--- !u!114 &42939401033754939
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,8 +78,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2881064952
-  InScenePlacedSourceGlobalObjectIdHash: 2881064952
+  GlobalObjectIdHash: 2254079076
+  InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -165,6 +165,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetItem: {fileID: 0}
   weaponObject: {fileID: 1415012297644262731}
+  team:
+    m_InternalValue: -1
   aimCamera: {fileID: 8114598411042677039}
   aimCanvas: {fileID: 5010046624809275930}
   arrowObject: {fileID: 2154582282572986278}
@@ -7289,7 +7291,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   serverProjectile: {fileID: 8598686334400172540, guid: 622608291d6ef9841b3a7a127595223c, type: 3}
   clientProjectile: {fileID: 8598686334400172540, guid: 4ad1f9c1c4b2670458bd4fea1800c640, type: 3}
-  trailprefab: {fileID: 5843697658609695856, guid: 2eb3ecaa0e56766419ca733057a072d9, type: 3}
   flightTime: 3
 --- !u!1 &4410012350216309992
 GameObject:

@@ -13580,7 +13580,7 @@ GameObject:
   - component: {fileID: 7803368916089666262}
   - component: {fileID: 4742214692945272390}
   - component: {fileID: 5472531369441942530}
-  - component: {fileID: 5360697999774111501}
+  - component: {fileID: -8680813614204549789}
   - component: {fileID: 956387020771885145}
   - component: {fileID: 4779212311087517118}
   - component: {fileID: 4574954733999470894}
@@ -13684,7 +13684,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &5360697999774111501
+--- !u!114 &-8680813614204549789
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13696,8 +13696,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3934638630
-  InScenePlacedSourceGlobalObjectIdHash: 1812290600
+  GlobalObjectIdHash: 882585040
+  InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -13781,6 +13781,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   cam: {fileID: 0}
+  targetItem: {fileID: 0}
+  weaponObject: {fileID: 0}
+  team:
+    m_InternalValue: -1
   initialSoldiersCount: 3
   detectItemRange: 0.7
   soldiers: []

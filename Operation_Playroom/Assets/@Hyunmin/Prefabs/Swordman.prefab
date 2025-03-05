@@ -8496,7 +8496,7 @@ GameObject:
   m_Component:
   - component: {fileID: 419716}
   - component: {fileID: 9553400}
-  - component: {fileID: 8836815669838192413}
+  - component: {fileID: -6525668269894956528}
   - component: {fileID: -7515905400544672292}
   - component: {fileID: 4244218131759594287}
   - component: {fileID: -7743729214425065396}
@@ -8550,7 +8550,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &8836815669838192413
+--- !u!114 &-6525668269894956528
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8562,8 +8562,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1812290600
-  InScenePlacedSourceGlobalObjectIdHash: 1812290600
+  GlobalObjectIdHash: 490222654
+  InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -8649,6 +8649,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetItem: {fileID: 0}
   weaponObject: {fileID: 171234}
+  team:
+    m_InternalValue: 0
   swordHitbox: {fileID: 171234}
   attackCooldown: 2
 --- !u!114 &-3931345857987243654

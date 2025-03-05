@@ -17870,7 +17870,7 @@ GameObject:
   - component: {fileID: 436856392372184420}
   - component: {fileID: 3915501742564724871}
   - component: {fileID: 8384845805929768959}
-  - component: {fileID: -4813626932012286443}
+  - component: {fileID: 2008463518462838688}
   - component: {fileID: -7345284614372664898}
   - component: {fileID: -3941548764843110615}
   - component: {fileID: 9140196470629511608}
@@ -18032,7 +18032,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 84
   m_CollisionDetection: 0
---- !u!114 &-4813626932012286443
+--- !u!114 &2008463518462838688
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -18044,7 +18044,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 787515856
+  GlobalObjectIdHash: 1966895600
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -18153,6 +18153,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetItem: {fileID: 0}
   weaponObject: {fileID: 0}
+  team:
+    m_InternalValue: -1
   itemContainer: {fileID: 2959140947267073897}
   spearHitbox: {fileID: 7270544927865333249}
   isHoldingItem: 0
