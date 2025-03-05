@@ -41,6 +41,11 @@ public class TitleSceneUI : MonoBehaviour
         startOptionPanel.SetActive(true);
     }
 
+    public void OnClientButtonPressed()
+    {
+        ClientSingleton.Instance.StartClient("127.0.0.1", 7777);
+    }
+
     public async void OnFindMatchButtonPressed()
     {
         if (isCancelling) { return; }
