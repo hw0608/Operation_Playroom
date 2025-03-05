@@ -19,6 +19,7 @@ public class ApplicationManager : MonoBehaviour
         if (isDedicatedServer)
         {
             appData = new ApplicationData();
+            Managers.Resource.LoadAllAsync<GameObject>("default", null);
 
             ServerSingleton.Instance.Init();
             await ServerSingleton.Instance.CreateServer();
