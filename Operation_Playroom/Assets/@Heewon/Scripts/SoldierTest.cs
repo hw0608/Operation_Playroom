@@ -117,7 +117,13 @@ public class SoldierTest : Character
     void HandleAnimation(State previousValue, State newValue)
     {
         float speed = newValue == State.Following || newValue == State.MoveToward ? 1f : 0f;
-        SetFloatAnimationserverRpc("Move", Time.fixedDeltaTime);
+        SetFloatAnimationserverRpc("Move", speed);
+
+        if (newValue == State.Attack && previousValue != State.Attack)
+        {
+            SetTriggerAnimationserverRpc("SpearAttack");
+        }
+
     }
 
     public void SetKing(Transform king)
@@ -136,11 +142,13 @@ public class SoldierTest : Character
         bool isNearKing = distanceToKing <= sqrStoppingDistance * 1.2f;
         bool isFarKing = distanceToKing > sqrStoppingDistance * 1.5f;
         bool hasArrived = false;
+        //target != null && Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
 
         if (target != null)
             hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
 
         RotateToDestination();
+
 
         switch (CurrentState.Value)
         {
@@ -153,8 +161,12 @@ public class SoldierTest : Character
             case State.MoveToward:
                 MoveTowardState(hasArrived);
                 break;
+            case State.Attack:
+                AttackState(hasArrived);
+                break;
         }
     }
+
 
     // 바라보는 각도 계산
     void RotateToDestination()
@@ -167,7 +179,23 @@ public class SoldierTest : Character
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.eulerAngles = Vector3.up * angle;
     }
+    void AttackState(bool hasArrived)
+    {
+        if (target == null || !target.activeInHierarchy)
+        {
+            ResetState();
+            return;
+        }
 
+        if (hasArrived && attackAble)
+        {
+            Attack();
+        }
+        else if (!hasArrived)
+        {
+            agent.SetDestination(target.transform.position);
+        }
+    }
     void IdleState(bool isFarKing)
     {
         if (isFarKing)
@@ -192,59 +220,110 @@ public class SoldierTest : Character
     void FollowKing()
     {
         currentState.Value = State.Following;
+
         agent.SetDestination(king.position);
     }
+    public void TryDeliverItemToOccupy(GameObject occupy)
+    {
+        if (!isHoldingItem) return;
 
+        currentState.Value = State.MoveToward;
+        target = occupy;
+        agent.stoppingDistance = 0.3f;
+        agent.SetDestination(occupy.transform.position);
+    }
     void MoveTowardState(bool hasArrived)
     {
         // TODO: 수정
         if (target == null)
         {
-            currentState.Value = State.Following;
-            agent.SetDestination(king.position);
+            //currentState.Value = State.Following;
+            //agent.SetDestination(king.position);
+            ResetState();
+            return;
         }
 
         if (target.CompareTag("Item"))
         {
             HandleItemPickup(hasArrived);
         }
+        else if (target.CompareTag("Occupy") && isHoldingItem)
+        {
+            HandleItemDelivery(hasArrived);
+        }
         else
         {
-            HandleEnemyAttack(hasArrived);
+            //HandleEnemyAttack(hasArrived);
+            AttackState(hasArrived);
         }
     }
-
+    
     void HandleItemPickup(bool hasArrived)
     {
         if (!isHoldingItem && hasArrived)
         {
             PickupItem();
         }
-        else if (isHoldingItem)
+        else if (isHoldingItem && !target.CompareTag("Occupy")) 
         {
-            if (hasArrived)
-            {
-                // TODO: 수정
-                GiveItem();
-            }
-            else
-            {
-                if (networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName("Holding") &&
-                    networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) return;
-                agent.SetDestination(king.position);
-            }
+            if
+            (networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName("Holding") &&
+               networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+            { return; }
+            agent.SetDestination(king.position);
         }
     }
-
-    void HandleEnemyAttack(bool hasArrived)
+    void HandleItemDelivery(bool hasArrived)
     {
         if (hasArrived)
         {
-            Attack();
+            DeliverItemToOccupy();
         }
         else
         {
             agent.SetDestination(target.transform.position);
+        }
+    }
+    void DeliverItemToOccupy()
+    {
+        if (target == null || !target.CompareTag("Occupy"))
+        {
+            Debug.Log("점령지 없음");
+            return;
+        }
+
+        Transform item = itemContainer.GetChild(0);
+        item.SetParent(null);
+        item.position = target.transform.position;
+        item.gameObject.SetActive(true);
+
+        target = null;
+        isHoldingItem = false;
+        SetAvatarLayerWeightserverRpc(0);
+        ResetState();
+
+        Debug.Log("자원을 Occupy에 내려놓음");
+    }
+
+    void HandleEnemyAttack(bool hasArrived)
+    {
+        //if (hasArrived)
+        //{
+        //    Attack();
+        //}
+        if (target == null)
+        {
+            ResetState();
+            return;
+        }
+        if (target.CompareTag("Resource"))
+        {
+            HandleItemPickup(hasArrived);
+        }
+        else
+        {
+            AttackState(hasArrived);
+            //agent.SetDestination(target.transform.position);
         }
     }
 
@@ -253,7 +332,7 @@ public class SoldierTest : Character
         Debug.Log("TryPickupItem");
         currentState.Value = State.MoveToward;
         target = item;
-        agent.stoppingDistance = 0.1f;
+        agent.stoppingDistance = 0.3f;
         agent.SetDestination(target.transform.position);
     }
 
@@ -269,11 +348,18 @@ public class SoldierTest : Character
 
     }
 
-    void GiveItem()
+    public void GiveItem()
     {
-        //SetAvatarLayerWeightserverRpc(0);
-        currentState.Value = State.Idle;
-        //isHoldingItem = false;
+        if (itemContainer.childCount > 0)
+        {
+            Transform item = itemContainer.GetChild(0);
+            item.SetParent(null);
+            item.position = transform.position; 
+        }
+        SetAvatarLayerWeightserverRpc(0);
+        //currentState.Value = State.Idle;
+        isHoldingItem = false;
+        ResetState();
     }
 
     public void TryAttack(GameObject enemy)

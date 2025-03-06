@@ -15,11 +15,16 @@ public class KingTest : Character
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) return;
-        base.Start(); 
+        base.Start();
         soldierSpawner = GetComponent<Spawner>();
 
+        
         soldierSpawner.SpawnSoldiers(initialSoldiersCount);
     }
+    //private void Start()
+    //{
+    //    transform.position = new Vector3(0, 0.5f, 0);
+    //}
     void Update()
     {
         if (!IsOwner) return;
@@ -32,18 +37,19 @@ public class KingTest : Character
         // E 버튼 누르면
         if (Input.GetKeyDown(KeyCode.E))
         {
-            //GameObject nearestOccupy = FindNearestOccupy();
-            //if (nearestOccupy != null && HasSoldierWithItem())
-            //{
-            //    CommandSoldierToDeliverItem(nearestOccupy);
-            //}
-            if (FindNearestItem() == null)
+            GameObject nearestOccupy = FindNearestOccupy();
+
+            if (FindNearestEnemy() != null)
             {
                 CommandSoldierToAdvance();
             }
-            else
+            else if (FindNearestItem() != null)
             {
                 CommandSoldierToPickupItem();
+            }
+            else if (nearestOccupy != null && HasSoldierWithItem())
+            {
+                CommandSoldierToDeliverItem(nearestOccupy);
             }
         }
         if (Input.GetKeyDown(KeyCode.Q))
@@ -63,7 +69,7 @@ public class KingTest : Character
         {
             if (soldier.isHoldingItem)
             {
-                //soldier.TryDeliverItemToOccupy(occupy);
+                soldier.TryDeliverItemToOccupy(occupy);
                 break;
             }
         }
@@ -96,7 +102,7 @@ public class KingTest : Character
     }
     void CommandSoldierToPickupItem()
     {
-        foreach(SoldierTest soldier in soldiers)
+        foreach (SoldierTest soldier in soldiers)
         {
             // 아이템을 가져오라는 명령을 받을 수 없는 상태
             if (soldier.isHoldingItem || soldier.CurrentState.Value != State.Idle && soldier.CurrentState.Value != State.Following)
@@ -117,15 +123,19 @@ public class KingTest : Character
 
     void CommandSoldierToReturn()
     {
-        foreach(SoldierTest soldier in soldiers)
+        foreach (SoldierTest soldier in soldiers)
         {
+            if (soldier.isHoldingItem)
+            {
+                soldier.GiveItem();
+            }
             soldier.ResetState();
         }
     }
 
     public void CommandSoldierToAdvance()
     {
-        foreach(SoldierTest soldier in soldiers)
+        foreach (SoldierTest soldier in soldiers)
         {
             if (soldier.isHoldingItem || soldier.CurrentState.Value != State.Idle && soldier.CurrentState.Value != State.Following)
             {
@@ -192,5 +202,3 @@ public class KingTest : Character
         return nearestItem; // 최소거리자원 오브젝트 반환
     }
 }
-
-
