@@ -7029,6 +7029,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 42939401033754939, guid: 60f6d4bfc4da5014cbda251d40147045, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 1600371695
+      objectReference: {fileID: 0}
+    - target: {fileID: 42939401033754939, guid: 60f6d4bfc4da5014cbda251d40147045, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 2254079076
+      objectReference: {fileID: 0}
     - target: {fileID: 141585091533852052, guid: 60f6d4bfc4da5014cbda251d40147045, type: 3}
       propertyPath: m_IsKinematic
       value: 0
