@@ -113,6 +113,7 @@ public class ServerSingleton : MonoBehaviour
         Debug.Log($"Id : {userData.userAuthId}, preference : {userData.userGamePreferences}");
 
         response.Approved = true;
+        response.CreatePlayerObject = false;
 
         //if (SceneManager.GetActiveScene().name == "GameScene")
         //{
