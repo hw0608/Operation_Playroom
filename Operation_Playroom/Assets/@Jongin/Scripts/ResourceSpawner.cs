@@ -11,16 +11,16 @@ public class ResourceSpawner : NetworkBehaviour
     public int currentSpawnCount;
     public override void OnNetworkSpawn()
     {
-
+        Debug.Log("11111");
+        if (IsServer)
+        {
+            SpawnResourceRandomPos(initSpawnCount);
+        }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            if (IsServer)
-                SpawnResourceRandomPos(initSpawnCount);
-        }
+
     }
     Collider[] itemBuffer = new Collider[1];
     public void SpawnResourceRandomPos(int count)
@@ -41,16 +41,17 @@ public class ResourceSpawner : NetworkBehaviour
                 if (numColliders == 0)
                 {
                     int randInt = Random.Range(0, 3);
-                    GameObject go = Instantiate(resourcePrefab, new Vector3(hit.position.x, 1, hit.position.z), Quaternion.identity);
+                    GameObject go = Instantiate(resourcePrefab);
                     go.GetComponent<NetworkObject>().Spawn(true);
-                    for (int i = 0; i < resourcePrefab.transform.childCount; i++)
+                    go.transform.position = new Vector3(hit.position.x, 1, hit.position.z);
+                    for (int i = 0; i < go.transform.childCount; i++)
                     {
                         go.transform.GetChild(i).gameObject.SetActive(false);
                     }
                     go.transform.GetChild(randInt).gameObject.SetActive(true);
 
                     NotifyResourceSpawnedClientRpc(go.GetComponent<NetworkObject>().NetworkObjectId, randInt);
-                    j++; 
+                    j++;
                     attempts = 0; // 자원 배치 성공 시 시도 횟수 초기화
                 }
                 else
@@ -76,5 +77,10 @@ public class ResourceSpawner : NetworkBehaviour
         {
             resourceObject.transform.GetChild(i).gameObject.SetActive(i == activeChildIndex);
         }
+    }
+
+    public void RespawnResource()
+    {
+        SpawnResourceRandomPos(1);
     }
 }

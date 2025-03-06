@@ -8766,6 +8766,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28020486b4289fb409ee4562da39aacc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   resourcePrefab: {fileID: 5763857477266137759, guid: d5a243cbaa5622949a7f3b6c186898d0, type: 3}
   initSpawnCount: 10
   layerMask:
