@@ -45,7 +45,7 @@ public class Archer : Character
 
         // 애니메이션 적용
         float speed = moveDirection.magnitude > 0.1f ? 1f : 0f;
-        SetFloatAnimationserverRpc("Move", speed);
+        SetFloatAnimation("Move", speed);
 
         // 조준중일때
         if (isAiming)

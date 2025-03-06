@@ -7593,6 +7593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8b4994377d86ff46908021730e6e1f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   damage: 10
 --- !u!1 &172168
 GameObject:
@@ -8497,13 +8498,13 @@ GameObject:
   - component: {fileID: 419716}
   - component: {fileID: 9553400}
   - component: {fileID: -6525668269894956528}
-  - component: {fileID: -7515905400544672292}
   - component: {fileID: 4244218131759594287}
   - component: {fileID: -7743729214425065396}
   - component: {fileID: -3931345857987243654}
   - component: {fileID: 4163147820075246991}
   - component: {fileID: 141585091533852052}
   - component: {fileID: 4943261774732861824}
+  - component: {fileID: -7497378250188054321}
   m_Layer: 0
   m_Name: Swordman
   m_TagString: Untagged
@@ -8575,28 +8576,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &-7515905400544672292
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 182410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  TransitionStateInfoList:
-  - IsCrossFadeExit: 0
-    Layer: 1
-    OriginatingState: 153482222
-    DestinationState: 1654249765
-    TransitionDuration: 0.25
-    TriggerNameHash: -943199693
-    TransitionIndex: 0
-  m_Animator: {fileID: 9553400}
 --- !u!114 &4244218131759594287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8733,6 +8712,28 @@ MonoBehaviour:
   currentHealth:
     m_InternalValue: 0
   isDead: 0
+--- !u!114 &-7497378250188054321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8eedbbff79d4624e99ffd3a2f03089e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 1
+    OriginatingState: 153482222
+    DestinationState: 1654249765
+    TransitionDuration: 0.25
+    TriggerNameHash: -943199693
+    TransitionIndex: 0
+  m_Animator: {fileID: 9553400}
 --- !u!1 &182750
 GameObject:
   m_ObjectHideFlags: 0
