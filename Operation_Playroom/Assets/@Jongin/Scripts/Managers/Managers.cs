@@ -18,6 +18,7 @@ public class Managers : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 60;
         Init();
     }
 

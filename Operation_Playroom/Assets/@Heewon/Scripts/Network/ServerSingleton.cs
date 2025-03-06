@@ -113,15 +113,15 @@ public class ServerSingleton : MonoBehaviour
         Debug.Log($"Id : {userData.userAuthId}, preference : {userData.userGamePreferences}");
 
         response.Approved = true;
-        response.CreatePlayerObject = false;
+        //response.CreatePlayerObject = false;
 
-        //if (SceneManager.GetActiveScene().name == "GameScene")
-        //{
-        //    response.CreatePlayerObject = true;
-        //    response.PlayerPrefabHash = gameRoleToPrefabHash[userData.userGamePreferences.gameRole];
-        //    response.Position = SpawnPoint.GetSpawnPoint(userData.userGamePreferences.gameTeam, userData.userGamePreferences.gameRole);
-        //    response.Rotation = Quaternion.identity;
-        //}
+        if (SceneManager.GetActiveScene().name == "GameScene")
+        {
+            response.CreatePlayerObject = true;
+            response.PlayerPrefabHash = gameRoleToPrefabHash[userData.userGamePreferences.gameRole];
+            response.Position = SpawnPoint.GetSpawnPoint(userData.userGamePreferences.gameTeam, userData.userGamePreferences.gameRole);
+            response.Rotation = Quaternion.identity;
+        }
     }
 
     private void OnClientDisconnect(ulong clientId)
