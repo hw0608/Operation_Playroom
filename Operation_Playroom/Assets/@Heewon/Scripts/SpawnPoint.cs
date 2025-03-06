@@ -20,14 +20,19 @@ public class SpawnPoint : MonoBehaviour
         }
     }
 
+    public static void Clear()
+    {
+        spawnPoints.Clear();
+    }
+
     public static Vector3 GetSpawnPoint(GameTeam team, GameRole role)
     {
         if (spawnPoints.Count == 0)
         {
-            return Vector3.zero;
+            return new Vector3(0, 0.5f, 0);
         }
 
-        Vector3 spawnPos = Vector3.zero;
+        Vector3 spawnPos = new Vector3(0, 0.5f, 0);
         var result = spawnPoints[team].Where(x => x.role == role).ToList();
         if (result.Count > 0)
         {
