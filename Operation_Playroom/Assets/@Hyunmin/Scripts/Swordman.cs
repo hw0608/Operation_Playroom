@@ -60,9 +60,9 @@ public class Swordman : Character
     IEnumerator SwordAttack()
     {
         swordHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId);
-        SetAvatarLayerWeightserverRpc(1); // 상체 움직임으로 설정
+        SetAvatarLayerWeight(1); // 상체 움직임으로 설정
         attackAble = false; // 재공격 비활성화
-        SetTriggerAnimationserverRpc("SwordAttack"); // 공격 모션 실행
+        SetTriggerAnimation("SwordAttack"); // 공격 모션 실행
 
         yield return new WaitForSeconds(0.4f);
 
@@ -75,7 +75,7 @@ public class Swordman : Character
         yield return new WaitForSeconds(0.4f);
 
         attackAble = true; // 공격 가능
-        SetAvatarLayerWeightserverRpc(0); // 상체 움직임 해제
+        SetAvatarLayerWeight(0); // 상체 움직임 해제
     }
 
     [ServerRpc]

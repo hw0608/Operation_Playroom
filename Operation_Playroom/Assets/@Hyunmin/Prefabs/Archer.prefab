@@ -143,6 +143,7 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetItem: {fileID: 0}
   weaponObject: {fileID: 1415012297644262731}
+  playerRenderer: {fileID: 6637046735245298041}
   team:
     m_InternalValue: -1
   aimCamera: {fileID: 8114598411042677039}
