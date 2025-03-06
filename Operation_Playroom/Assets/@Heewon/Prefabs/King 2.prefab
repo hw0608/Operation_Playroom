@@ -13765,7 +13765,7 @@ MonoBehaviour:
     m_InternalValue: -1
   initialSoldiersCount: 3
   detectItemRange: 0.7
-  occupyDetectRange: 0
+  occupyDetectRange: 0.7
   soldiers: []
 --- !u!114 &7808469528344250338
 MonoBehaviour:
