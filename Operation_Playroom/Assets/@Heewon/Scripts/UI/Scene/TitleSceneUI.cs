@@ -10,6 +10,7 @@ public class TitleSceneUI : MonoBehaviour
     [SerializeField] GameObject startOptionPanel;
     [SerializeField] TMP_InputField userNameInputField;
     [SerializeField] TMP_InputField joinCodeInputField;
+    [SerializeField] GameObject findMatchPanel;
 
     [SerializeField] TMP_Text findMatchStatusText;
     //[SerializeField] TMP_Text findButtonText;
@@ -48,30 +49,27 @@ public class TitleSceneUI : MonoBehaviour
 
     public async void OnFindMatchButtonPressed()
     {
-        if (isCancelling) { return; }
-        if (isMatchmaking)
-        {
-            //cancel
-            isCancelling = true;
-            findMatchStatusText.text = "Cancelling...";
+        if (isCancelling || isMatchmaking) { return; }
+        //match
+        findMatchStatusText.text = "Searching...";
 
-            await ClientSingleton.Instance.CancelMatchmaking();
+        findMatchPanel.SetActive(true);
+        isMatchmaking = true;
+        isCancelling = false;
 
-            isCancelling = false;
-            isMatchmaking = false;
-            findMatchStatusText.text = "";
-            //findButtonText.text = "Find Match";
-        }
-        else
-        {
-            //match
-            findMatchStatusText.text = "Searching...";
-            //findButtonText.text = "Cancel";
-            isMatchmaking = true;
-            isCancelling = false;
+        ClientSingleton.Instance.MatchmakeAsync(OnMatchMade);
+    }
 
-            ClientSingleton.Instance.MatchmakeAsync(OnMatchMade);
-        }
+    public async void OnCancelMatchmakeButtonPressed()
+    {
+        findMatchPanel.SetActive(false);
+        isCancelling = true;
+
+        await ClientSingleton.Instance.CancelMatchmaking();
+
+        isCancelling = false;
+        isMatchmaking = false;
+        findMatchStatusText.text = "";
     }
 
     void OnMatchMade(MatchmakerPollingResult result)
