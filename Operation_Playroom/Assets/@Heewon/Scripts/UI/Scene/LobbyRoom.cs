@@ -5,13 +5,10 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
-using Unity.Services.Lobbies;
-using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 [System.Serializable]
 class TMPList
@@ -19,10 +16,18 @@ class TMPList
     public TMP_Text[] texts;
 }
 
+[System.Serializable]
+class ImageList
+{
+    public Image[] images;
+}
+
 public class LobbyRoom : NetworkBehaviour
 {
     [SerializeField] TMPList[] playerNameTexts = new TMPList[2];
     [SerializeField] TMPList[] playerReadyTexts = new TMPList[2];
+    [SerializeField] ImageList[] playerBGImages = new ImageList[2];
+    [SerializeField] Sprite[] BGImagesByTeam;
     [SerializeField] GameObject readyButton;
     [SerializeField] GameObject startButton;
     [SerializeField] TMP_Text joinCodeText;
@@ -170,7 +175,8 @@ public class LobbyRoom : NetworkBehaviour
                 playerNameTexts[team].texts[index].text = player.userName.ToString();
                 if (player.clientId == clientId)
                 {
-                    playerNameTexts[team].texts[index].text = $"<b>{player.userName.ToString()}</b>";
+                    playerBGImages[team].images[index].sprite = BGImagesByTeam[team];
+                    //playerNameTexts[team].texts[index].text = $"<b>{player.userName.ToString()}</b>";
                 }
                 playerReadyTexts[team].texts[index].text = !player.isLeader && player.isReady ? "<color=green>Ready</color>" : "";
                 teamCount[team]++;
