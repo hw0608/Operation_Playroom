@@ -117,12 +117,7 @@ public class SoldierTest : Character
     void HandleAnimation(State previousValue, State newValue)
     {
         float speed = newValue == State.Following || newValue == State.MoveToward ? 1f : 0f;
-        SetFloatAnimationserverRpc("Move", speed);
-
-        if (newValue == State.Attack && previousValue != State.Attack)
-        {
-            SetTriggerAnimationserverRpc("SpearAttack");
-        }
+        SetFloatAnimationserverRpc("Move", Time.fixedDeltaTime);
     }
 
     public void SetKing(Transform king)
@@ -141,13 +136,12 @@ public class SoldierTest : Character
         bool isNearKing = distanceToKing <= sqrStoppingDistance * 1.2f;
         bool isFarKing = distanceToKing > sqrStoppingDistance * 1.5f;
         bool hasArrived = false;
-        
+
         if (target != null)
             hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
 
         RotateToDestination();
 
-        
         switch (CurrentState.Value)
         {
             case State.Idle:
@@ -159,13 +153,9 @@ public class SoldierTest : Character
             case State.MoveToward:
                 MoveTowardState(hasArrived);
                 break;
-            case State.Attack:
-                AttackState(hasArrived);
-                break;
         }
     }
-    
-    
+
     // 바라보는 각도 계산
     void RotateToDestination()
     {
@@ -177,23 +167,7 @@ public class SoldierTest : Character
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.eulerAngles = Vector3.up * angle;
     }
-    void AttackState(bool hasArrived)
-    {
-        if (target == null || !target.activeInHierarchy)
-        {
-            ResetState();
-            return;
-        }
 
-        if (hasArrived && attackAble)
-        {
-            Attack();
-        }
-        else if (!hasArrived)
-        {
-            agent.SetDestination(target.transform.position);
-        }
-    }
     void IdleState(bool isFarKing)
     {
         if (isFarKing)
@@ -218,7 +192,6 @@ public class SoldierTest : Character
     void FollowKing()
     {
         currentState.Value = State.Following;
-        
         agent.SetDestination(king.position);
     }
 
@@ -227,10 +200,8 @@ public class SoldierTest : Character
         // TODO: 수정
         if (target == null)
         {
-            //currentState.Value = State.Following;
-            //agent.SetDestination(king.position);
-            ResetState();
-            return;
+            currentState.Value = State.Following;
+            agent.SetDestination(king.position);
         }
 
         if (target.CompareTag("Item"))
@@ -239,8 +210,7 @@ public class SoldierTest : Character
         }
         else
         {
-            //HandleEnemyAttack(hasArrived);
-            AttackState(hasArrived);
+            HandleEnemyAttack(hasArrived);
         }
     }
 
@@ -259,7 +229,7 @@ public class SoldierTest : Character
             }
             else
             {
-                if (networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName("Holding") && 
+                if (networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName("Holding") &&
                     networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f) return;
                 agent.SetDestination(king.position);
             }
@@ -268,23 +238,13 @@ public class SoldierTest : Character
 
     void HandleEnemyAttack(bool hasArrived)
     {
-        //if (hasArrived)
-        //{
-        //    Attack();
-        //}
-        if (target == null)
+        if (hasArrived)
         {
-            ResetState();
-            return;
-        }
-        if (target.CompareTag("Item"))
-        {
-            HandleItemPickup(hasArrived);
+            Attack();
         }
         else
         {
-            AttackState(hasArrived);
-            //agent.SetDestination(target.transform.position);
+            agent.SetDestination(target.transform.position);
         }
     }
 
@@ -319,7 +279,7 @@ public class SoldierTest : Character
     public void TryAttack(GameObject enemy)
     {
         Debug.Log("TryAttack");
-        currentState.Value = State.Attack;
+        currentState.Value = State.MoveToward;
         target = enemy;
         agent.stoppingDistance = 0.1f;
         agent.SetDestination(target.transform.position);

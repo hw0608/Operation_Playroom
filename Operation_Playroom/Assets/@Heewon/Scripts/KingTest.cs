@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class KingTest : Character
 {
     [SerializeField] int initialSoldiersCount;
     [SerializeField] float detectItemRange;
+    [SerializeField] float occupyDetectRange; // 점령지 감지 범위 
 
     Spawner soldierSpawner;
     public List<SoldierTest> soldiers = new List<SoldierTest>();
@@ -27,15 +29,14 @@ public class KingTest : Character
     // 키 입력 메서드
     public override void HandleInput()
     {
-        //// 공격
-        //if (Input.GetButtonDown("Attack"))
-        //{
-        //    Attack();
-        //}
-
         // E 버튼 누르면
         if (Input.GetKeyDown(KeyCode.E))
         {
+            //GameObject nearestOccupy = FindNearestOccupy();
+            //if (nearestOccupy != null && HasSoldierWithItem())
+            //{
+            //    CommandSoldierToDeliverItem(nearestOccupy);
+            //}
             if (FindNearestItem() == null)
             {
                 CommandSoldierToAdvance();
@@ -44,13 +45,10 @@ public class KingTest : Character
             {
                 CommandSoldierToPickupItem();
             }
-            Debug.Log("King E눌림");
         }
-        // Q 버튼 누르면
         if (Input.GetKeyDown(KeyCode.Q))
         {
             CommandSoldierToReturn();
-            Debug.Log("Q눌림");
         }
 
         if (Input.GetKeyDown(KeyCode.V))
@@ -58,7 +56,44 @@ public class KingTest : Character
             soldierSpawner.SpawnSoldiers(1);
         }
     }
+    // 점령지로 자원 넣기
+    void CommandSoldierToDeliverItem(GameObject occupy)
+    {
+        foreach (SoldierTest soldier in soldiers)
+        {
+            if (soldier.isHoldingItem)
+            {
+                //soldier.TryDeliverItemToOccupy(occupy);
+                break;
+            }
+        }
+    }
+    bool HasSoldierWithItem()
+    {
+        return soldiers.Any(soldier => soldier.isHoldingItem);
+    }
+    // 근처 점령지 찾기
+    GameObject FindNearestOccupy()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, occupyDetectRange, LayerMask.GetMask("Occupy"));
+        GameObject nearestOccupy = null;
+        float minDistance = Mathf.Infinity;
 
+        foreach (Collider col in colliders)
+        {
+            GameObject occupy = col.gameObject;
+            if (occupy != null)
+            {
+                float distance = Vector3.Distance(transform.position, col.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearestOccupy = occupy;
+                }
+            }
+        }
+        return nearestOccupy;
+    }
     void CommandSoldierToPickupItem()
     {
         foreach(SoldierTest soldier in soldiers)
@@ -155,12 +190,6 @@ public class KingTest : Character
             }
         }
         return nearestItem; // 최소거리자원 오브젝트 반환
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + transform.forward * 0.5f, detectItemRange);
     }
 }
 
