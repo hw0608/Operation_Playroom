@@ -5654,9 +5654,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2959140947267073897}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ItemPos
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17875,6 +17875,7 @@ GameObject:
   - component: {fileID: -3941548764843110615}
   - component: {fileID: 9140196470629511608}
   - component: {fileID: 2033974309212188620}
+  - component: {fileID: 7541565092657274071}
   m_Layer: 0
   m_Name: Soldier
   m_TagString: Soldier
@@ -18159,6 +18160,23 @@ MonoBehaviour:
   spearHitbox: {fileID: 7270544927865333249}
   isHoldingItem: 0
   isAttacking: 0
+--- !u!114 &7541565092657274071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8455552684458472438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa5b04b780c6964e98cd7571f67c9ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 80
+  currentHealth:
+    m_InternalValue: 0
+  isDead: 0
 --- !u!1 &8509804826014776603
 GameObject:
   m_ObjectHideFlags: 0
