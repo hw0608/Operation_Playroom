@@ -11,12 +11,17 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     [SerializeField] GameObject targetItem;
     [SerializeField] GameObject weaponObject;
+    [SerializeField] SkinnedMeshRenderer bodyRenderer;
+    [SerializeField] MeshRenderer headRenderer;
 
     public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     bool isGrounded;
     Vector3 velocity;
     float detectItemRange = 0.7f;
+    NetworkVariable<Color> playerColor = new NetworkVariable<Color>(
+        Color.white, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
 
 
     protected bool attackAble;
@@ -36,21 +41,41 @@ public abstract class Character : NetworkBehaviour, ICharacter
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
 
+        if (bodyRenderer.material == null && headRenderer.material == null)
+        {
+            bodyRenderer.material = new Material(bodyRenderer.sharedMaterial);
+            headRenderer.material = new Material(headRenderer.sharedMaterial);
+        }
+
         attackAble = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        //transform.position = new Vector3(0, 0.5f, 0);
+        transform.position = new Vector3(0, 0.5f, 0);
 
         if (IsOwner) 
         {
             team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
         }
+
+        if (IsServer)
+        {
+            playerColor.Value = Color.white;
+        }
+
+        // 색상 변경 이벤트 구독
+        playerColor.OnValueChanged += OnPlayerColorChanged;
     }
 
     public abstract void Attack(); // 공격 구현
     public abstract void Interaction(); // 상호작용 구현
     public abstract void HandleInput(); // 키 입력 구현
+
+    private void OnPlayerColorChanged(Color previousValue, Color newValue)
+    {
+        bodyRenderer.material.color = newValue;
+        headRenderer.material.color = newValue;
+    }
 
     // 이동 메서드
     public virtual void Move(CinemachineCamera cam, Rigidbody rb)
@@ -97,23 +122,35 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 데미지 루틴
     IEnumerator DamageRoutine()
     {
-        SetAvatarLayerWeight(1);
-        SetTriggerAnimation("Damage");
+        SetAvatarLayerWeightClientRpc(1);
+        SetTriggerAnimationClientRpc("Damage");
+
+        if (IsServer)
+        {
+            playerColor.Value = Color.red; // 네트워크로 색상 동기화
+        }
+
         attackAble = false;
 
         yield return new WaitForSeconds(0.5f);
 
         SetAvatarLayerWeight(0);
+
+        if (IsServer)
+        {
+            playerColor.Value = Color.white; // 원래 색상으로 복구
+        }
+
         attackAble = true;
         damageRoutine = null;
     }
 
-    void SetAvatarLayerWeight(int value)
+    protected void SetAvatarLayerWeight(int value)
     {
         networkAnimator.Animator.SetLayerWeight(1, value);
     }
 
-    void SetTriggerAnimation(string name)
+    protected void SetTriggerAnimation(string name)
     {
         networkAnimator.SetTrigger(name);
     }
@@ -121,6 +158,20 @@ public abstract class Character : NetworkBehaviour, ICharacter
     protected void SetFloatAnimation(string name, float value)
     {
         networkAnimator.Animator.SetFloat(name, value);
+    }
+
+    [ClientRpc]
+    protected void SetAvatarLayerWeightClientRpc(int value)
+    {
+        Debug.Log("SetAvatarLayer");
+        networkAnimator.Animator.SetLayerWeight(1, value);
+    }
+
+    [ClientRpc]
+    protected void SetTriggerAnimationClientRpc(string name)
+    {
+        Debug.Log("SetTrigger");
+        networkAnimator.SetTrigger(name);
     }
 
     // 사망 메서드

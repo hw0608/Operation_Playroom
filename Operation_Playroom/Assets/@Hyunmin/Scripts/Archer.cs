@@ -91,8 +91,8 @@ public class Archer : Character
             aimCamera.Priority = 10;
 
             // 조준 애니메이션 실행
-            SetAvatarLayerWeightserverRpc(1);
-            SetTriggerAnimationserverRpc("Aim");
+            SetAvatarLayerWeight(1);
+            SetTriggerAnimation("Aim");
             isAiming = true;
         }
         // 조준 해제
@@ -102,7 +102,7 @@ public class Archer : Character
 
             aimCanvas.SetActive(false);
 
-            SetAvatarLayerWeightserverRpc(0);
+            SetAvatarLayerWeight(0);
 
             aimCamera.Priority = -10;
 
@@ -170,13 +170,13 @@ public class Archer : Character
     // 장전 루틴
     IEnumerator ShootAndReloadRoutine()
     {
-        SetTriggerAnimationserverRpc("BowAttack");
+        SetTriggerAnimation("BowAttack");
         aimCamera.GetComponent<ProjectileLauncher>().ShootArrow(aimCamera.transform);
         attackAble = false;
 
         yield return new WaitForSeconds(0.5f);
 
-        SetTriggerAnimationserverRpc("Aim");
+        SetTriggerAnimation("Aim");
 
         yield return new WaitForSeconds(1f);
 

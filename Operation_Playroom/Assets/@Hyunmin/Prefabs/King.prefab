@@ -13890,6 +13890,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   cam: {fileID: 0}
+  targetItem: {fileID: 0}
+  weaponObject: {fileID: 0}
+  playerRenderer: {fileID: 0}
+  team:
+    m_InternalValue: -1
 --- !u!114 &5142026032379993717
 MonoBehaviour:
   m_ObjectHideFlags: 0
