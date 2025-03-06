@@ -142,8 +142,7 @@ public class SoldierTest : Character
         bool isNearKing = distanceToKing <= sqrStoppingDistance * 1.2f;
         bool isFarKing = distanceToKing > sqrStoppingDistance * 1.5f;
         bool hasArrived = false;
-        //target != null && Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
-
+     
         if (target != null)
             hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
 
@@ -168,7 +167,7 @@ public class SoldierTest : Character
     }
 
 
-    // ï¿½Ù¶óº¸´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    // ¹Ù¶óº¸´Â °¢µµ °è»ê 
     void RotateToDestination()
     {
         if (CurrentState.Value == State.Idle) { return; }
@@ -223,18 +222,10 @@ public class SoldierTest : Character
 
         agent.SetDestination(king.position);
     }
-    public void TryDeliverItemToOccupy(GameObject occupy)
-    {
-        if (!isHoldingItem) return;
-
-        currentState.Value = State.MoveToward;
-        target = occupy;
-        agent.stoppingDistance = 0.3f;
-        agent.SetDestination(occupy.transform.position);
-    }
+    
     void MoveTowardState(bool hasArrived)
     {
-        // TODO: ï¿½ï¿½ï¿½ï¿½
+        // TODO: ¼öÁ¤
         if (target == null)
         {
             //currentState.Value = State.Following;
@@ -273,6 +264,7 @@ public class SoldierTest : Character
             agent.SetDestination(king.position);
         }
     }
+    
     void HandleItemDelivery(bool hasArrived)
     {
         if (hasArrived)
@@ -284,25 +276,33 @@ public class SoldierTest : Character
             agent.SetDestination(target.transform.position);
         }
     }
+    // Á¡·ÉÁö·Î ÀÌµ¿
+    public void TryDeliverItemToOccupy(GameObject occupy)
+    {
+        if (!isHoldingItem) return;
+
+        currentState.Value = State.MoveToward;
+        target = occupy;
+        agent.stoppingDistance = 0.3f;
+        agent.SetDestination(occupy.transform.position);
+    }
+    // Á¡·ÉÁö¿¡ ³õ±â
     void DeliverItemToOccupy()
     {
         if (target == null || !target.CompareTag("Occupy"))
         {
-            Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
         Transform item = itemContainer.GetChild(0);
         item.SetParent(null);
         item.position = target.transform.position;
-        item.gameObject.SetActive(true);
+        item.gameObject.SetActive(false);
 
         target = null;
         isHoldingItem = false;
         SetAvatarLayerWeightserverRpc(0);
         ResetState();
-
-        Debug.Log("ï¿½Ú¿ï¿½ï¿½ï¿½ Occupyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
     }
 
     void HandleEnemyAttack(bool hasArrived)

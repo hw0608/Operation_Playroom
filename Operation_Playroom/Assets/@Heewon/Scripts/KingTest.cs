@@ -21,10 +21,10 @@ public class KingTest : Character
         
         soldierSpawner.SpawnSoldiers(initialSoldiersCount);
     }
-    //private void Start()
-    //{
-    //    transform.position = new Vector3(0, 0.5f, 0);
-    //}
+    private void Start()
+    {
+        transform.position = new Vector3(0, 0.5f, 0);
+    }
     void Update()
     {
         if (!IsOwner) return;
@@ -39,18 +39,20 @@ public class KingTest : Character
         {
             GameObject nearestOccupy = FindNearestOccupy();
 
-            if (FindNearestEnemy() != null)
+            Debug.Log(nearestOccupy);
+            if (nearestOccupy != null && HasSoldierWithItem())
             {
-                CommandSoldierToAdvance();
+                CommandSoldierToDeliverItem(nearestOccupy);
             }
             else if (FindNearestItem() != null)
             {
                 CommandSoldierToPickupItem();
             }
-            else if (nearestOccupy != null && HasSoldierWithItem())
+            else if (FindNearestEnemy() != null)
             {
-                CommandSoldierToDeliverItem(nearestOccupy);
+                CommandSoldierToAdvance();
             }
+
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
