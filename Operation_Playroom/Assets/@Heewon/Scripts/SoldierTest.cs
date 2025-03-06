@@ -117,7 +117,7 @@ public class SoldierTest : Character
     void HandleAnimation(State previousValue, State newValue)
     {
         float speed = newValue == State.Following || newValue == State.MoveToward ? 1f : 0f;
-        SetFloatAnimation("Move", Time.fixedDeltaTime);
+        SetFloatAnimation("Move", speed);
     }
 
     public void SetKing(Transform king)
