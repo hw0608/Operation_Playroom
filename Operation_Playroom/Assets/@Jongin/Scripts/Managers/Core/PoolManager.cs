@@ -65,10 +65,15 @@ internal class Pool
 }
 
 
+
 public class PoolManager
 {
     private Dictionary<string, Pool> _pools = new Dictionary<string, Pool>();
 
+    public void Init()
+    {
+        Clear();
+    }
     public GameObject Pop(GameObject prefab)
     {
         if (_pools.ContainsKey(prefab.name) == false)

@@ -168,7 +168,7 @@ public class SoldierTest : Character
     }
 
 
-    // ¹Ù¶óº¸´Â °¢µµ °è»ê
+    // ï¿½Ù¶óº¸´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     void RotateToDestination()
     {
         if (CurrentState.Value == State.Idle) { return; }
@@ -234,7 +234,7 @@ public class SoldierTest : Character
     }
     void MoveTowardState(bool hasArrived)
     {
-        // TODO: ¼öÁ¤
+        // TODO: ï¿½ï¿½ï¿½ï¿½
         if (target == null)
         {
             //currentState.Value = State.Following;
@@ -288,7 +288,7 @@ public class SoldierTest : Character
     {
         if (target == null || !target.CompareTag("Occupy"))
         {
-            Debug.Log("Á¡·ÉÁö ¾øÀ½");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -302,7 +302,7 @@ public class SoldierTest : Character
         SetAvatarLayerWeightserverRpc(0);
         ResetState();
 
-        Debug.Log("ÀÚ¿øÀ» Occupy¿¡ ³»·Á³õÀ½");
+        Debug.Log("ï¿½Ú¿ï¿½ï¿½ï¿½ Occupyï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
     }
 
     void HandleEnemyAttack(bool hasArrived)

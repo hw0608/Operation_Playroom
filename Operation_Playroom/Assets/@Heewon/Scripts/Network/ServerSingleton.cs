@@ -46,6 +46,11 @@ public class ServerSingleton : MonoBehaviour
 
     void LoadPrefabHashes()
     {
+        if (gameRoleToPrefabHash.Count > 0)
+        {
+            return;
+        }
+
         uint kingPrefabHash = Managers.Resource.Load<GameObject>("King").GetComponent<NetworkObject>().PrefabIdHash;
         uint archerPrefabHash = Managers.Resource.Load<GameObject>("Archer").GetComponent<NetworkObject>().PrefabIdHash;
         uint swordmanPrefabHash = Managers.Resource.Load<GameObject>("Swordman").GetComponent<NetworkObject>().PrefabIdHash;
@@ -108,6 +113,7 @@ public class ServerSingleton : MonoBehaviour
         Debug.Log($"Id : {userData.userAuthId}, preference : {userData.userGamePreferences}");
 
         response.Approved = true;
+        //response.CreatePlayerObject = false;
 
         if (SceneManager.GetActiveScene().name == "GameScene")
         {

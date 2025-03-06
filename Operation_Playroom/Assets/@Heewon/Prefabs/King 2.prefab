@@ -13581,13 +13581,13 @@ GameObject:
   - component: {fileID: 4742214692945272390}
   - component: {fileID: 5472531369441942530}
   - component: {fileID: -8680813614204549789}
-  - component: {fileID: 956387020771885145}
   - component: {fileID: 4779212311087517118}
   - component: {fileID: 4574954733999470894}
   - component: {fileID: 7808469528344250338}
   - component: {fileID: 5142026032379993717}
   - component: {fileID: 6567251517888913678}
   - component: {fileID: -6791188696187152576}
+  - component: {fileID: -2464251044387882103}
   m_Layer: 0
   m_Name: King 2
   m_TagString: Untagged
@@ -13709,28 +13709,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &956387020771885145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9142197980193174957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  TransitionStateInfoList:
-  - IsCrossFadeExit: 0
-    Layer: 1
-    OriginatingState: 153482222
-    DestinationState: 1654249765
-    TransitionDuration: 0.25
-    TriggerNameHash: -943199693
-    TransitionIndex: 0
-  m_Animator: {fileID: 7803368916089666262}
 --- !u!114 &4779212311087517118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13787,6 +13765,7 @@ MonoBehaviour:
     m_InternalValue: -1
   initialSoldiersCount: 3
   detectItemRange: 0.7
+  occupyDetectRange: 0
   soldiers: []
 --- !u!114 &7808469528344250338
 MonoBehaviour:
@@ -13848,6 +13827,28 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &-2464251044387882103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9142197980193174957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8eedbbff79d4624e99ffd3a2f03089e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 1
+    OriginatingState: 153482222
+    DestinationState: 1654249765
+    TransitionDuration: 0.25
+    TriggerNameHash: -943199693
+    TransitionIndex: 0
+  m_Animator: {fileID: 7803368916089666262}
 --- !u!1 &9155472280922709860
 GameObject:
   m_ObjectHideFlags: 0

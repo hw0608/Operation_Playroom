@@ -19,16 +19,16 @@ public class ResourceSpawner : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Z))
         {
             if (IsServer)
-                SpawnResourceRandomPos();
+                SpawnResourceRandomPos(initSpawnCount);
         }
     }
     Collider[] itemBuffer = new Collider[1];
-    public void SpawnResourceRandomPos()
+    public void SpawnResourceRandomPos(int count)
     {
         int j = 0;
         int attempts = 0; // 시도 횟수를 추적하는 변수
 
-        while (j < initSpawnCount)
+        while (j < count)
         {
             // 임의의 위치를 선택합니다. (이 예에서는 월드 좌표의 범위에 맞게 설정)
             Vector3 randomPosition = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
@@ -59,13 +59,13 @@ public class ResourceSpawner : NetworkBehaviour
                 }
             }
 
-            // 10번 이상 시도해도 유효한 위치를 찾지 못하면 루프를 종료
             if (attempts >= 100)
             {
                 break;
             }
         }
     }
+
     [ClientRpc]
     private void NotifyResourceSpawnedClientRpc(ulong networkObjectId, int activeChildIndex)
     {
