@@ -41,6 +41,7 @@ public class ServerSingleton : MonoBehaviour
 
     public void Init()
     {
+        SpawnPoint.Clear();
         LoadPrefabHashes();
     }
 
