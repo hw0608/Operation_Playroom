@@ -18,10 +18,8 @@ public class GameManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
-        {
-            remainTime.Value = 600f;
-        }
+        remainTime.OnValueChanged -= OnChangeTimer;
+        remainTime.OnValueChanged += OnChangeTimer;
         gameState = EGameState.Ready;
 
         textSequence = DOTween.Sequence();
@@ -30,37 +28,35 @@ public class GameManager : NetworkBehaviour
         textSequence.Append(notiText.DOFade(0, 1))
             .SetAutoKill(false).Pause();
 
-        StartCoroutine(CallReadyMessage());
+
+        if (IsServer)
+        {
+            remainTime.Value = 600f;
+            StartCoroutine(CallReadyMessage());
+        }
     }
 
     public override void OnNetworkDespawn()
     {
-
+        remainTime.OnValueChanged -= OnChangeTimer;
     }
     private float lastSyncTime = 0f;
     private float syncInterval = 1f;
 
     void Update()
     {
+        if (gameState != EGameState.Play) return;
+
         if (IsServer)
         {
-            if (gameState != EGameState.Play) return;
 
-            remainTime.Value -= Time.deltaTime;
-            timerText.text = GetFormattedTime(remainTime.Value);
-            // 1초마다 동기화
-            if (Time.time - lastSyncTime > syncInterval)
-            {
-                remainTime.SetDirty(false);  // 강제 동기화
-                lastSyncTime = Time.time;
-            }
         }
         else
         {
-            // 클라이언트는 로컬에서 타이머 감소
-            timerText.text = GetFormattedTime(remainTime.Value - Time.deltaTime);
+
         }
     }
+
 
     private string GetFormattedTime(float time)
     {
@@ -69,6 +65,19 @@ public class GameManager : NetworkBehaviour
         return sec >= 10 ? $"{min} : {sec}" : $"{min} : 0{sec}";
     }
 
+    IEnumerator TimerRoutine()
+    {
+        while (remainTime.Value > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            remainTime.Value -= 1.0f;
+        }
+    }
+
+    public void OnChangeTimer(float oldVal, float newVal)
+    {
+        timerText.text = GetFormattedTime(newVal);
+    }
     IEnumerator CallReadyMessage()
     {
         float time = 15;
@@ -87,13 +96,13 @@ public class GameManager : NetworkBehaviour
         yield return new WaitForSeconds(1);
         CallNotiTextClientRpc("Start!");
         gameState = EGameState.Play;
+        StartCoroutine(TimerRoutine());
     }
 
 
     [ClientRpc]
     public void CallNotiTextClientRpc(string text)
     {
-        if (!IsServer) return;
         notiText.text = text;
         textSequence.Restart();
     }

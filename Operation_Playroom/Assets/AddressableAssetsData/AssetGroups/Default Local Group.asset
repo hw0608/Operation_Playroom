@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5a243cbaa5622949a7f3b6c186898d0
+    m_Address: ResourcePrefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: db0a8ef031523b8438278825bc4b2d01
     m_Address: Test
     m_ReadOnly: 0
