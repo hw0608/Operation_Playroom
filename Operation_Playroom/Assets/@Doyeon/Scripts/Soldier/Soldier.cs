@@ -190,7 +190,7 @@ public class Soldier : Character
     void SoldierAnimation(SoldierState oldValue, SoldierState newValue)
     {
         float speed = newValue == SoldierState.Following || newValue == SoldierState.Collecting ? 1f : 0f;
-        SetFloatAnimationserverRpc("Move", speed);
+        SetFloatAnimation("Move", speed);
     }
     //private void ChangeState(SoldierState newState)
     //{

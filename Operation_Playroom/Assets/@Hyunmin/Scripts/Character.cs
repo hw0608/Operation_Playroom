@@ -72,7 +72,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         // 애니메이션 적용
         float speed = moveDirection.magnitude > 0.1f ? 1f : 0f;
-        SetFloatAnimationserverRpc("Move", speed);
+        SetFloatAnimation("Move", speed);
 
         // 일정 움직임이 있을때만 회전값 변경
         if (moveDirection.magnitude > 0.1f)
@@ -116,6 +116,11 @@ public abstract class Character : NetworkBehaviour, ICharacter
     void SetTriggerAnimation(string name)
     {
         networkAnimator.SetTrigger(name);
+    }
+
+    protected void SetFloatAnimation(string name, float value)
+    {
+        networkAnimator.Animator.SetFloat(name, value);
     }
 
     // 사망 메서드
