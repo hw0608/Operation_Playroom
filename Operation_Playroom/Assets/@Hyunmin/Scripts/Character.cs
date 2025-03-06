@@ -40,6 +40,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        //transform.position = new Vector3(0, 0.5f, 0);
+
         if (IsOwner) 
         {
             team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;

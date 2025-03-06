@@ -16,6 +16,7 @@ public class WeaponDamage : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (!IsOwner) return;
         if (other.TryGetComponent<NetworkObject>(out NetworkObject obj))
         {
             if (ownerClientId == obj.OwnerClientId)
