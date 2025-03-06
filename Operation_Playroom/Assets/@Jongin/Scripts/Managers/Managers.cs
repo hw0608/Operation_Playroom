@@ -15,6 +15,7 @@ public class Managers : MonoBehaviour
     public static SoundManager Sound { get { return Instance?._sound; } }
     public static DataManager Data { get { return Instance?._data; } }
 
+
     private void Awake()
     {
         Init();
@@ -22,8 +23,6 @@ public class Managers : MonoBehaviour
 
     public static void Init()
     {
-        Debug.Log("11111");
-
         Initialized = true;
 
         GameObject go = GameObject.Find("@Managers");
