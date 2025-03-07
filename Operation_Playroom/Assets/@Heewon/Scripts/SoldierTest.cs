@@ -20,7 +20,6 @@ public class SoldierTest : Character
     Transform king;
     NavMeshAgent agent;
     NetworkVariable<State> currentState = new NetworkVariable<State>(State.Idle, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    
 
     [SerializeField] Transform itemContainer;
     [SerializeField] GameObject spearHitbox;
@@ -43,6 +42,7 @@ public class SoldierTest : Character
     {
         if (attackAble)
         {
+            agent.avoidancePriority = 50;
             if (attackRoutine != null)
             {
                 StopCoroutine(attackRoutine);
@@ -78,13 +78,31 @@ public class SoldierTest : Character
         currentState.OnValueChanged -= HandleAnimation;
     }
 
+    IEnumerator RotateToTarget()
+    {
+        float timer = 2f;
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            Vector2 forward = new Vector2(transform.position.z, transform.position.x);
+            Vector2 targetPos = new Vector2(target.transform.position.z, target.transform.position.x);
+            
+            Vector2 dir = targetPos - forward;
+            float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+            float smoothAngle = Mathf.LerpAngle(transform.eulerAngles.y, targetAngle, Time.deltaTime * 5f);
+            transform.eulerAngles = Vector3.up * smoothAngle;
+
+            yield return null;
+        }
+    }
+
     IEnumerator SpearAttack()
     {
-        RotateToDestination();
+        StartCoroutine(RotateToTarget());
         spearHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId);
-        SetAvatarLayerWeightserverRpc(1);
         attackAble = false;
-        SetTriggerAnimationserverRpc("SpearAttack");
+        SetTriggerAnimation("SpearAttack");
 
         yield return new WaitForSeconds(0.4f);
 
@@ -97,7 +115,6 @@ public class SoldierTest : Character
         yield return new WaitForSeconds(0.4f);
 
         attackAble = true;
-        SetAvatarLayerWeightserverRpc(0);
     }
 
     [ServerRpc]
@@ -115,15 +132,16 @@ public class SoldierTest : Character
     void HandleAnimation(State previousValue, State newValue)
     {
         float speed = newValue == State.Following || newValue == State.MoveToward ? 1f : 0f;
-        SetFloatAnimationserverRpc("Move", speed);
+        SetFloatAnimation("Move", speed);
 
         if (newValue == State.Attack && previousValue != State.Attack)
         {
-            SetTriggerAnimationserverRpc("SpearAttack");
+            SetTriggerAnimation("SpearAttack");
         }
         if (newValue == State.Idle)
         {
             agent.avoidancePriority = 50;
+           
         }
         else if (newValue == State.Following)
         {
@@ -151,8 +169,7 @@ public class SoldierTest : Character
         if (target != null)
             hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
 
-        RotateToDestination();
-
+        RotateToDestination(hasArrived);
 
         switch (CurrentState.Value)
         {
@@ -171,25 +188,28 @@ public class SoldierTest : Character
         }
     }
 
-
     // 바라보는 각도 계산 
-    void RotateToDestination()
+    void RotateToDestination(bool hasArrived)
     {
-        if (CurrentState.Value == State.Idle) { return; }
+        if (CurrentState.Value == State.Idle
+            || (hasArrived && currentState.Value == State.MoveToward || currentState.Value == State.Attack)) { return; }
 
         Vector2 forward = new Vector2(transform.position.z, transform.position.x);
         Vector2 steeringTarget = new Vector2(agent.steeringTarget.z, agent.steeringTarget.x);
         Vector2 dir = steeringTarget - forward;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.eulerAngles = Vector3.up * angle;
+        float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        float smoothAngle = Mathf.LerpAngle(transform.eulerAngles.y, targetAngle, Time.deltaTime * 5f);
+        transform.eulerAngles = Vector3.up * smoothAngle;
     }
+
     void AttackState(bool hasArrived)
     {
-        if (target == null || !target.activeInHierarchy)
-        {
-            ResetState();
-            return;
-        }
+        //if (target.TryGetComponent(out Character character))
+        //{
+        //    // TODO: 사망하면 왕한테 돌아오게 하기
+        //    ResetState();
+        //    return;
+        //}
 
         if (hasArrived && attackAble)
         {
@@ -197,12 +217,15 @@ public class SoldierTest : Character
         }
         else if (!hasArrived)
         {
+            if (!attackAble) { return; }
+            agent.avoidancePriority = 49;
+            networkAnimator.ResetTrigger("SpearAttack");
+            SetFloatAnimation("Move", 1f);
             agent.SetDestination(target.transform.position);
         }
     }
     void IdleState(bool isFarKing)
     {
-
         if (isFarKing)
         {
             FollowKing();
