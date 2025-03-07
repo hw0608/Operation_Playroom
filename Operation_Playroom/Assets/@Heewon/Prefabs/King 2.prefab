@@ -13587,9 +13587,9 @@ GameObject:
   - component: {fileID: 5142026032379993717}
   - component: {fileID: 6567251517888913678}
   - component: {fileID: -2464251044387882103}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: King 2
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13664,7 +13664,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9142197980193174957}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 5
   m_Drag: 0
   m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}

@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -21,10 +22,7 @@ public class KingTest : Character
         
         soldierSpawner.SpawnSoldiers(initialSoldiersCount);
     }
-    private void Start()
-    {
-        transform.position = new Vector3(0, 0.5f, 0);
-    }
+
     void Update()
     {
         if (!IsOwner) return;
@@ -169,6 +167,11 @@ public class KingTest : Character
 
         foreach (Collider enemy in enemies) // 탐색된 모든 적 순회
         {
+            if (enemy.TryGetComponent(out Character character))
+            {
+                // 같은 팀이면 무시
+                if (team == character.team) continue;
+            } 
             float distance = Vector3.Distance(transform.position, enemy.transform.position); // 왕, 각 적의 거리를 계산
             if (distance < minDistance) // 현재 계산된 거리가 최소 거리보다 작으면 
             {
