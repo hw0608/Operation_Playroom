@@ -11,8 +11,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     [SerializeField] GameObject targetItem;
     [SerializeField] GameObject weaponObject;
-    [SerializeField] SkinnedMeshRenderer bodyRenderer;
-    [SerializeField] MeshRenderer headRenderer;
+    [SerializeField] Material[] teamMaterials;
+    [SerializeField] Renderer[] playerRenderers;
 
     public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
@@ -41,40 +41,51 @@ public abstract class Character : NetworkBehaviour, ICharacter
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
 
-        if (bodyRenderer.material == null && headRenderer.material == null)
-        {
-            bodyRenderer.material = new Material(bodyRenderer.sharedMaterial);
-            headRenderer.material = new Material(headRenderer.sharedMaterial);
-        }
-
         attackAble = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        transform.position = new Vector3(0, 0.5f, 0);
 
         if (IsOwner) 
         {
             team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
         }
 
-        if (IsServer)
+        foreach (var renderer in playerRenderers)
         {
-            playerColor.Value = Color.white;
+            renderer.material = new Material(teamMaterials[team.Value]);
         }
 
         // 색상 변경 이벤트 구독
         playerColor.OnValueChanged += OnPlayerColorChanged;
     }
 
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            SetTeamMaterial();
+        }
+    }
+
+    public override void OnDestroy()
+    {
+        playerColor.OnValueChanged -= OnPlayerColorChanged;
+    }
+
     public abstract void Attack(); // 공격 구현
     public abstract void Interaction(); // 상호작용 구현
     public abstract void HandleInput(); // 키 입력 구현
 
+    // 플레이어 피격 시 색상 변경 메서드
     private void OnPlayerColorChanged(Color previousValue, Color newValue)
     {
-        bodyRenderer.material.color = newValue;
-        headRenderer.material.color = newValue;
+        if(playerRenderers != null)
+        {
+            foreach (var renderer in playerRenderers)
+            {
+                renderer.sharedMaterial.color = newValue;
+            }
+        }
     }
 
     // 이동 메서드
@@ -127,19 +138,18 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         if (IsServer)
         {
-            playerColor.Value = Color.red; // 네트워크로 색상 동기화
+            playerColor.Value = Color.red;
         }
-
         attackAble = false;
 
         yield return new WaitForSeconds(0.5f);
 
-        SetAvatarLayerWeight(0);
-
         if (IsServer)
         {
-            playerColor.Value = Color.white; // 원래 색상으로 복구
+            playerColor.Value = Color.white;
         }
+
+        SetAvatarLayerWeight(0);
 
         attackAble = true;
         damageRoutine = null;
@@ -163,21 +173,18 @@ public abstract class Character : NetworkBehaviour, ICharacter
     [ClientRpc]
     protected void SetAvatarLayerWeightClientRpc(int value)
     {
-        Debug.Log("SetAvatarLayer");
         networkAnimator.Animator.SetLayerWeight(1, value);
     }
 
     [ClientRpc]
     protected void SetTriggerAnimationClientRpc(string name)
     {
-        Debug.Log("SetTrigger");
         networkAnimator.SetTrigger(name);
     }
 
     // 사망 메서드
     public void Die()
     {
-        Debug.Log("Die");
         SetTriggerAnimation("Die");
     }
 
@@ -232,8 +239,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
         targetItem.transform.localPosition = new Vector3(0, 2f, 0);
 
         // 줍는 애니메이션
-        SetAvatarLayerWeightserverRpc(1);
-        SetTriggerAnimationserverRpc("Holding");
+        SetAvatarLayerWeight(1);
+        SetTriggerAnimation("Holding");
     }
 
     // 아이템을 내려놓는 메서드
@@ -249,8 +256,19 @@ public abstract class Character : NetworkBehaviour, ICharacter
         targetItem = null;
 
         // 애니메이션 해제
-        SetAvatarLayerWeightserverRpc(0);
-        SetTriggerAnimationserverRpc("Idle");
+        SetAvatarLayerWeight(0);
+        SetTriggerAnimation("Idle");
+    }
+
+    void SetTeamMaterial()
+    {
+        Debug.Log("Set Team Material");
+
+        Material teamMaterial = new Material(teamMaterials[team.Value]);
+        foreach(var renderer in playerRenderers)
+        {
+            renderer.material = teamMaterial;
+        }
     }
 
     // 애니메이션 Trigger 메서드

@@ -43,12 +43,13 @@ public class Swordman : Character
     // 상호작용 메서드
     public override void Interaction()
     {
-        // 아이템을 들고 있으면
+        // 아이템 내려놓기
         if (isHoldingItem)
         {
             Drop();
             attackAble = true;
         }
+        // 아이템 들기
         else
         {
             PickUp();
