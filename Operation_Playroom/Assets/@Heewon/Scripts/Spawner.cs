@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Spawner : NetworkBehaviour
 {
+    int count = 0;
     [SerializeField] GameObject soldierPrefab;
 
     public void SpawnSoldiers(int count)
@@ -41,7 +42,9 @@ public class Spawner : NetworkBehaviour
         KingTest king = NetworkManager.Singleton.SpawnManager.SpawnedObjects[kingObj.NetworkObjectId].GetComponent<KingTest>();
 
         king.soldiers.Add(soldierObj.GetComponent<SoldierTest>());
-        soldier.SetKing(king.transform);
+        soldier.SetKing(king.transform, king.soldierOffsets[count]);
+
+        count++;
     }
 
     [ServerRpc]

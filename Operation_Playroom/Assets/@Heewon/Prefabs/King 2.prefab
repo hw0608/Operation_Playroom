@@ -13760,14 +13760,17 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetItem: {fileID: 0}
   weaponObject: {fileID: 0}
-  bodyRenderer: {fileID: 0}
-  headRenderer: {fileID: 0}
+  teamMaterials: []
+  playerRenderers: []
   team:
     m_InternalValue: -1
   initialSoldiersCount: 3
   detectItemRange: 0.7
   occupyDetectRange: 0.7
+  soldierSpacing: 0.15
+  maxSoldierCount: 10
   soldiers: []
+  soldierOffsets: []
 --- !u!114 &7808469528344250338
 MonoBehaviour:
   m_ObjectHideFlags: 0
