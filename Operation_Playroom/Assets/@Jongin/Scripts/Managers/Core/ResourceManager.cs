@@ -34,12 +34,12 @@ public class ResourceManager
 
         GameObject go = Object.Instantiate(prefab);
         NetworkObject no;
-        if(go.TryGetComponent<NetworkObject>(out no))
+        if (go.TryGetComponent<NetworkObject>(out no))
         {
             no.Spawn();
         }
 
-        go.transform.parent = parent;
+        go.transform.SetParent(parent, false);
         go.name = prefab.name;
 
         return go;

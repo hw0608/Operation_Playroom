@@ -33,7 +33,7 @@ public class ResourceSpawner : NetworkBehaviour
         while (j < count)
         {
             // 임의의 위치를 선택합니다. (이 예에서는 월드 좌표의 범위에 맞게 설정)
-            Vector3 randomPosition = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
+            Vector3 randomPosition = new Vector3(Random.Range(-4f, 4f), 0, Random.Range(-4f, 4f));
 
             // NavMesh에서 해당 위치가 유효한지 확인하고, 유효하면 해당 위치를 반환합니다.
             NavMeshHit hit;
