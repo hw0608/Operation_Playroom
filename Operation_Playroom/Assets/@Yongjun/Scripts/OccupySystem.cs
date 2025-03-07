@@ -24,7 +24,7 @@ public class OccupySystem : NetworkBehaviour
 
     void Update()
     {
-        if (IsServer || IsClient)
+        if (IsServer)
             DetectResources();
     }
     public override void OnNetworkSpawn()
@@ -43,30 +43,35 @@ public class OccupySystem : NetworkBehaviour
         Collider[] colliders = Physics.OverlapSphere(transform.position, transform.localScale.x / 2);
         foreach (Collider collider in colliders)
         {
-            if (collider.CompareTag("Resource"))
+            if (collider.CompareTag("Item"))
             {
                 ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
-                Owner owner = collider.GetComponent<ResourceData>().CurrentOwner;
-                DetectResourceServerRpc(resourceId, owner);
+                ResourceData data = collider.GetComponent<ResourceData>();
+                Debug.Log("detect!");
+
+                if (data.CurrentOwner == Owner.Red) redTeamResourceCount.Value++;
+                else if (data.CurrentOwner == Owner.Blue) blueTeamResourceCount.Value++;
+
+                //data.PushObjectClientRpc();
+                //PushObjectClientRpc(resourceId);
+
+                if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(resourceId, out NetworkObject resourceObject))
+                {
+                    resourceObject.Despawn();
+                }
             }
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    void DetectResourceServerRpc(ulong resourceId, Owner owner) // 점령지 내 자원 감지 서버RPC
+    [ClientRpc(RequireOwnership = false)]
+    public void PushObjectClientRpc(ulong resourceId)
     {
-        if (currentOwner != Owner.Neutral) return;
-
         if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(resourceId, out NetworkObject resourceObject))
         {
-            ResourceData resourceData = resourceObject.GetComponent<ResourceData>();
-            if (resourceData != null && resourceData.CurrentOwner == owner)
-            {
-                HandleResource(resourceObject.GetComponent<Collider>());
-            }
+            bool a = Managers.Pool.Push(resourceObject.gameObject);
+            Debug.Log(a);
         }
     }
-
     void HandleResource(Collider collider) // 감지된 자원 적재
     {
         if (!IsServer) return;
@@ -75,7 +80,15 @@ public class OccupySystem : NetworkBehaviour
         if (resourceData == null || resourceData.CurrentOwner == Owner.Neutral) return;
 
         ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
-        HandleResourceServerRpc(resourceId, resourceData.CurrentOwner);
+        if (resourceData.CurrentOwner == Owner.Red) redTeamResourceCount.Value++;
+        else if (resourceData.CurrentOwner == Owner.Blue) blueTeamResourceCount.Value++;
+
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(resourceId, out NetworkObject resourceObject))
+        {
+            resourceObject.Despawn();
+        }
+
+        //HandleResourceServerRpc(resourceId, resourceData.CurrentOwner);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -89,8 +102,8 @@ public class OccupySystem : NetworkBehaviour
             resourceObject.Despawn();
         }
 
-        CheckOwnership();
-        UpdateVisuals();
+        //CheckOwnership();
+        //UpdateVisuals();
     }
 
     void CheckOwnership() // 점령지 소유권 검사

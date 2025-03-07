@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  currentOwner: 2
+  currentOwner: 0
 --- !u!1001 &1023930065547146509
 PrefabInstance:
   m_ObjectHideFlags: 0

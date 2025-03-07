@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1262742209619848965}
   - component: {fileID: 7340814911644593656}
   - component: {fileID: 8222264562448540431}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Red Team Resource Count
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 9739586586158490}
   - component: {fileID: 7730590797883291220}
   - component: {fileID: 6906841169979473895}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 2035959126797070943}
   - component: {fileID: 9057859201585304990}
   - component: {fileID: 1358541235369553088}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Blue Team Resource Count
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 2663232077741772242}
   - component: {fileID: 2126690632534586306}
   - component: {fileID: 648713756932199557}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Occupy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
