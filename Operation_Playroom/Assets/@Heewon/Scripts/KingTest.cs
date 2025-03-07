@@ -1,26 +1,46 @@
 using NUnit.Framework.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class KingTest : Character
 {
     [SerializeField] int initialSoldiersCount;
     [SerializeField] float detectItemRange;
-    [SerializeField] float occupyDetectRange; // 점령지 감지 범위 
+    [SerializeField] float occupyDetectRange; // 점령지 감지 범위
+    [SerializeField] float soldierSpacing = 0.2f;
+    [SerializeField] int maxSoldierCount = 10;
 
     Spawner soldierSpawner;
     public List<SoldierTest> soldiers = new List<SoldierTest>();
+    public List<Vector3> soldierOffsets = new List<Vector3>();
 
     public override void OnNetworkSpawn()
     {
+        int[] colOffsets = { 0, -1, 1, -2, 2 };
         if (!IsOwner) return;
         base.Start();
-        soldierSpawner = GetComponent<Spawner>();
+        for (int i = 0; i < maxSoldierCount; i++)
+        {
+            soldierOffsets.Add(GetFormationOffset(i, colOffsets));
+        }
 
-        
+        soldierSpawner = GetComponent<Spawner>();
         soldierSpawner.SpawnSoldiers(initialSoldiersCount);
+    }
+
+    Vector3 GetFormationOffset(int index, int[] colOffsets)
+    {
+        float verticalSpacing = soldierSpacing * 1.2f;
+        int row = index / 5;
+        int col = index % 5;
+
+        float offsetX = colOffsets[col];
+
+        return new Vector3(offsetX * soldierSpacing, 0, -row * verticalSpacing - soldierSpacing);
     }
 
     void Update()
@@ -171,7 +191,7 @@ public class KingTest : Character
             {
                 // 같은 팀이면 무시
                 if (team == character.team) continue;
-            } 
+            }
             float distance = Vector3.Distance(transform.position, enemy.transform.position); // 왕, 각 적의 거리를 계산
             if (distance < minDistance) // 현재 계산된 거리가 최소 거리보다 작으면 
             {

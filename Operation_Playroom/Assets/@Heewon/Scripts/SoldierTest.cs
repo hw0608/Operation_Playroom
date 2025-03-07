@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Drawing;
 using System.Globalization;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -18,6 +19,7 @@ public enum State
 public class SoldierTest : Character
 {
     Transform king;
+    Vector3 offset;
     NavMeshAgent agent;
     NetworkVariable<State> currentState = new NetworkVariable<State>(State.Idle, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
@@ -67,6 +69,8 @@ public class SoldierTest : Character
 
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
+        agent.avoidancePriority = UnityEngine.Random.Range(30, 70);
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 
         currentState.OnValueChanged += HandleAnimation;
     }
@@ -86,7 +90,7 @@ public class SoldierTest : Character
             timer -= Time.deltaTime;
             Vector2 forward = new Vector2(transform.position.z, transform.position.x);
             Vector2 targetPos = new Vector2(target.transform.position.z, target.transform.position.x);
-            
+
             Vector2 dir = targetPos - forward;
             float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
@@ -100,7 +104,7 @@ public class SoldierTest : Character
     IEnumerator SpearAttack()
     {
         StartCoroutine(RotateToTarget());
-        spearHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId);
+        //spearHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId);
         attackAble = false;
         SetTriggerAnimation("SpearAttack");
 
@@ -141,7 +145,7 @@ public class SoldierTest : Character
         if (newValue == State.Idle)
         {
             agent.avoidancePriority = 50;
-           
+
         }
         else if (newValue == State.Following)
         {
@@ -149,23 +153,32 @@ public class SoldierTest : Character
         }
     }
 
-    public void SetKing(Transform king)
+    public void SetKing(Transform king, Vector3 offset)
     {
         this.king = king;
-        agent.SetDestination(king.position);
+        this.offset = offset;
+        agent.SetDestination(GetFormationPosition());
     }
 
-    private void Update()
+    Vector3 GetFormationPosition()
+    {
+        Vector3 rotatedOffset = Quaternion.LookRotation(king.forward) * offset;
+
+        return king.position + rotatedOffset;
+    }
+
+    private void FixedUpdate()
     {
         if (!IsOwner) { return; }
         if (king == null) { return; }
 
         float sqrDistance = agent.stoppingDistance * agent.stoppingDistance;
-        float distanceToKing = Vector3.SqrMagnitude(transform.position - king.position);
+        float distanceToKing = Vector3.SqrMagnitude(transform.position - GetFormationPosition());
+
         bool isNearKing = distanceToKing <= sqrDistance * 1.2f;
         bool isFarKing = distanceToKing > sqrDistance * 1.5f;
         bool hasArrived = false;
-     
+
         if (target != null)
             hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon;
 
@@ -234,7 +247,7 @@ public class SoldierTest : Character
 
     void FollowingState(bool isNearKing)
     {
-        if (isNearKing && agent.velocity.sqrMagnitude < 0.01f)
+        if (isNearKing)
         {
             currentState.Value = State.Idle;
             agent.velocity = Vector3.zero;
@@ -248,9 +261,9 @@ public class SoldierTest : Character
     void FollowKing()
     {
         currentState.Value = State.Following;
-        agent.SetDestination(king.position);
+        agent.SetDestination(GetFormationPosition());
     }
-    
+
     void MoveTowardState(bool hasArrived)
     {
         // TODO: ¼öÁ¤
@@ -276,23 +289,23 @@ public class SoldierTest : Character
             AttackState(hasArrived);
         }
     }
-    
+
     void HandleItemPickup(bool hasArrived)
     {
         if (!isHoldingItem && hasArrived)
         {
             PickupItem();
         }
-        else if (isHoldingItem && !target.CompareTag("Occupy")) 
+        else if (isHoldingItem && !target.CompareTag("Occupy"))
         {
             if
             (networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName("Holding") &&
                networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
             { return; }
-            agent.SetDestination(king.position);
+            agent.SetDestination(GetFormationPosition());
         }
     }
-    
+
     void HandleItemDelivery(bool hasArrived)
     {
         if (hasArrived)
@@ -373,7 +386,7 @@ public class SoldierTest : Character
         SetAvatarLayerWeightserverRpc(1);
         SetTriggerAnimationserverRpc("Holding");
         agent.stoppingDistance = 0.3f;
-        agent.SetDestination(king.position);
+        agent.SetDestination(GetFormationPosition());
     }
 
     public void TryAttack(GameObject enemy)
