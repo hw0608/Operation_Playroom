@@ -27,7 +27,7 @@ public class OccupyManager : NetworkBehaviour
 
             if (networkObject != null)
             {
-                networkObject.Spawn(true);
+                //networkObject.Spawn(true);
                 networkObject.TrySetParent(occupyPool.GetComponent<NetworkObject>());
             }
             occupyInstance.transform.position = child.position; 

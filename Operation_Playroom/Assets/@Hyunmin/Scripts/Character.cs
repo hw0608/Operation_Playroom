@@ -18,7 +18,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     bool isGrounded;
     Vector3 velocity;
-    float detectItemRange = 0.7f;
+    float detectItemRange = 0.2f;
     NetworkVariable<Color> playerColor = new NetworkVariable<Color>(
         Color.white, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -41,11 +41,11 @@ public abstract class Character : NetworkBehaviour, ICharacter
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
 
-        if (bodyRenderer.material == null && headRenderer.material == null)
-        {
-            bodyRenderer.material = new Material(bodyRenderer.sharedMaterial);
-            headRenderer.material = new Material(headRenderer.sharedMaterial);
-        }
+        //if (bodyRenderer.material == null && headRenderer.material == null)
+        //{
+        //    bodyRenderer.material = new Material(bodyRenderer.sharedMaterial);
+        //    headRenderer.material = new Material(headRenderer.sharedMaterial);
+        //}
 
         attackAble = true;
         Cursor.lockState = CursorLockMode.Locked;
@@ -76,7 +76,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     }
 
     public override void OnDestroy()
-    {
+    {   
         playerColor.OnValueChanged -= OnPlayerColorChanged;
     }
 
@@ -217,7 +217,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 자원 찾기 (범위 내 가장 가까운 자원)
     GameObject FindNearestItem()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, detectItemRange);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, detectItemRange);
         Collider[] item = colliders.Where(col => col.CompareTag("Item")).ToArray();
 
         GameObject nearestItem = null; // 가까운 자원을 저장할 오브젝트
@@ -243,8 +243,9 @@ public abstract class Character : NetworkBehaviour, ICharacter
         isHoldingItem = true;
 
         // 아이템 오브젝트 위치시킴
-        targetItem.transform.SetParent(gameObject.transform);
-        targetItem.transform.localPosition = new Vector3(0, 2f, 0);
+        //targetItem.transform.SetParent(gameObject.transform);
+        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId,true);
+        //targetItem.transform.localPosition = new Vector3(0, 2f, 0);
 
         // 줍는 애니메이션
         SetAvatarLayerWeight(1);
@@ -259,13 +260,14 @@ public abstract class Character : NetworkBehaviour, ICharacter
         isHoldingItem = false;
 
         // 아이템 오브젝트 내려놓기
-        targetItem.transform.SetParent(null);
-        targetItem.transform.position = transform.position + transform.up * 0.08f + transform.forward * 0.25f; // 앞에 내려놓기
+        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
+        //targetItem.transform.position = transform.position + transform.up * 0.08f + transform.forward * 0.25f; // 앞에 내려놓기
         targetItem = null;
 
         // 애니메이션 해제
         SetAvatarLayerWeight(0);
         SetTriggerAnimation("Idle");
+
     }
 
     void SetTeamMaterial()
@@ -277,6 +279,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         {
             renderer.material = teamMaterial;
         }
+
     }
 
     // 애니메이션 Trigger 메서드

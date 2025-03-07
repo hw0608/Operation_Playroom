@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Pool;
 internal class Pool
@@ -7,7 +8,7 @@ internal class Pool
     private IObjectPool<GameObject> _pool;
 
     private Transform _root;
-    private Transform Root
+    public Transform Root
     {
         get
         {
@@ -42,7 +43,15 @@ internal class Pool
     private GameObject OnCreate()
     {
         GameObject go = GameObject.Instantiate(_prefab);
-        go.transform.SetParent(Root);
+        NetworkObject no;
+        if (go.TryGetComponent<NetworkObject>(out no))
+        {
+            no.Spawn();
+        }
+        else
+        {
+            go.transform.SetParent(Root);
+        }
         go.name = _prefab.name;
         return go;
     }

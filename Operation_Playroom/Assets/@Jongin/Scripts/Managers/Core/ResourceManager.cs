@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -31,7 +32,14 @@ public class ResourceManager
         if (pooling)
             return Managers.Pool.Pop(prefab);
 
-        GameObject go = Object.Instantiate(prefab, parent);
+        GameObject go = Object.Instantiate(prefab);
+        NetworkObject no;
+        if(go.TryGetComponent<NetworkObject>(out no))
+        {
+            no.Spawn();
+        }
+
+        go.transform.parent = parent;
         go.name = prefab.name;
 
         return go;
