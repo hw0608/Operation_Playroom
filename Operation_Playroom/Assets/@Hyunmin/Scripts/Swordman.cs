@@ -60,7 +60,7 @@ public class Swordman : Character
     // 칼 공격 코루틴
     IEnumerator SwordAttack()
     {
-        swordHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId);
+        swordHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId, team.Value);
         SetAvatarLayerWeight(1); // 상체 움직임으로 설정
         attackAble = false; // 재공격 비활성화
         SetTriggerAnimation("SwordAttack"); // 공격 모션 실행
