@@ -7855,7 +7855,7 @@ MonoBehaviour:
   initSpawnCount: 10
   layerMask:
     serializedVersion: 2
-    m_Bits: 640
+    m_Bits: 1664
   currentSpawnCount: 0
 --- !u!114 &1736646972
 MonoBehaviour:

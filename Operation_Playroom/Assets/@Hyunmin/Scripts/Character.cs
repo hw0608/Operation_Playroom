@@ -16,11 +16,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
-    bool isGrounded;
-    Vector3 velocity;
     float detectItemRange = 0.2f;
-    NetworkVariable<Color> playerColor = new NetworkVariable<Color>(
-        Color.white, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    NetworkVariable<Color> playerColor = new NetworkVariable<Color>(Color.white, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     protected bool attackAble;
     protected bool isHoldingItem;

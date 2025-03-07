@@ -11,6 +11,7 @@ public class ResourceData : NetworkBehaviour
     NetworkVariable<bool> isColliderEnable = new NetworkVariable<bool>();
     Collider resourceCollider;
     Coroutine delayColliderEnable;
+    Coroutine delayPushObject;
     public override void OnNetworkSpawn()
     {
         resourceCollider = GetComponent<Collider>();
@@ -30,7 +31,6 @@ public class ResourceData : NetworkBehaviour
 
     void ChangeColliderEnable(bool oldVal, bool newVal)
     {
-        Debug.Log(newVal);
         if (newVal)
         {
             if (delayColliderEnable != null)
@@ -70,9 +70,13 @@ public class ResourceData : NetworkBehaviour
             isColliderEnable.Value = true;
         }
     }
+
+
+
     IEnumerator DelayColliderEnable(bool value)
     {
         yield return new WaitForSeconds(0.3f);
         resourceCollider.enabled = value;
     }
+
 }
