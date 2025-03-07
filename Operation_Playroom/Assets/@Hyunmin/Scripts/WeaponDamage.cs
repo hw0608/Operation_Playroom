@@ -7,20 +7,34 @@ public class WeaponDamage : NetworkBehaviour
     [SerializeField] int damage = 10;
 
     ulong ownerClientId;
+    int ownerTeam;
     bool isCollision;
 
-    public void SetOwner(ulong ownerClientId)
+    public void SetOwner(ulong ownerClientId, int team)
     {
         this.ownerClientId = ownerClientId;
+        this.ownerTeam = team;
     }
 
     void OnTriggerEnter(Collider other)
     {
+        // 본인이 아닐 경우 리턴
         if (!IsOwner) return;
+
+        // 본인을 타격했을경우 리턴
         if (other.TryGetComponent<NetworkObject>(out NetworkObject obj))
         {
             if (ownerClientId == obj.OwnerClientId)
             {
+                return;
+            }
+        }
+        if (other.TryGetComponent<Character>(out Character targetCharacter))
+        {
+            // 팀 비교: 같은 팀이면 타격을 입히지 않음
+            if (ownerTeam == targetCharacter.team.Value)
+            {
+                Debug.Log("Same team, no damage applied.");
                 return;
             }
         }
