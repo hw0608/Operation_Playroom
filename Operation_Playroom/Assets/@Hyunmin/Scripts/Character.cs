@@ -268,6 +268,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         SetAvatarLayerWeight(0);
         SetTriggerAnimation("Idle");
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     }
 
     void SetTeamMaterial()
@@ -279,6 +280,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
         {
             renderer.material = teamMaterial;
         }
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     }
