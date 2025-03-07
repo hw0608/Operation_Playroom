@@ -22,8 +22,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     NetworkVariable<Color> playerColor = new NetworkVariable<Color>(
         Color.white, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-
-
     protected bool attackAble;
     protected bool isHoldingItem;
     protected float maxHp = 100;
@@ -41,12 +39,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
 
-        //if (bodyRenderer.material == null && headRenderer.material == null)
-        //{
-        //    bodyRenderer.material = new Material(bodyRenderer.sharedMaterial);
-        //    headRenderer.material = new Material(headRenderer.sharedMaterial);
-        //}
-
         attackAble = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -58,9 +50,9 @@ public abstract class Character : NetworkBehaviour, ICharacter
             team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
         }
 
-        if (IsServer)
+        foreach (var renderer in playerRenderers)
         {
-            playerColor.Value = Color.white;
+            renderer.material = new Material(teamMaterials[team.Value]);
         }
 
         // 색상 변경 이벤트 구독
