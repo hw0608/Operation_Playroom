@@ -104,7 +104,7 @@ public class SoldierTest : Character
     IEnumerator SpearAttack()
     {
         StartCoroutine(RotateToTarget());
-        //spearHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId);
+        spearHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId, team.Value);
         attackAble = false;
         SetTriggerAnimation("SpearAttack");
 
