@@ -7,11 +7,14 @@ public class WeaponDamage : NetworkBehaviour
     [SerializeField] int damage = 10;
 
     ulong ownerClientId;
+    int ownerTeam;
+
     bool isCollision;
 
-    public void SetOwner(ulong ownerClientId)
+    public void SetOwner(ulong ownerClientId, int ownerTeam)
     {
         this.ownerClientId = ownerClientId;
+        this.ownerTeam = ownerTeam;
     }
 
     void OnTriggerEnter(Collider other)
@@ -27,15 +30,18 @@ public class WeaponDamage : NetworkBehaviour
                 return;
             }
         }
-        if (other.TryGetComponent<Character>(out Character targetCharacter))
+
+        // 같은 팀 타격 시 리턴
+        if (other.TryGetComponent<Character>(out Character character))
         {
-            // 같은 팀이면 타격하지 않음
-            //if (ownerTeam == targetCharacter.team.Value)
-            //{
-            //    Debug.Log("Same team, no damage applied.");
-            //    return;
-            //}
+            if (ownerTeam == character.team.Value)
+            {
+                Debug.Log("Team Kill");
+                return;
+            }
         }
+
+        // 상대 팀 타격 시 데미지
         if (!isCollision)
         {
             isCollision = true;
@@ -57,6 +63,7 @@ public class WeaponDamage : NetworkBehaviour
         }
     }
 
+    // 데미지 콜라이더에 쿨타임을 적용하는 루틴
     IEnumerator ResetCollisionRoutine()
     {
         yield return new WaitForSeconds(0.5f);

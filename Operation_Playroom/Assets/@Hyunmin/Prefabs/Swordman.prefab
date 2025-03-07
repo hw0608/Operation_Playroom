@@ -3657,8 +3657,8 @@ MonoBehaviour:
   targetItem: {fileID: 0}
   weaponObject: {fileID: 171234}
   teamMaterials:
-  - {fileID: 2100000, guid: 98a7fdcb4ebb44344b4afe0424d44b82, type: 2}
   - {fileID: 2100000, guid: dccf8e44ede71db42b49378af93c5fb7, type: 2}
+  - {fileID: 2100000, guid: 98a7fdcb4ebb44344b4afe0424d44b82, type: 2}
   playerRenderers:
   - {fileID: 2369422}
   - {fileID: 2378074}

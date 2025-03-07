@@ -6,9 +6,9 @@ public class ProjectileLauncher : NetworkBehaviour
 {
     [SerializeField] GameObject serverProjectile;
     [SerializeField] GameObject clientProjectile;
+    [SerializeField] Character character;
 
     public float flightTime = 3f;
-
 
     public void ShootArrow(Transform shootPoint)
     {
@@ -22,7 +22,7 @@ public class ProjectileLauncher : NetworkBehaviour
         // 서버에서 실제 발사체 생성(데미지 처리)
         GameObject arrow = Managers.Pool.Pop(serverProjectile);
        
-        arrow.GetComponent<ProjectileDamage>().SetOwner(OwnerClientId);
+        arrow.GetComponent<ProjectileDamage>().SetOwner(OwnerClientId, character.team.Value);
 
         arrow.GetComponent<Projectile>().Launch(spawnPoint, direction);
 
