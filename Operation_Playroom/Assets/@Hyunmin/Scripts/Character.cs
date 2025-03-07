@@ -41,11 +41,11 @@ public abstract class Character : NetworkBehaviour, ICharacter
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
 
-        if (bodyRenderer.material == null && headRenderer.material == null)
-        {
-            bodyRenderer.material = new Material(bodyRenderer.sharedMaterial);
-            headRenderer.material = new Material(headRenderer.sharedMaterial);
-        }
+        //if (bodyRenderer.material == null && headRenderer.material == null)
+        //{
+        //    bodyRenderer.material = new Material(bodyRenderer.sharedMaterial);
+        //    headRenderer.material = new Material(headRenderer.sharedMaterial);
+        //}
 
         attackAble = true;
         Cursor.lockState = CursorLockMode.Locked;
@@ -53,15 +53,15 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         transform.position = new Vector3(0, 0.5f, 0);
 
-        if (IsOwner) 
-        {
-            team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
-        }
+        //if (IsOwner) 
+        //{
+        //    team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
+        //}
 
-        if (IsServer)
-        {
-            playerColor.Value = Color.white;
-        }
+        //if (IsServer)
+        //{
+        //    playerColor.Value = Color.white;
+        //}
 
         // 색상 변경 이벤트 구독
         playerColor.OnValueChanged += OnPlayerColorChanged;

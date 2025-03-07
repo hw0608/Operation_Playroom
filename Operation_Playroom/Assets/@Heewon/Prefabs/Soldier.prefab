@@ -18004,9 +18004,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2.0649788
+  m_Height: 1.9258997
   m_Direction: 1
-  m_Center: {x: 0, y: 0.90615517, z: 0}
+  m_Center: {x: 0, y: 0.9756948, z: 0}
 --- !u!54 &8384845805929768959
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -18015,7 +18015,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8455552684458472438}
   serializedVersion: 4
-  m_Mass: 10
+  m_Mass: 1
   m_Drag: 1
   m_AngularDrag: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -18032,7 +18032,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 84
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &2008463518462838688
 MonoBehaviour:
@@ -18133,6 +18133,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetItem: {fileID: 0}
   weaponObject: {fileID: 0}
+  bodyRenderer: {fileID: 0}
+  headRenderer: {fileID: 0}
   team:
     m_InternalValue: -1
   itemContainer: {fileID: 2959140947267073897}

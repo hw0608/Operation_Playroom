@@ -20,7 +20,7 @@ public class SoldierTest : Character
     Transform king;
     NavMeshAgent agent;
     NetworkVariable<State> currentState = new NetworkVariable<State>(State.Idle, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    float sqrStoppingDistance;
+    
 
     [SerializeField] Transform itemContainer;
     [SerializeField] GameObject spearHitbox;
@@ -67,8 +67,6 @@ public class SoldierTest : Character
 
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
-
-        sqrStoppingDistance = agent.stoppingDistance * agent.stoppingDistance;
 
         currentState.OnValueChanged += HandleAnimation;
     }
@@ -123,7 +121,14 @@ public class SoldierTest : Character
         {
             SetTriggerAnimationserverRpc("SpearAttack");
         }
-
+        if (newValue == State.Idle)
+        {
+            agent.avoidancePriority = 50;
+        }
+        else if (newValue == State.Following)
+        {
+            agent.avoidancePriority = 49;
+        }
     }
 
     public void SetKing(Transform king)
@@ -139,8 +144,8 @@ public class SoldierTest : Character
 
         float sqrDistance = agent.stoppingDistance * agent.stoppingDistance;
         float distanceToKing = Vector3.SqrMagnitude(transform.position - king.position);
-        bool isNearKing = distanceToKing <= sqrStoppingDistance * 1.2f;
-        bool isFarKing = distanceToKing > sqrStoppingDistance * 1.5f;
+        bool isNearKing = distanceToKing <= sqrDistance * 1.2f;
+        bool isFarKing = distanceToKing > sqrDistance * 1.5f;
         bool hasArrived = false;
      
         if (target != null)
@@ -197,6 +202,7 @@ public class SoldierTest : Character
     }
     void IdleState(bool isFarKing)
     {
+
         if (isFarKing)
         {
             FollowKing();
@@ -219,7 +225,6 @@ public class SoldierTest : Character
     void FollowKing()
     {
         currentState.Value = State.Following;
-
         agent.SetDestination(king.position);
     }
     
@@ -338,6 +343,7 @@ public class SoldierTest : Character
 
     void PickupItem()
     {
+        currentState.Value = State.Following;
         isHoldingItem = true;
         target.transform.SetParent(itemContainer);
         target.transform.localPosition = Vector3.zero;
@@ -345,21 +351,6 @@ public class SoldierTest : Character
         SetTriggerAnimationserverRpc("Holding");
         agent.stoppingDistance = 0.3f;
         agent.SetDestination(king.position);
-
-    }
-
-    public void GiveItem()
-    {
-        if (itemContainer.childCount > 0)
-        {
-            Transform item = itemContainer.GetChild(0);
-            item.SetParent(null);
-            item.position = transform.position; 
-        }
-        SetAvatarLayerWeightserverRpc(0);
-        //currentState.Value = State.Idle;
-        isHoldingItem = false;
-        ResetState();
     }
 
     public void TryAttack(GameObject enemy)
@@ -367,14 +358,14 @@ public class SoldierTest : Character
         Debug.Log("TryAttack");
         currentState.Value = State.MoveToward;
         target = enemy;
-        agent.stoppingDistance = 0.1f;
+        agent.stoppingDistance = 0.2f;
         agent.SetDestination(target.transform.position);
     }
 
     public void ResetState()
     {
         if (isHoldingItem) { return; }
-        agent.stoppingDistance = 0.5f;
+        agent.stoppingDistance = 0.3f;
         currentState.Value = State.Following;
     }
 }

@@ -13586,7 +13586,6 @@ GameObject:
   - component: {fileID: 7808469528344250338}
   - component: {fileID: 5142026032379993717}
   - component: {fileID: 6567251517888913678}
-  - component: {fileID: -6791188696187152576}
   - component: {fileID: -2464251044387882103}
   m_Layer: 0
   m_Name: King 2
@@ -13761,6 +13760,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetItem: {fileID: 0}
   weaponObject: {fileID: 0}
+  bodyRenderer: {fileID: 0}
+  headRenderer: {fileID: 0}
   team:
     m_InternalValue: -1
   initialSoldiersCount: 3
@@ -13811,22 +13812,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   soldierPrefab: {fileID: 8455552684458472438, guid: bf7978dd03808084d97d940bcd000b80, type: 3}
---- !u!208 &-6791188696187152576
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9142197980193174957}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 0
-  m_Extents: {x: 0.1, y: 1, z: 0.1}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
 --- !u!114 &-2464251044387882103
 MonoBehaviour:
   m_ObjectHideFlags: 0

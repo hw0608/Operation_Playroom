@@ -39,7 +39,6 @@ public class KingTest : Character
         {
             GameObject nearestOccupy = FindNearestOccupy();
 
-            Debug.Log(nearestOccupy);
             if (nearestOccupy != null && HasSoldierWithItem())
             {
                 CommandSoldierToDeliverItem(nearestOccupy);
@@ -72,7 +71,6 @@ public class KingTest : Character
             if (soldier.isHoldingItem)
             {
                 soldier.TryDeliverItemToOccupy(occupy);
-                break;
             }
         }
     }
@@ -127,10 +125,6 @@ public class KingTest : Character
     {
         foreach (SoldierTest soldier in soldiers)
         {
-            if (soldier.isHoldingItem)
-            {
-                soldier.GiveItem();
-            }
             soldier.ResetState();
         }
     }
