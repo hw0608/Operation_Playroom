@@ -99,7 +99,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkTransformExpanded: 0
   AuthorityMode: 0
-  TickSyncChildren: 0
+  TickSyncChildren: 1
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
@@ -134,6 +134,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   currentOwner: 0
+  isColliderEnable:
+    m_InternalValue: 1
+  resourceCollider: {fileID: 0}
 --- !u!1001 &1023930065547146509
 PrefabInstance:
   m_ObjectHideFlags: 0

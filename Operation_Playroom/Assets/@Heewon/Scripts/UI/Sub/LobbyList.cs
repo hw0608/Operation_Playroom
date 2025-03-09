@@ -17,15 +17,16 @@ public enum VisibilityToggleType
 
 public class LobbyList : MonoBehaviour
 {
-    [SerializeField] Transform lobbyItemParent;
-    [SerializeField] LobbyItem lobbyItemPrefab;
+    [SerializeField] Transform roomItemParent;
+    [SerializeField] LobbyItem roomItemPrefab;
 
-    [Header("Create Lobby")]
-    [SerializeField] TMP_InputField lobbyNameInputField;
+    [Header("Create Room")]
+    [SerializeField] TMP_InputField roomNameInputField;
     [SerializeField] ToggleGroup visibilityToggleGroup;
     [SerializeField] TMP_InputField createPasswordInputField;
+    [SerializeField] TMP_Text PasswordSettingWarningText;
 
-    [Header("Join Lobby")]
+    [Header("Join Room")]
     [SerializeField] GameObject joinPasswordPanel;
     [SerializeField] Button joinPasswordButton;
     [SerializeField] TMP_InputField joinPasswordInputField;
@@ -54,14 +55,14 @@ public class LobbyList : MonoBehaviour
             };
             QueryResponse lobbies = await LobbyService.Instance.QueryLobbiesAsync(options);
 
-            foreach (Transform child in lobbyItemParent)
+            foreach (Transform child in roomItemParent)
             {
                 Destroy(child.gameObject);
             }
 
             foreach (Lobby lobby in lobbies.Results)
             {
-                LobbyItem lobbyItem = Instantiate(lobbyItemPrefab, lobbyItemParent);
+                LobbyItem lobbyItem = Instantiate(roomItemPrefab, roomItemParent);
                 lobbyItem.SetItem(this, lobby);
             }
         }
@@ -138,16 +139,15 @@ public class LobbyList : MonoBehaviour
         {
             options.Password = password;
         }
-        else if (password.Length > 0)
+        else if (password.Length >= 0)
         {
-            MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
-            popup.SetText("password should be at least 8 chars long");
-            popup.Show();
+            PasswordSettingWarningText.gameObject.SetActive(true);
+            PasswordSettingWarningText.text = "비밀번호는 최소 8자 이상이어야 합니다.";
             return;
         }
 
         options.IsPrivate = isPrivate;
 
-        await HostSingleton.Instance.StartHostAsync(options, lobbyNameInputField.text);
+        await HostSingleton.Instance.StartHostAsync(options, roomNameInputField.text);
     }
 }

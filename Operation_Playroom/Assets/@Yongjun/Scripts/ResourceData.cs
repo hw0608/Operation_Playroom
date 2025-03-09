@@ -8,8 +8,8 @@ public class ResourceData : NetworkBehaviour
 {
     [SerializeField] Owner currentOwner = Owner.Neutral;
     Transform originalTransform;
-    NetworkVariable<bool> isColliderEnable = new NetworkVariable<bool>();
-    Collider resourceCollider;
+    public NetworkVariable<bool> isColliderEnable = new NetworkVariable<bool>();
+    public Collider resourceCollider;
     Coroutine delayColliderEnable;
     Coroutine delayPushObject;
     public override void OnNetworkSpawn()
