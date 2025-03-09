@@ -27,8 +27,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - default
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3914c805c98199540995a4dafe247dcb
+    m_Address: BuildingRed
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3dc39d438e3d15745a725d545903a2ee
+    m_Address: BuildingDestroyEffect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40469bcefaafd0c4fa0f8a848b6fbd0c
+    m_Address: BuildingSmokeEffect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 60f6d4bfc4da5014cbda251d40147045
     m_Address: Archer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65db92258586b9741b1ff6f01d7edfe9
+    m_Address: BuildCompleteEffect
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e02ae7fb3d27cf4f9dcd8543a2be3f3
+    m_Address: BuildingBlue
     m_ReadOnly: 0
     m_SerializedLabels:
     - default

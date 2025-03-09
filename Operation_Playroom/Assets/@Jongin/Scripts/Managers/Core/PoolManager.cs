@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Entities;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -94,7 +95,9 @@ public class PoolManager
     public bool Push(GameObject go)
     {
         if (_pools.ContainsKey(go.name) == false)
+        {
             return false;
+        }
 
         _pools[go.name].Push(go);
         return true;

@@ -1,52 +1,73 @@
-using UnityEngine;
 using System.Collections;
 using Unity.Netcode;
+using UnityEngine;
 
 public class Building : NetworkBehaviour
 {
     // 건물 체력
-    [SerializeField] NetworkVariable<int> health = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> health = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     // 스크립터블 오브젝트
     [SerializeField] BuildingScriptableObject buildingData;
-    [SerializeField] EffectScriptableObject effectData;
-    
+
     // 중복 철거 방지
     bool isDestruction = false;
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
+        Debug.Log("BuildingSpawn!");
+        health.OnValueChanged -= OnHealthChange;
+        health.OnValueChanged += OnHealthChange;
+    }
+    public override void OnNetworkDespawn()
+    {
+        health.OnValueChanged -= OnHealthChange;
+    }
+    public void OnHealthChange(int oldVal, int newVal)
+    {
+        if (newVal <= 0 && !isDestruction)
         {
-            health.Value = buildingData.health;
-        }
-
-        if (IsClient)
-        {
-            StartCoroutine(RaiseBuilding(3f));
+            isDestruction = true;
+            if (IsServer)
+            {
+                DestructionBuilding();
+            }
         }
     }
+
+    public void BuildingInit()
+    {
+        Debug.Log("Building Init!");
+        health.Value = buildingData.health;
+        Debug.Log(health.Value);
+
+        StartCoroutine(RaiseBuilding(3f));
+    }
+
 
     void Update()
     {
         if (!IsServer) return;
 
-        if (health.Value <= 0 && !isDestruction)
+        if (Input.GetKeyDown(KeyCode.K))
         {
-            isDestruction = true;
-            DestructionBuildingServerRpc();
+            health.Value = 0;
         }
+
     }
 
     IEnumerator RaiseBuilding(float duration)
     {
         float elapsedTime = 0f;
-        Vector3 startPos = transform.localPosition;
-        Vector3 targetPos = new Vector3(0f, 10f, 0f);
+        Vector3 startPos = new Vector3(0, -25f, 0);
+        Vector3 targetPos = new Vector3(0f, 5f, 0f);
 
-        GameObject buildEffect = Instantiate(effectData.buildEffect, transform.position, Quaternion.identity, transform);
-        buildEffect.transform.SetParent(transform, true);
-        buildEffect.transform.localPosition = new Vector3(0f, 0f, 1.5f);
+        GameObject buildEffect = Managers.Resource.Instantiate("BuildingSmokeEffect", null, true);
+        ActiveNetworkObjectClientRpc(buildEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
+        if (buildEffect.GetComponent<NetworkObject>().TrySetParent(transform.parent, true))
+        {
+            buildEffect.transform.localPosition = Vector3.zero;
+        }
 
         while (elapsedTime < duration)
         {
@@ -55,40 +76,52 @@ public class Building : NetworkBehaviour
             yield return null;
         }
         transform.localPosition = targetPos;
-        Destroy(buildEffect);
 
-        GameObject sparkleEffect = Instantiate(effectData.sparkleEffect, transform.position, Quaternion.identity);
-        sparkleEffect.transform.SetParent(transform, true);
-        sparkleEffect.transform.localPosition = Vector3.zero;
-        yield return new WaitForSeconds(0.5f);
-        Destroy(sparkleEffect);
+        Managers.Pool.Push(buildEffect);
+        ActiveNetworkObjectClientRpc(buildEffect.GetComponent<NetworkObject>().NetworkObjectId, false);
+
+        GameObject sparkleEffect = Managers.Resource.Instantiate("BuildCompleteEffect");
+        ActiveNetworkObjectClientRpc(sparkleEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
+        if (sparkleEffect.GetComponent<NetworkObject>().TrySetParent(transform, true))
+        {
+            sparkleEffect.transform.localPosition = Vector3.zero;
+            yield return new WaitForSeconds(0.5f);
+            Managers.Pool.Push(sparkleEffect);
+            ActiveNetworkObjectClientRpc(sparkleEffect.GetComponent<NetworkObject>().NetworkObjectId, false);
+        };
+        isDestruction = false;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    void DestructionBuildingServerRpc()
+    void DestructionBuilding()
     {
-        GetComponent<OccupySystem>().ResetOwnershipServerRpc();
-
-        DestructionBuildingClientRpc();
-
-        NetworkObject networkObject = GetComponent<NetworkObject>();
-        if (networkObject != null)
+        GetComponentInParent<OccupySystem>().ResetOwnership();
+        GameObject destructionEffect = Managers.Resource.Instantiate("BuildingDestroyEffect", null, true);
+        ActiveNetworkObjectClientRpc(destructionEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
+        if (destructionEffect.GetComponent<NetworkObject>().TrySetParent(transform.parent, true))
         {
-            networkObject.Despawn(true);
+            destructionEffect.transform.localPosition = Vector3.zero;
+            StartCoroutine(DelayPushEffect(destructionEffect, 3.25f));
+            transform.localPosition = new Vector3(0, -25f, 0);
+        }
+    }
+    IEnumerator DelayPushEffect(GameObject effect, float time)
+    {
+        yield return new WaitForSeconds(time);
+        Managers.Pool.Push(effect);
+        ActiveNetworkObjectClientRpc(effect.GetComponent<NetworkObject>().NetworkObjectId, false);
+        Managers.Pool.Push(gameObject);
+        ActiveNetworkObjectClientRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
+    }
+    [ClientRpc]
+    void ActiveNetworkObjectClientRpc(ulong networkObjectId, bool isActive)
+    {
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out NetworkObject networkObject))
+        {
+            networkObject.gameObject.SetActive(isActive);
         }
     }
 
-    [ClientRpc]
-    void DestructionBuildingClientRpc()
-    {
-        if (IsServer) return;
 
-        GameObject destructionEffect = Instantiate(effectData.destructionEffect, transform.position, Quaternion.identity);
-        destructionEffect.transform.SetParent(transform, true);
-        destructionEffect.transform.localPosition = Vector3.zero;
-        Destroy(destructionEffect, 3.25f);
-        gameObject.SetActive(false);
-    }
 
     [ServerRpc(RequireOwnership = false)]
     public void TakeDamageServerRpc(int damage)
