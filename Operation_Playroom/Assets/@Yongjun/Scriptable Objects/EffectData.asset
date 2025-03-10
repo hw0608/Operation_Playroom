@@ -15,3 +15,4 @@ MonoBehaviour:
   buildEffect: {fileID: 402978979610626135, guid: 91228e5d4bb78114faab80ec61075e9e, type: 3}
   sparkleEffect: {fileID: 1625590031068301035, guid: c86032e58accc344a8f33beb96a3ba1c, type: 3}
   destructionEffect: {fileID: 7258070247710157660, guid: e7271791a91f3544d9493cc1f0179576, type: 3}
+  buildingHitEffect: {fileID: 1625590031068301035, guid: 38e898beec5d77243b5a88aacbb19224, type: 3}

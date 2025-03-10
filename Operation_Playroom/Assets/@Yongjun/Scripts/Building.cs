@@ -13,6 +13,17 @@ public class Building : NetworkBehaviour
     // 중복 철거 방지
     bool isDestruction = false;
 
+    // 건물 메쉬
+    MeshFilter meshFilter;
+
+    // 건물 체력 상태
+    int currentState = 3; // 3: 기본, 2: 손상, 1: 많이 손상
+
+    void Start()
+    {
+        meshFilter = GetComponent<MeshFilter>();
+    }
+
     public override void OnNetworkSpawn()
     {
         Debug.Log("BuildingSpawn!");
@@ -27,6 +38,15 @@ public class Building : NetworkBehaviour
 
     public void OnHealthChange(int oldVal, int newVal)
     {
+        //// ~
+        int damage = oldVal - newVal;
+        if (damage > 0)
+        {
+            StartCoroutine(PlayDamageEffect());
+        }
+        UpdateBuildingMesh(newVal);
+        //// ~
+
         if (newVal <= 0 && !isDestruction)
         {
             isDestruction = true;
@@ -48,13 +68,15 @@ public class Building : NetworkBehaviour
 
     void Update()
     {
-        if (!IsServer) return;
-
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            health.Value = 0;
+            TakeDamageServerRpc(10);
         }
 
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            TakeDamageServerRpc(100);
+        }
     }
 
     IEnumerator RaiseBuilding(float duration)
@@ -125,11 +147,44 @@ public class Building : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(int damage)
+    public void TakeDamageServerRpc(int damage) // 테스트용도 서버한테 건물 체력감소 요청. 나중에 지워도 됩니다
     {
         if (health.Value > 0)
         {
             health.Value -= damage;
         }
+    }
+
+    void UpdateBuildingMesh(int health)
+    {
+        float healthPer = (float)health / buildingData.health;
+        int state = (healthPer > 0.6f) ? 3 : (healthPer > 0.2f) ? 2 : 1; // 건물체력이 60%이상일때 보통, 20~60%일때 손상, 20%미만일때 많이손상
+
+        if (currentState == state) return;
+
+        currentState = state;
+
+        switch (state) 
+        {
+            case 3:
+                meshFilter.mesh = buildingData.defaultMesh;
+                break;
+
+            case 2:
+                meshFilter.mesh = buildingData.brokenMesh;
+                break;
+
+            case 1:
+                meshFilter.mesh = buildingData.hardBrokenMesh;
+                break;
+        }
+    }
+
+    IEnumerator PlayDamageEffect()
+    {
+        // 건물 피해 입을 때 이펙트
+     
+        
+        yield return null;
     }
 }
