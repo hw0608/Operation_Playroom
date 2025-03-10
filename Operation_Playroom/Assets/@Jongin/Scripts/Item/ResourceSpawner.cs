@@ -21,10 +21,7 @@ public class ResourceSpawner : NetworkBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
 
-        }
     }
     Collider[] itemBuffer = new Collider[1];
     public void InitSpawnResource(int count)
@@ -73,40 +70,31 @@ public class ResourceSpawner : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void NotifyResourceSpawnedClientRpc(ulong networkObjectId, int randInt)
+    private void NotifyResourceSpawnedClientRpc(ulong networkObjectId)
     {
         GameObject resourceObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId].gameObject;
         resourceObject.SetActive(true);
-        StartCoroutine(DelayActiveChild(resourceObject, randInt));
+        StartCoroutine(DelayActiveChild(resourceObject));
     }
     public void SpawnResource()
     {
         Vector3 randomPos = GetRandomSpawnPos();
         if (randomPos == Vector3.zero) return;
 
-        int randInt = Random.Range(0, 3);
         GameObject go = Managers.Resource.Instantiate("ResourcePrefab", null, true);
         if (go.transform.parent != resourceParent)
             go.GetComponent<NetworkObject>().TrySetParent(resourceParent, true);
-
         go.transform.position = new Vector3(randomPos.x, 0, randomPos.z);
-        //for (int j = 0; j < go.transform.childCount; j++) 
-        //{
-        //    go.transform.GetChild(j).gameObject.SetActive(false);
-        //}
-        //go.transform.GetChild(randInt).gameObject.SetActive(true);
-        NotifyResourceSpawnedClientRpc(go.GetComponent<NetworkObject>().NetworkObjectId, randInt);
-        currentSpawnCount++;
-    }
 
-    IEnumerator DelayActiveChild(GameObject go, int activeChildIndex)
+        DelayActiveChild(go);
+        NotifyResourceSpawnedClientRpc(go.GetComponent<NetworkObject>().NetworkObjectId);
+        currentSpawnCount++;
+    }  
+
+    IEnumerator DelayActiveChild(GameObject go)
     {
         yield return new WaitForSeconds(0.5f);
-        // 자식 객체들 중 지정된 인덱스만 활성화
-        for (int i = 0; i < go.transform.childCount; i++)
-        {
-            go.transform.GetChild(i).gameObject.SetActive(i == activeChildIndex);
-        }
+        go.transform.GetChild(0).gameObject.SetActive(true);
         go.GetComponent<ResourceData>().resourceCollider.enabled = true;
     }
 }
