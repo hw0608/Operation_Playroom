@@ -42,7 +42,10 @@ public class Building : NetworkBehaviour
         int damage = oldVal - newVal;
         if (damage > 0)
         {
-            StartCoroutine(PlayDamageEffect());
+            if (IsServer)
+            {
+                StartCoroutine(PlayDamageEffect());
+            }
         }
         UpdateBuildingMesh(newVal);
         //// ~
@@ -63,7 +66,7 @@ public class Building : NetworkBehaviour
         health.Value = buildingData.health;
         Debug.Log(health.Value);
 
-        StartCoroutine(RaiseBuilding(3f));
+        StartCoroutine(RaiseBuilding(2f));
     }
 
     void Update()
@@ -183,8 +186,14 @@ public class Building : NetworkBehaviour
     IEnumerator PlayDamageEffect()
     {
         // 건물 피해 입을 때 이펙트
-     
-        
-        yield return null;
+        GameObject damageEffect = Managers.Resource.Instantiate("BuildingDamageEffect", null, true);
+        ActiveNetworkObjectClientRpc(damageEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
+        if (damageEffect.GetComponent<NetworkObject>().TrySetParent(transform.parent, true))
+        {
+            damageEffect.transform.localPosition = Vector3.zero;
+            yield return new WaitForSeconds(1f);
+            Managers.Pool.Push(damageEffect);
+            ActiveNetworkObjectClientRpc(damageEffect.GetComponent<NetworkObject>().NetworkObjectId, false);
+        }
     }
-}
+} 
