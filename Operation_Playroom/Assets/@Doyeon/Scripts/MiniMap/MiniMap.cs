@@ -1,16 +1,10 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class MiniMap : MonoBehaviour
+public class MiniMap : NetworkBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private Camera minimapCamera;
+    [SerializeField] private GameObject[] occupyPoints;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
