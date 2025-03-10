@@ -18,8 +18,7 @@ public class GameManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        remainTime.OnValueChanged -= OnChangeTimer;
-        remainTime.OnValueChanged += OnChangeTimer;
+
         gameState = EGameState.Ready;
 
         textSequence = DOTween.Sequence();
@@ -34,7 +33,12 @@ public class GameManager : NetworkBehaviour
             remainTime.Value = 600f;
             StartCoroutine(CallReadyMessage());
         }
-    }
+        else
+        {
+            remainTime.OnValueChanged -= OnChangeTimer;
+            remainTime.OnValueChanged += OnChangeTimer;
+        }
+    } 
 
     public override void OnNetworkDespawn()
     {
@@ -46,15 +50,6 @@ public class GameManager : NetworkBehaviour
     void Update()
     {
         if (gameState != EGameState.Play) return;
-
-        if (IsServer)
-        {
-
-        }
-        else
-        {
-
-        }
     }
 
 
