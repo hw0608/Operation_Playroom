@@ -2030,6 +2030,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: RedMainCamp
       objectReference: {fileID: 0}
+    - target: {fileID: 3631701817389202068, guid: 493a8bfeb5e0d3944912c415d966279f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7275597241540509231, guid: 493a8bfeb5e0d3944912c415d966279f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8759178095781155676, guid: 493a8bfeb5e0d3944912c415d966279f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8944582029856936438, guid: 493a8bfeb5e0d3944912c415d966279f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.844
@@ -9386,6 +9398,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1000591018365443635, guid: a6bce41fe1276fc4796967c7f8407e3a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1108572730854884188, guid: a6bce41fe1276fc4796967c7f8407e3a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4102651722341004145, guid: a6bce41fe1276fc4796967c7f8407e3a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7827217294158200499, guid: a6bce41fe1276fc4796967c7f8407e3a, type: 3}
       propertyPath: m_Name
       value: BlueMainCamp

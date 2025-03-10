@@ -275,7 +275,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         isHoldingItem = true;
 
         // 아이템 오브젝트 위치시킴
-        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true);
+        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true, team.Value);
 
         // 줍는 애니메이션
         SetAvatarLayerWeight(1);
@@ -290,7 +290,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         isHoldingItem = false;
 
         // 아이템 오브젝트 내려놓기
-        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
+        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
         targetItem = null;
 
         // 애니메이션 해제

@@ -237,7 +237,7 @@ public class SoldierTest : Character
             return;
         }
 
-        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
+        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false , 0);
         myItem = null;
         isHoldingItem = false;
         SetAvatarLayerWeight(0);
@@ -258,7 +258,7 @@ public class SoldierTest : Character
     {
         currentState.Value = State.Following;
         isHoldingItem = true;
-        target.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true);
+        target.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true, 0);
         myItem = target;
         SetAvatarLayerWeight(1);
         SetTriggerAnimation("Holding");
