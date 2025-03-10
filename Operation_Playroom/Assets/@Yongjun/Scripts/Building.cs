@@ -19,10 +19,12 @@ public class Building : NetworkBehaviour
         health.OnValueChanged -= OnHealthChange;
         health.OnValueChanged += OnHealthChange;
     }
+
     public override void OnNetworkDespawn()
     {
         health.OnValueChanged -= OnHealthChange;
     }
+
     public void OnHealthChange(int oldVal, int newVal)
     {
         if (newVal <= 0 && !isDestruction)
@@ -43,7 +45,6 @@ public class Building : NetworkBehaviour
 
         StartCoroutine(RaiseBuilding(3f));
     }
-
 
     void Update()
     {
@@ -104,6 +105,7 @@ public class Building : NetworkBehaviour
             transform.localPosition = new Vector3(0, -25f, 0);
         }
     }
+
     IEnumerator DelayPushEffect(GameObject effect, float time)
     {
         yield return new WaitForSeconds(time);
@@ -112,6 +114,7 @@ public class Building : NetworkBehaviour
         Managers.Pool.Push(gameObject);
         ActiveNetworkObjectClientRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
     }
+
     [ClientRpc]
     void ActiveNetworkObjectClientRpc(ulong networkObjectId, bool isActive)
     {
@@ -120,8 +123,6 @@ public class Building : NetworkBehaviour
             networkObject.gameObject.SetActive(isActive);
         }
     }
-
-
 
     [ServerRpc(RequireOwnership = false)]
     public void TakeDamageServerRpc(int damage)
