@@ -144,8 +144,11 @@ MonoBehaviour:
   targetItem: {fileID: 0}
   weaponObject: {fileID: 1415012297644262731}
   teamMaterials:
-  - {fileID: 2100000, guid: 98a7fdcb4ebb44344b4afe0424d44b82, type: 2}
   - {fileID: 2100000, guid: dccf8e44ede71db42b49378af93c5fb7, type: 2}
+  - {fileID: 2100000, guid: 98a7fdcb4ebb44344b4afe0424d44b82, type: 2}
+  damageMaterials:
+  - {fileID: 2100000, guid: 4f5e367a826793646be938a5776eed32, type: 2}
+  - {fileID: 2100000, guid: fb357c43975f9eb4f8a48d0117650fee, type: 2}
   playerRenderers:
   - {fileID: 3715174852491810640}
   - {fileID: 7858767670652734736}
@@ -1332,7 +1335,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: dccf8e44ede71db42b49378af93c5fb7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3019,7 +3022,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: dccf8e44ede71db42b49378af93c5fb7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10669,7 +10672,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: dccf8e44ede71db42b49378af93c5fb7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11873,7 +11876,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: dccf8e44ede71db42b49378af93c5fb7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

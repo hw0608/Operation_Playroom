@@ -13,12 +13,12 @@ public abstract class Character : NetworkBehaviour, ICharacter
     [SerializeField] GameObject targetItem;
     [SerializeField] GameObject weaponObject;
     [SerializeField] Material[] teamMaterials;
+    [SerializeField] Material[] damageMaterials;
     [SerializeField] Renderer[] playerRenderers;
 
     public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     float detectItemRange = 0.2f;
-    NetworkVariable<Color> playerColor = new NetworkVariable<Color>(Color.white, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     protected bool attackAble;
     protected bool isHoldingItem;
@@ -50,7 +50,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
             team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
         }
 
-        playerColor.OnValueChanged += OnPlayerColorChanged;
         team.OnValueChanged += (oldValue, newValue) => OnTeamValueChanged(newValue);
 
         if (IsClient)
@@ -61,69 +60,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
         OnTeamValueChanged(team.Value);
     }
 
-    void SyncMaterialsOnSpawn()
-    {
-        Character[] players = FindObjectsByType<Character>(FindObjectsSortMode.None);
-
-        foreach (Character player in players)
-        {
-            if (player != this)
-            {
-                player.ApplyMaterial(player.team.Value); 
-            }
-        }
-    }
-
-    void OnTeamValueChanged(int teamValue)
-    {
-        if (teamMaterials == null || teamMaterials.Length == 0)
-        {
-            return;
-        }
-
-        if (teamValue < 0 || teamValue >= teamMaterials.Length)
-        {
-            teamValue = 0;
-        }
-
-        UpdateTeamMaterialClientRpc(teamValue);
-    }
-
-    void ApplyMaterial(int teamIndex)
-    {
-        Material targetMaterial = teamMaterials[teamIndex];
-        foreach (var renderer in playerRenderers)
-        {
-            if (renderer != null)
-            {
-                renderer.material = targetMaterial;
-            }
-        }
-    }
-
-    [ClientRpc]
-    void UpdateTeamMaterialClientRpc(int teamIndex)
-    {
-        if (playerRenderers == null || playerRenderers.Length == 0)
-        {
-            Debug.LogError("Null");
-            return;
-        }
-
-        Material targetMaterial = teamMaterials[teamIndex];
-
-        foreach (var renderer in playerRenderers)
-        {
-            if (renderer != null)
-            {
-                renderer.material = teamMaterials[teamIndex];
-            }
-        }
-    }
-
     public override void OnDestroy()
     {
-        playerColor.OnValueChanged -= OnPlayerColorChanged;
         team.OnValueChanged -= (oldValue, newValue) => OnTeamValueChanged(newValue);
     }
 
@@ -131,17 +69,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public abstract void Interaction(); // 상호작용 구현
     public abstract void HandleInput(); // 키 입력 구현
 
-    // 플레이어 피격 시 색상 변경 메서드
-    private void OnPlayerColorChanged(Color previousValue, Color newValue)
-    {
-        if (playerRenderers != null)
-        {
-            foreach (var renderer in playerRenderers)
-            {
-                renderer.sharedMaterial.color = newValue;
-            }
-        }
-    }
 
     // 이동 메서드
     public virtual void Move(CinemachineCamera cam, Rigidbody rb)
@@ -191,18 +118,12 @@ public abstract class Character : NetworkBehaviour, ICharacter
         SetAvatarLayerWeightClientRpc(1);
         SetTriggerAnimationClientRpc("Damage");
 
-        if (IsServer)
-        {
-            playerColor.Value = Color.red;
-        }
+        ApplyDamageMaterialClientRpc(team.Value);
         attackAble = false;
 
         yield return new WaitForSeconds(0.5f);
 
-        if (IsServer)
-        {
-            playerColor.Value = Color.white;
-        }
+        ApplyMaterialClientRpc(team.Value);
 
         SetAvatarLayerWeight(0);
 
@@ -210,6 +131,96 @@ public abstract class Character : NetworkBehaviour, ICharacter
         damageRoutine = null;
     }
 
+    void SyncMaterialsOnSpawn()
+    {
+        Character[] players = FindObjectsByType<Character>(FindObjectsSortMode.None);
+
+        foreach (Character player in players)
+        {
+            if (player != this)
+            {
+                player.ApplyMaterial(player.team.Value);
+            }
+        }
+    }
+
+    void OnTeamValueChanged(int teamValue)
+    {
+        if (teamMaterials == null || teamMaterials.Length == 0)
+        {
+            return;
+        }
+
+        if (teamValue < 0 || teamValue >= teamMaterials.Length)
+        {
+            teamValue = 0;
+        }
+
+        UpdateTeamMaterialClientRpc(teamValue);
+        SyncMaterialsOnSpawn();
+    }
+
+    void ApplyMaterial(int teamIndex)
+    {
+        if (teamIndex < 0) return;
+        Debug.Log("Apply");
+        Material targetMaterial = teamMaterials[teamIndex];
+        foreach (var renderer in playerRenderers)
+        {
+            if (renderer != null)
+            {
+                renderer.material = targetMaterial;
+            }
+        }
+    }
+
+    [ClientRpc]
+    void ApplyMaterialClientRpc(int teamIndex)
+    {
+        if (teamIndex < 0) return;
+        Debug.Log("Apply");
+        foreach (var renderer in playerRenderers)
+        {
+            if (renderer != null)
+            {
+                renderer.material = teamMaterials[teamIndex];
+            }
+        }
+    }
+
+    [ClientRpc]
+    void ApplyDamageMaterialClientRpc(int teamIndex)
+    {
+        if (teamIndex < 0) return;
+        Debug.Log("Damage Apply");
+        foreach (var renderer in playerRenderers)
+        {
+            if (renderer != null)
+            {
+                renderer.material = damageMaterials[teamIndex];
+            }
+        }
+    }
+
+    [ClientRpc]
+    void UpdateTeamMaterialClientRpc(int teamIndex)
+    {
+        if (playerRenderers == null || playerRenderers.Length == 0)
+        {
+            Debug.LogError("Null");
+            return;
+        }
+
+        Material targetMaterial = teamMaterials[teamIndex];
+
+        foreach (var renderer in playerRenderers)
+        {
+            if (renderer != null)
+            {
+                renderer.material = new Material(teamMaterials[teamIndex]);
+            }
+        }
+    }
 
     // 사망 메서드
     public void Die()
