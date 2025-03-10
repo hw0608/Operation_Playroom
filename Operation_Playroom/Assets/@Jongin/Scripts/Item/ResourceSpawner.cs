@@ -10,7 +10,7 @@ public class ResourceSpawner : NetworkBehaviour
     [SerializeField] LayerMask layerMask;
 
     public int currentSpawnCount;
-    public override void OnNetworkSpawn()
+    public override void OnNetworkSpawn() 
     {
         if (IsServer)
         {
