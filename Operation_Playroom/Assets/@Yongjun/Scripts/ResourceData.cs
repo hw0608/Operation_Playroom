@@ -61,6 +61,7 @@ public class ResourceData : NetworkBehaviour
     {
         if (isPickUp)
         {
+            isHolding.Value = true;
             NetworkObject newParent = NetworkManager.Singleton.SpawnManager.SpawnedObjects[targetId];
             GetComponent<NetworkObject>().TrySetParent(newParent);
             transform.localPosition = new Vector3(0, 1f, 0);
@@ -74,12 +75,6 @@ public class ResourceData : NetworkBehaviour
             transform.position = new Vector3(newPos.x, 0, newPos.z); // 앞에 내려놓기
             isColliderEnable.Value = true;
         }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void HoldServerRpc()
-    {
-        isHolding.Value = true;
     }
 
 

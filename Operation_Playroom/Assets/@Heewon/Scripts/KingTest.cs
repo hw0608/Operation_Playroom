@@ -183,6 +183,7 @@ public class KingTest : Character
     {
         foreach (SoldierTest soldier in soldiers)
         {
+            if (soldier == null) continue;
             GameObject occupy = FindNearestOccupy();
             if (soldier.HasItem)
             {
@@ -195,6 +196,7 @@ public class KingTest : Character
     {
         foreach (SoldierTest soldier in soldiers)
         {
+            if (soldier == null) continue;
             // 명령을 받을 수 없는 상태
             if (!soldier.CanReceiveCommand)
             {
@@ -214,6 +216,7 @@ public class KingTest : Character
     {
         foreach (SoldierTest soldier in soldiers)
         {
+            if (soldier == null) continue;
             soldier.TryResetState();
         }
     }
@@ -222,6 +225,7 @@ public class KingTest : Character
     {
         foreach (SoldierTest soldier in soldiers)
         {
+            if (soldier == null) continue;
             if (!soldier.CanReceiveCommand)
             {
                 continue;

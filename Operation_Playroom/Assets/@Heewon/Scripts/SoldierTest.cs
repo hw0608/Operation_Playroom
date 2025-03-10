@@ -18,9 +18,9 @@ public class SoldierTest : Character
     NavMeshAgent agent;
     NetworkVariable<State> currentState = new NetworkVariable<State>(State.Idle, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
-    [SerializeField] Transform itemContainer;
     [SerializeField] GameObject spearHitbox;
     GameObject target;
+    GameObject myItem;
     public bool isAttacking;
     bool isResetting;
 
@@ -174,13 +174,13 @@ public class SoldierTest : Character
         {
             HandleItemPickup(hasArrived);
         }
-        else if (target.CompareTag("Occupy") && isHoldingItem)
-        {
-            HandleItemDelivery(hasArrived);
-        }
         else if (target.CompareTag("Enemy"))
         {
             CurrentState.Value = State.Attack;
+        }
+        else if (isHoldingItem)
+        {
+            HandleItemDelivery(hasArrived);
         }
     }
 
@@ -197,7 +197,7 @@ public class SoldierTest : Character
                 TryResetState();
             }
         }
-        else if (isHoldingItem && !target.CompareTag("Occupy"))
+        else if (isHoldingItem)
         {
             if
             (networkAnimator.Animator.GetCurrentAnimatorStateInfo(0).IsName("Holding") &&
@@ -231,19 +231,16 @@ public class SoldierTest : Character
     // 점령지에 놓기
     void DeliverItemToOccupy()
     {
-        if (target == null || !target.CompareTag("Occupy"))
+        if (target == null)
         {
+            ResetState();
             return;
         }
 
-        Transform item = itemContainer.GetChild(0);
-        item.SetParent(null);
-        item.position = target.transform.position;
-        item.gameObject.SetActive(false);
-
-        target = null;
+        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
+        myItem = null;
         isHoldingItem = false;
-        SetAvatarLayerWeightserverRpc(0);
+        SetAvatarLayerWeight(0);
         ResetState();
     }
 
@@ -259,13 +256,12 @@ public class SoldierTest : Character
 
     void PickupItem()
     {
-        target.GetComponent<ResourceData>().HoldServerRpc();
         currentState.Value = State.Following;
         isHoldingItem = true;
-        target.transform.SetParent(itemContainer);
-        target.transform.localPosition = Vector3.zero;
-        SetAvatarLayerWeightserverRpc(1);
-        SetTriggerAnimationserverRpc("Holding");
+        target.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true);
+        myItem = target;
+        SetAvatarLayerWeight(1);
+        SetTriggerAnimation("Holding");
         agent.stoppingDistance = 0.1f;
         agent.SetDestination(GetFormationPosition());
     }
