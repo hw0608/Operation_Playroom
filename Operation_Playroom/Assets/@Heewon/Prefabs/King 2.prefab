@@ -13765,12 +13765,13 @@ MonoBehaviour:
   team:
     m_InternalValue: -1
   initialSoldiersCount: 3
-  detectItemRange: 0.7
+  itemDetectRange: 0.7
   occupyDetectRange: 0.7
   soldierSpacing: 0.15
   maxSoldierCount: 10
   soldiers: []
   soldierOffsets: []
+  debugSoldier: {fileID: 0}
 --- !u!114 &7808469528344250338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13814,6 +13815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  index: 0
   soldierPrefab: {fileID: 8455552684458472438, guid: bf7978dd03808084d97d940bcd000b80, type: 3}
 --- !u!114 &-2464251044387882103
 MonoBehaviour:
