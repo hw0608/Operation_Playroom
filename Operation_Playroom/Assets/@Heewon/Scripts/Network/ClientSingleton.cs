@@ -124,7 +124,6 @@ public class ClientSingleton : MonoBehaviour
     public async Task<MatchmakerPollingResult> GetMatchAsync()
     {
         MatchmakingResult result = await matchmaker.Matchmake(userData);
-
         Debug.Log(result.resultMessage);
 
         if (result.result == MatchmakerPollingResult.Success)

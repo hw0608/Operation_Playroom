@@ -1,8 +1,10 @@
 ﻿using TMPro;
 using Unity.Netcode;
 using Unity.Services.Authentication;
+using Unity.Services.Matchmaker;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class TitleSceneUI : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class TitleSceneUI : MonoBehaviour
     [SerializeField] GameObject findMatchPanel;
 
     [SerializeField] TMP_Text findMatchStatusText;
+    [SerializeField] Image lockCancelImage;
     [SerializeField] TMP_Text userNameWarningText;
     //[SerializeField] TMP_Text findButtonText;
 
@@ -63,11 +66,13 @@ public class TitleSceneUI : MonoBehaviour
         await AuthenticationService.Instance.GetPlayerNameAsync();
     }
 
-    public async void OnFindMatchButtonPressed()
+    public void OnFindMatchButtonPressed()
     {
         if (isCancelling || isMatchmaking) { return; }
         //match
-        findMatchStatusText.text = "Searching...";
+        lockCancelImage.gameObject.SetActive(false);
+
+        findMatchStatusText.text = "게임 찾는 중...";
 
         findMatchPanel.SetActive(true);
         isMatchmaking = true;
@@ -85,7 +90,6 @@ public class TitleSceneUI : MonoBehaviour
 
         isCancelling = false;
         isMatchmaking = false;
-        findMatchStatusText.text = "";
     }
 
     void OnMatchMade(MatchmakerPollingResult result)
@@ -93,7 +97,8 @@ public class TitleSceneUI : MonoBehaviour
         switch (result)
         {
             case MatchmakerPollingResult.Success:
-                findMatchStatusText.text = "connecting...";
+                lockCancelImage.gameObject.SetActive(true);
+                findMatchStatusText.text = "매칭 완료";
                 break;
             default:
                 isMatchmaking = false;
