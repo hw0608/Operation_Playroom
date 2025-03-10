@@ -13760,8 +13760,14 @@ MonoBehaviour:
   cam: {fileID: 0}
   targetItem: {fileID: 0}
   weaponObject: {fileID: 0}
-  teamMaterials: []
-  playerRenderers: []
+  teamMaterials:
+  - {fileID: 2100000, guid: dccf8e44ede71db42b49378af93c5fb7, type: 2}
+  - {fileID: 2100000, guid: 98a7fdcb4ebb44344b4afe0424d44b82, type: 2}
+  playerRenderers:
+  - {fileID: 7343446336707620606}
+  - {fileID: 5982702547882145453}
+  - {fileID: 3477880661817449821}
+  - {fileID: 8751855008651745310}
   team:
     m_InternalValue: -1
   initialSoldiersCount: 3
