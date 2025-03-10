@@ -1,14 +1,20 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class Spawner : NetworkBehaviour
 {
-    int count = 0;
+    public int index = 0;
     [SerializeField] GameObject soldierPrefab;
 
     public void SpawnSoldiers(int count)
     {
+        if (GetComponent<KingTest>().soldiers.Count >= 10)
+        {
+            return;
+        }
+
         for (int i = 0; i < count; i++)
         {
             SpawnSoldierServerRpc(transform.position, NetworkManager.Singleton.LocalClientId);
@@ -41,10 +47,17 @@ public class Spawner : NetworkBehaviour
         NetworkObject kingObj = GetComponent<NetworkObject>();
         KingTest king = NetworkManager.Singleton.SpawnManager.SpawnedObjects[kingObj.NetworkObjectId].GetComponent<KingTest>();
 
-        king.soldiers.Add(soldierObj.GetComponent<SoldierTest>());
-        soldier.SetKing(king.transform, king.soldierOffsets[count]);
-
-        count++;
+        if (king.soldiers.Count > index)
+        {
+            king.soldiers[index] = soldierObj.GetComponent<SoldierTest>();
+        }
+        else
+        {
+            king.soldiers.Add(soldierObj.GetComponent<SoldierTest>());
+        }
+        
+        soldier.Init(king.transform, king.soldierOffsets[index]);
+        index++;
     }
 
     [ServerRpc]

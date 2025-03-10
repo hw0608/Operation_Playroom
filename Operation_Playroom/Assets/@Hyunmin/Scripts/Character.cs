@@ -44,7 +44,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         if (IsOwner) 
         {
-            team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
+            //team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
         }
 
         foreach (var renderer in playerRenderers)
