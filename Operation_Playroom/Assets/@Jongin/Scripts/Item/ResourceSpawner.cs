@@ -12,18 +12,18 @@ public class ResourceSpawner : NetworkBehaviour
     public int currentSpawnCount;
     public override void OnNetworkSpawn()
     {
-
+        if (IsServer)
+        {
+            InitSpawnResource(initSpawnCount);
+            StartCoroutine(SpawnResourceRoutine());
+        }
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            if (IsServer)
-            {
-                InitSpawnResource(initSpawnCount);
-                StartCoroutine(SpawnResourceRoutine());
-            }
+
         }
     }
     Collider[] itemBuffer = new Collider[1];
