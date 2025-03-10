@@ -157,6 +157,7 @@ public class HostSingleton : MonoBehaviour
 
     public async void ShutDown()    
     {
+        ServerSingleton.Instance.OnClientLeft -= HandleClientLeft;
         StopAllCoroutines();
 
         if (!lobbyId.IsNullOrEmpty())
@@ -171,7 +172,5 @@ public class HostSingleton : MonoBehaviour
             }
             lobbyId = null;
         }
-
-        ServerSingleton.Instance.OnClientLeft -= HandleClientLeft;
     }
 }

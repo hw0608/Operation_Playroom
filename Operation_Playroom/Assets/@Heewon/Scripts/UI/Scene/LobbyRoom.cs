@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Collections;
+using Unity.Entities.UniversalDelegates;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -25,7 +26,7 @@ class ImageList
 public class LobbyRoom : NetworkBehaviour
 {
     [SerializeField] TMPList[] playerNameTexts = new TMPList[2];
-    [SerializeField] TMPList[] playerReadyTexts = new TMPList[2];
+    [SerializeField] ImageList[] playerReadyImages = new ImageList[2];
     [SerializeField] ImageList[] playerBGImages = new ImageList[2];
     [SerializeField] Sprite[] BGImagesByTeam;
     [SerializeField] GameObject readyButton;
@@ -158,7 +159,7 @@ public class LobbyRoom : NetworkBehaviour
             for (int j = 0; j < playerNameTexts[i].texts.Length; j++)
             {
                 playerNameTexts[i].texts[j].text = "Waiting...";
-                playerReadyTexts[i].texts[j].text = "";
+                playerReadyImages[i].images[j].gameObject.SetActive(false);
             }
         }
 
@@ -172,13 +173,23 @@ public class LobbyRoom : NetworkBehaviour
 
             if (index < playerNameTexts[team].texts.Length)
             {
+                if (player.isLeader)
+                {
+                    playerReadyImages[team].images[index].gameObject.SetActive(false);
+                    playerBGImages[team].images[index].sprite = BGImagesByTeam[2];
+                }
+                else
+                {
+                    playerBGImages[team].images[index].sprite = BGImagesByTeam[3];
+                }
+
                 playerNameTexts[team].texts[index].text = player.userName.ToString();
                 if (player.clientId == clientId)
                 {
                     playerBGImages[team].images[index].sprite = BGImagesByTeam[team];
-                    //playerNameTexts[team].texts[index].text = $"<b>{player.userName.ToString()}</b>";
                 }
-                playerReadyTexts[team].texts[index].text = !player.isLeader && player.isReady ? "<color=green>Ready</color>" : "";
+                if (!player.isLeader && player.isReady)
+                    playerReadyImages[team].images[index].gameObject.SetActive(true);
                 teamCount[team]++;
             }
         }

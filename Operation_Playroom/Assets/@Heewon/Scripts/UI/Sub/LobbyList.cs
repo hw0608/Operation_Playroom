@@ -139,7 +139,7 @@ public class LobbyList : MonoBehaviour
         {
             options.Password = password;
         }
-        else if (password.Length >= 0)
+        else if (password.Length > 0)
         {
             PasswordSettingWarningText.gameObject.SetActive(true);
             PasswordSettingWarningText.text = "비밀번호는 최소 8자 이상이어야 합니다.";
@@ -149,5 +149,6 @@ public class LobbyList : MonoBehaviour
         options.IsPrivate = isPrivate;
 
         await HostSingleton.Instance.StartHostAsync(options, roomNameInputField.text);
+        PasswordSettingWarningText.text = "";
     }
 }
