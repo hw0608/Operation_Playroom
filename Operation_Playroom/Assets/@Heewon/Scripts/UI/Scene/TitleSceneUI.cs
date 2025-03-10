@@ -126,9 +126,4 @@ public class TitleSceneUI : MonoBehaviour
 
         nicknameSettingPanel.SetActive(false);
     }
-
-    public async void OnJoinButtonPressed()
-    {
-        await ClientSingleton.Instance.StartClientAsync(joinCodeInputField.text);
-    }
 }

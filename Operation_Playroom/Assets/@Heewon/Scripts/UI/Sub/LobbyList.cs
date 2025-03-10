@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
+using Unity.VisualScripting;
+using UnityEditor.Build.Pipeline;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,17 +27,28 @@ public class LobbyList : MonoBehaviour
     [SerializeField] ToggleGroup visibilityToggleGroup;
     [SerializeField] TMP_InputField createPasswordInputField;
     [SerializeField] TMP_Text PasswordSettingWarningText;
+    [SerializeField] GameObject creatingProgressPanel;
 
     [Header("Join Room")]
     [SerializeField] GameObject joinPasswordPanel;
     [SerializeField] Button joinPasswordButton;
+    [SerializeField] Button closePasswordPanelButton;
     [SerializeField] TMP_InputField joinPasswordInputField;
+
+    [Header("Join Room By JoinCode")]
+    [SerializeField] GameObject joinCodePanel;
+    [SerializeField] Button joinByJoinCodeButton;
+    [SerializeField] Button closeJoinCodePanelButton;
+    [SerializeField] TMP_InputField joinCodeInputField;
+
+    [SerializeField] GameObject joiningProgressPanel;
 
     bool isRefreshing;
     bool isJoining;
 
     private void OnEnable()
     {
+        joiningProgressPanel.SetActive(false);
         RefreshList();
     }
 
@@ -83,12 +96,26 @@ public class LobbyList : MonoBehaviour
         try
         {
             if (needPassword)
-                joiningLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, new JoinLobbyByIdOptions
+            {
+                string password = await InputPassword();
+
+                if (string.IsNullOrEmpty(password))
                 {
-                    Password = await InputPassword()
-                });
+                    isJoining = false;
+                    return;
+                }
+                else
+                {
+                    joiningLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, new JoinLobbyByIdOptions
+                    {
+                        Password = password
+                    });
+                }
+            }
             else
                 joiningLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id);
+
+            joiningProgressPanel.SetActive(true);
 
             string joinCode = joiningLobby.Data["JoinCode"].Value;
             await ClientSingleton.Instance.StartClientAsync(joinCode);
@@ -97,13 +124,12 @@ public class LobbyList : MonoBehaviour
         {
             if (e.Reason == LobbyExceptionReason.IncorrectPassword || e.Reason == LobbyExceptionReason.ValidationError)
             {
-                Debug.Log("Invalid Password");
                 MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
                 if (popup != null)
                 {
-                    popup.SetText("Invalid Password");
+                    popup.SetText("비밀번호가 틀립니다");
                     popup.Show();
-                }     
+                }
             }
             else
             {
@@ -113,19 +139,61 @@ public class LobbyList : MonoBehaviour
         isJoining = false;
     }
 
-    async Task<string> InputPassword()
+    public async void JoinByJoinCodeAsync()
+    {
+        joinCodePanel.SetActive(true);
+
+        string joinCode = await InputJoinCode();
+
+        if (string.IsNullOrEmpty(joinCode))
+        {
+            joinCodePanel.SetActive(false);
+        }
+        else
+        {
+            joiningProgressPanel.SetActive(true);
+            await ClientSingleton.Instance.StartClientAsync(joinCodeInputField.text);
+        }
+    }
+
+    async Task<string> InputJoinCode()
     {
         bool waiting = true;
-        joinPasswordPanel.SetActive(true);
+        bool cancel = false;
 
-        while (waiting)
+        joinByJoinCodeButton.onClick.AddListener(() => waiting = false);
+        closeJoinCodePanelButton.onClick.AddListener(() => cancel = true);
+
+        while (!cancel && waiting)
         {
-            joinPasswordButton.onClick.AddListener(() => waiting = false);
             await Task.Yield();
         }
 
+        joinByJoinCodeButton.onClick.RemoveAllListeners();
+        closeJoinCodePanelButton.onClick.RemoveAllListeners();
+
+        return cancel ? "" : joinCodeInputField.text;
+    }
+
+    async Task<string> InputPassword()
+    {
+        bool waiting = true;
+        bool cancel = false;
+        joinPasswordPanel.SetActive(true);
+
+        joinPasswordButton.onClick.AddListener(() => waiting = false);
+        closePasswordPanelButton.onClick.AddListener(() => cancel = true);
+
+        while (!cancel && waiting)
+        {
+            await Task.Yield();
+        }
+
+        joinPasswordButton.onClick.RemoveAllListeners();
+        closePasswordPanelButton.onClick.RemoveAllListeners();
+
         joinPasswordPanel.SetActive(false);
-        return joinPasswordInputField.text;
+        return cancel ? "" : joinPasswordInputField.text;
     }
 
     public async void OnCreateLobbyButtonPressed()
@@ -148,7 +216,10 @@ public class LobbyList : MonoBehaviour
 
         options.IsPrivate = isPrivate;
 
+        creatingProgressPanel.SetActive(true);
         await HostSingleton.Instance.StartHostAsync(options, roomNameInputField.text);
+
+        creatingProgressPanel.SetActive(false);
         PasswordSettingWarningText.text = "";
     }
 }
