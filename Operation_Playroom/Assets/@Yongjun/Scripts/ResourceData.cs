@@ -12,6 +12,11 @@ public class ResourceData : NetworkBehaviour
     public Collider resourceCollider;
     Coroutine delayColliderEnable;
     Coroutine delayPushObject;
+
+
+    public bool isMarked = false;
+    public NetworkVariable<bool> isHolding = new NetworkVariable<bool>(false);
+
     public override void OnNetworkSpawn()
     {
         resourceCollider = GetComponent<Collider>();
@@ -71,6 +76,11 @@ public class ResourceData : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void HoldServerRpc()
+    {
+        isHolding.Value = true;
+    }
 
 
     IEnumerator DelayColliderEnable(bool value)
