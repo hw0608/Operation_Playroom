@@ -1,4 +1,3 @@
-using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +9,7 @@ public class OccupySystem : NetworkBehaviour
     [SerializeField] NetworkVariable<int> blueTeamResourceCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     // 채워야 할 자원
-    const int resourceFillCount = 3 ;
+    const int resourceFillCount = 3;
 
     // 점령지 초기 상태
     Owner currentOwner = Owner.Neutral;
@@ -48,13 +47,13 @@ public class OccupySystem : NetworkBehaviour
         {
             if (collider.CompareTag("Item"))
             {
+                Debug.Log("detect!");
                 ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
                 ResourceData data = collider.GetComponent<ResourceData>();
-                Debug.Log("detect!");
-
+                data.isColliderEnable.Value = false;
+                data.resourceCollider.enabled = false;
                 if (data.CurrentOwner == Owner.Red) redTeamResourceCount.Value++;
                 else if (data.CurrentOwner == Owner.Blue) blueTeamResourceCount.Value++;
-                data.isColliderEnable.Value = false;
                 Managers.Pool.Push(collider.gameObject);
                 PushObjectClientRpc(resourceId);
                 resourceSpawner.currentSpawnCount--;
@@ -121,7 +120,7 @@ public class OccupySystem : NetworkBehaviour
 
         NetworkObject networkObject = building.GetComponent<NetworkObject>();
         networkObject.TrySetParent(transform.GetComponent<NetworkObject>());
-        ActiveNetworkObjectClientRpc(networkObject.NetworkObjectId,true);
+        ActiveNetworkObjectClientRpc(networkObject.NetworkObjectId, true);
         building.GetComponent<Building>().BuildingInit();
     }
 
@@ -133,7 +132,7 @@ public class OccupySystem : NetworkBehaviour
             no.gameObject.SetActive(isActive);
         }
     }
-    
+
     void UpdateVisuals() // 자원 적재 시각 효과
     {
         float redFill = Mathf.Clamp((float)redTeamResourceCount.Value / resourceFillCount, 0f, 1f);

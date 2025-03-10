@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Unity.Cinemachine;
@@ -40,33 +41,90 @@ public abstract class Character : NetworkBehaviour, ICharacter
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        transform.position = new Vector3(0, 0.5f, 0);
-
-        if (IsOwner) 
-        {
-            //team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
-        }
-
-        foreach (var renderer in playerRenderers)
-        {
-            renderer.material = new Material(teamMaterials[team.Value]);
-        }
-
-        // 색상 변경 이벤트 구독
-        playerColor.OnValueChanged += OnPlayerColorChanged;
     }
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
+        if (IsOwner)
         {
-            SetTeamMaterial();
+            team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
+        }
+
+        playerColor.OnValueChanged += OnPlayerColorChanged;
+        team.OnValueChanged += (oldValue, newValue) => OnTeamValueChanged(newValue);
+
+        if (IsClient)
+        {
+            SyncMaterialsOnSpawn();
+        }
+
+        OnTeamValueChanged(team.Value);
+    }
+
+    void SyncMaterialsOnSpawn()
+    {
+        Character[] players = FindObjectsByType<Character>(FindObjectsSortMode.None);
+
+        foreach (Character player in players)
+        {
+            if (player != this)
+            {
+                player.ApplyMaterial(player.team.Value); 
+            }
+        }
+    }
+
+    void OnTeamValueChanged(int teamValue)
+    {
+        if (teamMaterials == null || teamMaterials.Length == 0)
+        {
+            return;
+        }
+
+        if (teamValue < 0 || teamValue >= teamMaterials.Length)
+        {
+            teamValue = 0;
+        }
+
+        UpdateTeamMaterialClientRpc(teamValue);
+    }
+
+    void ApplyMaterial(int teamIndex)
+    {
+        Material targetMaterial = teamMaterials[teamIndex];
+        foreach (var renderer in playerRenderers)
+        {
+            if (renderer != null)
+            {
+                renderer.material = targetMaterial;
+            }
+        }
+    }
+
+    [ClientRpc]
+    void UpdateTeamMaterialClientRpc(int teamIndex)
+    {
+        if (playerRenderers == null || playerRenderers.Length == 0)
+        {
+            Debug.LogError("Null");
+            return;
+        }
+
+        Material targetMaterial = teamMaterials[teamIndex];
+
+        foreach (var renderer in playerRenderers)
+        {
+            if (renderer != null)
+            {
+                renderer.material = teamMaterials[teamIndex];
+            }
         }
     }
 
     public override void OnDestroy()
-    {   
+    {
         playerColor.OnValueChanged -= OnPlayerColorChanged;
+        team.OnValueChanged -= (oldValue, newValue) => OnTeamValueChanged(newValue);
     }
 
     public abstract void Attack(); // 공격 구현
@@ -76,7 +134,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 플레이어 피격 시 색상 변경 메서드
     private void OnPlayerColorChanged(Color previousValue, Color newValue)
     {
-        if(playerRenderers != null)
+        if (playerRenderers != null)
         {
             foreach (var renderer in playerRenderers)
             {
@@ -152,32 +210,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
         damageRoutine = null;
     }
 
-    protected void SetAvatarLayerWeight(int value)
-    {
-        networkAnimator.Animator.SetLayerWeight(1, value);
-    }
-
-    protected void SetTriggerAnimation(string name)
-    {
-        networkAnimator.SetTrigger(name);
-    }
-
-    protected void SetFloatAnimation(string name, float value)
-    {
-        networkAnimator.Animator.SetFloat(name, value);
-    }
-
-    [ClientRpc]
-    protected void SetAvatarLayerWeightClientRpc(int value)
-    {
-        networkAnimator.Animator.SetLayerWeight(1, value);
-    }
-
-    [ClientRpc]
-    protected void SetTriggerAnimationClientRpc(string name)
-    {
-        networkAnimator.SetTrigger(name);
-    }
 
     // 사망 메서드
     public void Die()
@@ -232,9 +264,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         isHoldingItem = true;
 
         // 아이템 오브젝트 위치시킴
-        //targetItem.transform.SetParent(gameObject.transform);
-        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId,true);
-        //targetItem.transform.localPosition = new Vector3(0, 2f, 0);
+        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true);
 
         // 줍는 애니메이션
         SetAvatarLayerWeight(1);
@@ -250,24 +280,11 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         // 아이템 오브젝트 내려놓기
         targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
-        //targetItem.transform.position = transform.position + transform.up * 0.08f + transform.forward * 0.25f; // 앞에 내려놓기
         targetItem = null;
 
         // 애니메이션 해제
         SetAvatarLayerWeight(0);
         SetTriggerAnimation("Idle");
-
-    }
-
-    void SetTeamMaterial()
-    {
-        Debug.Log("Set Team Material");
-
-        Material teamMaterial = new Material(teamMaterials[team.Value]);
-        foreach(var renderer in playerRenderers)
-        {
-            renderer.material = teamMaterial;
-        }
 
     }
 
@@ -278,18 +295,39 @@ public abstract class Character : NetworkBehaviour, ICharacter
         networkAnimator.SetTrigger(name);
     }
 
-    // 애니메이션 Float 메서드
-    [ServerRpc(RequireOwnership = false)]
-    public void SetFloatAnimationserverRpc(string name, float value)
-    {
-        networkAnimator.Animator.SetFloat(name, value);
-    }
-
     // 애니메이션 상체 웨이트 메서드
     [ServerRpc(RequireOwnership = false)]
     public void SetAvatarLayerWeightserverRpc(int value)
     {
         networkAnimator.Animator.SetLayerWeight(1, value);
     }
+
+    protected void SetAvatarLayerWeight(int value)
+    {
+        networkAnimator.Animator.SetLayerWeight(1, value);
+    }
+
+    protected void SetTriggerAnimation(string name)
+    {
+        networkAnimator.SetTrigger(name);
+    }
+
+    protected void SetFloatAnimation(string name, float value)
+    {
+        networkAnimator.Animator.SetFloat(name, value);
+    }
+
+    [ClientRpc]
+    protected void SetAvatarLayerWeightClientRpc(int value)
+    {
+        networkAnimator.Animator.SetLayerWeight(1, value);
+    }
+
+    [ClientRpc]
+    protected void SetTriggerAnimationClientRpc(string name)
+    {
+        networkAnimator.SetTrigger(name);
+    }
+
 
 }
