@@ -7,4 +7,5 @@ public class EffectScriptableObject : ScriptableObject
     public GameObject buildEffect;
     public GameObject sparkleEffect;
     public GameObject destructionEffect;
+    public GameObject buildingHitEffect;
 }

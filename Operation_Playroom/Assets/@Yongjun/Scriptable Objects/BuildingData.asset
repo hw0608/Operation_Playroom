@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: BuildingData
   m_EditorClassIdentifier: 
   health: 100
-  buildEffect: {fileID: 4968336861700998245, guid: 762b94612fd2f2d4f97a21bb6ba9699d, type: 3}
-  sparkleEffect: {fileID: 1625590031068301035, guid: c86032e58accc344a8f33beb96a3ba1c, type: 3}
-  destructionEffect: {fileID: 7258070247710157660, guid: e7271791a91f3544d9493cc1f0179576, type: 3}
+  defaultMesh: {fileID: 4300000, guid: 05035b78d90b21f43854dfe010ccd289, type: 3}
+  brokenMesh: {fileID: 4300000, guid: b1ff534b3931e674e8e475faa59eb659, type: 3}
+  hardBrokenMesh: {fileID: 4300000, guid: c4bb27f050a2ef4439fb736e16b2bded, type: 3}
