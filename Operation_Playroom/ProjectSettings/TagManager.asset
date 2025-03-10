@@ -21,8 +21,8 @@ TagManager:
   - Enemy
   - Obstacle
   - Occupy
-  - MiniMap
-  - 
+  - Minimap
+  - IgnoreMinimap
   - 
   - 
   - 
