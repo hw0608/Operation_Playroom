@@ -32,6 +32,7 @@ public class KingTest : Character
     #region Network
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         int[] colOffsets = { 0, -1, 1, -2, 2 };
         if (!IsOwner) return;
         base.Start();
@@ -73,7 +74,12 @@ public class KingTest : Character
         // E 버튼 누르면
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (FindNearestOccupy() != null && HasSoldierWithItem())
+            if (FindNearestEnemy() != null)
+            {
+                Debug.Log("CommandSoldierToAdvance");
+                CommandSoldierToAdvance();
+            }
+            else if (FindNearestOccupy() != null && HasSoldierWithItem())
             {
                 Debug.Log("CommandSoldierToDeliverItem");
                 CommandSoldierToDeliverItem();
@@ -83,12 +89,6 @@ public class KingTest : Character
                 Debug.Log("CommandSoldierToPickupItem");
                 CommandSoldierToPickupItem();
             }
-            else if (FindNearestEnemy() != null)
-            {
-                Debug.Log("CommandSoldierToAdvance");
-                CommandSoldierToAdvance();
-            }
-
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {

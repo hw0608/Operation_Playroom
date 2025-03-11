@@ -51,6 +51,7 @@ public class SoldierTest : Character
     #region Network
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         if (!IsOwner) { return; }
 
         health = GetComponent<Health>();
@@ -241,10 +242,7 @@ public class SoldierTest : Character
         }
 
         myItem.GetComponent<ResourceData>().isMarked = false;
-        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
-        myItem = null;
-        isHoldingItem = false;
-        SetAvatarLayerWeight(0);
+        PutDownItem();
         ResetState();
     }
 
@@ -393,6 +391,10 @@ public class SoldierTest : Character
             Debug.Log("Mark «ÿ¡¶");
             data.isMarked = false;
         }
+        if (myItem != null)
+        {
+            PutDownItem();
+        }
         target = null;
         agent.stoppingDistance = 0.2f;
         currentState.Value = State.Following;
@@ -439,16 +441,6 @@ public class SoldierTest : Character
         {
             agent.avoidancePriority = 49;
         }
-
-        if (newValue == State.Attack)
-        {
-            agent.speed = 0.4f;
-        }
-        else
-        {
-            agent.speed = 0.25f;
-        }
-
     }
 
     // Animation Event
@@ -463,7 +455,7 @@ public class SoldierTest : Character
             else
             {
                 Debug.Log("PutDownItem");
-                myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
+                PutDownItem();
             }
         }
         else
@@ -474,13 +466,22 @@ public class SoldierTest : Character
 
     #endregion
 
+    void PutDownItem()
+    {
+        if (myItem == null) return;
 
+        myItem.GetComponent<ResourceData>().isMarked = false;
+        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
+        myItem = null;
+        isHoldingItem = false;
+        SetAvatarLayerWeight(0);
+    }
 
     public void Init(Transform king, Vector3 offset)
     {
         this.king = king;
         this.offset = offset;
-        team = king.GetComponent<Character>().team;
+        team.Value = king.GetComponent<Character>().team.Value;
         agent.SetDestination(GetFormationPosition());
     }
 
