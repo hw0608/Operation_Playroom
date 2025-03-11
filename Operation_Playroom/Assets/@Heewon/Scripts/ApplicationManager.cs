@@ -21,6 +21,9 @@ public class ApplicationManager : MonoBehaviour
         {
             if (loadCount >= totalCount)
             {
+                Debug.Log($"({loadCount}/{totalCount})");
+                Debug.Log("addressables load complete");
+
                 tcs.SetResult(true);
             }
         });

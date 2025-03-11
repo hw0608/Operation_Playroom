@@ -11,6 +11,12 @@ public class ResourceManager
     private Dictionary<string, UnityEngine.Object> _resources = new Dictionary<string, UnityEngine.Object>();
     private Dictionary<string, AsyncOperationHandle> _handles = new Dictionary<string, AsyncOperationHandle>();
 
+    public void Init()
+    {
+        _resources.Clear();
+        _handles.Clear();
+    }
+
     #region Load Resource
     public T Load<T>(string key) where T : Object
     {

@@ -18,7 +18,7 @@ public class TimmyDirection : NetworkBehaviour
     SleepTimmy sleepTimmy;
     MoveTimmy moveTimmy;
 
-    
+
     public NetworkVariable<float> fadeAlpha = new NetworkVariable<float>(0);
     public NetworkVariable<int> cameraIndex = new NetworkVariable<int>(0);
     public override void OnNetworkSpawn()
@@ -38,6 +38,14 @@ public class TimmyDirection : NetworkBehaviour
     {
         cameraIndex.OnValueChanged -= ActiveCamera;
         fadeAlpha.OnValueChanged -= ChangeImageAlpha;
+        if (sleepTimmy.GetComponent<NetworkObject>().IsSpawned)
+        {
+            sleepTimmy.GetComponent<NetworkObject>().Despawn();
+        }
+        if (moveTimmy.GetComponent<NetworkObject>().IsSpawned)
+        {
+            moveTimmy.GetComponent<NetworkObject>().Despawn();
+        }
     }
 
 
@@ -65,7 +73,7 @@ public class TimmyDirection : NetworkBehaviour
     public void StartTimmy()
     {
         Sequence timmySequence = DOTween.Sequence();
-        
+
         //Fade in
         timmySequence.Append(DOTween.To(() => fadeAlpha.Value, x => SetAlpha(x), 1f, 0.5f));
         timmySequence.AppendCallback(() =>
@@ -136,7 +144,7 @@ public class TimmyDirection : NetworkBehaviour
         fadeImage.color = imageColor;
     }
 
-    public void ActiveCamera(int oldIndex,int newIndex)
+    public void ActiveCamera(int oldIndex, int newIndex)
     {
         foreach (var camera in cameras)
         {

@@ -5,17 +5,21 @@ public class SleepTimmy : NetworkBehaviour
 {
     public NetworkVariable<bool> timmyActive = new NetworkVariable<bool>(true);
     public Animator animator;
-    void Start()
-    {
-        timmyActive.OnValueChanged += OnSetActiveSelf;
-    }
+
     public override void OnNetworkSpawn()
     {
+        timmyActive.OnValueChanged -= OnSetActiveSelf;
+        timmyActive.OnValueChanged += OnSetActiveSelf;
         if (!IsServer) return;
         animator = GetComponent<Animator>();
         timmyActive.Value = true;
     }
-    public void OnSetActiveSelf(bool oldValue, bool newValue)
+
+    public override void OnNetworkDespawn()
+    {
+        timmyActive.OnValueChanged -= OnSetActiveSelf;
+    }
+        public void OnSetActiveSelf(bool oldValue, bool newValue)
     {
         gameObject.SetActive(newValue);
     }

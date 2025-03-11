@@ -21,17 +21,17 @@ public class MoveTimmy : NetworkBehaviour
 
     Vector3 startPos;
     Quaternion startRot;
-    private void Start()
-    {
-        timmyActive.OnValueChanged += OnSetActiveSelf;
-        gameObject.SetActive(false);
-    }
+
     public void OnSetActiveSelf(bool oldValue, bool newValue)
     {
         gameObject.SetActive(newValue);
     }
     public override void OnNetworkSpawn()
     {
+        timmyActive.OnValueChanged -= OnSetActiveSelf;
+        timmyActive.OnValueChanged += OnSetActiveSelf;
+        gameObject.SetActive(false);
+
         if (!IsServer) return;
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
@@ -41,7 +41,10 @@ public class MoveTimmy : NetworkBehaviour
         startRot = transform.rotation;
 
     }
-
+    public override void OnNetworkDespawn()
+    {
+        timmyActive.OnValueChanged -= OnSetActiveSelf;
+    }
     public void ResetTimmy()
     {
         transform.position = startPos;
