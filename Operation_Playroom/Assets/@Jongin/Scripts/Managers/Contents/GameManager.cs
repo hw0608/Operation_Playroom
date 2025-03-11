@@ -9,7 +9,7 @@ public class GameManager : NetworkBehaviour
 {
     public NetworkVariable<float> remainTime = new NetworkVariable<float>();
     public TMP_Text notiText;
-    public TMP_Text timerText;
+    public TMP_Text timerText; 
     private Color textColor;
     float textAlpha = 0;
     EGameState gameState;

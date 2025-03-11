@@ -36,7 +36,7 @@ public class SpawnPoint : MonoBehaviour
         var result = spawnPoints[team].Where(x => x.role == role).ToList();
         if (result.Count > 0)
         {
-            spawnPos = result[0].transform.position;
+            spawnPos = new Vector3(result[0].transform.position.x, 0.12f, result[0].transform.position.z);
         }
 
         return spawnPos;

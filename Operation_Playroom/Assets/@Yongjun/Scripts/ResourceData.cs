@@ -57,7 +57,7 @@ public class ResourceData : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SetParentOwnerserverRpc(ulong targetId, bool isPickUp)
+    public void SetParentOwnerserverRpc(ulong targetId, bool isPickUp, int team)
     {
         if (isPickUp)
         {
@@ -75,8 +75,15 @@ public class ResourceData : NetworkBehaviour
             transform.position = new Vector3(newPos.x, 0, newPos.z); // 앞에 내려놓기
             isColliderEnable.Value = true;
         }
-    }
 
+        if(team == 0)
+        {
+            CurrentOwner = Owner.Blue;
+        }else if(team == 1)
+        {
+            CurrentOwner = Owner.Red;
+        }
+    }
 
     IEnumerator DelayColliderEnable(bool value)
     {
