@@ -75,6 +75,7 @@ public class Archer : Character
         if (Input.GetButtonDown("Aim"))
         {
             if (isHoldingItem) return;
+            holdItemAble = false; 
 
             // 조준점 활성화
             aimCanvas.SetActive(true);
@@ -99,6 +100,7 @@ public class Archer : Character
         if (Input.GetButtonUp("Aim"))
         {
             if (isHoldingItem) return;
+            holdItemAble = true;
 
             aimCanvas.SetActive(false);
 
@@ -141,12 +143,10 @@ public class Archer : Character
         if (isHoldingItem)
         {
             Drop();
-            attackAble = true;
         }
         else
         {
             PickUp();
-            attackAble = false;
         }
     }
 
