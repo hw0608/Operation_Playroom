@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class Managers : MonoBehaviour
 {
@@ -37,6 +38,7 @@ public class Managers : MonoBehaviour
         DontDestroyOnLoad(go);
 
         s_instance = go.GetComponent<Managers>();
+        Addressables.InitializeAsync();
         Pool.Init();
         //s_instance._sound.Init();
 

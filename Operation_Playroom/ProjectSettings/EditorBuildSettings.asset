@@ -41,13 +41,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/@Jongin/Scenes/AddressableTest.unity
     guid: 2c2cbc1448c8e0343b771d566ff69993
-  - enabled: 1
+  - enabled: 0
     path: Assets/@Yongjun/Scenes/Test2.unity
     guid: 3f0a50c180ead5741b69351a078a898d
-  - enabled: 1
+  - enabled: 0
     path: Assets/@Heewon/Scenes/KingTestScene.unity
     guid: 0e2518b4152022448aa684ccbf662d92
-  - enabled: 1
+  - enabled: 0
     path: Assets/@Doyeon/Scene/GameSceneTest.unity
     guid: a48e83ce1e9f8004cbce13c9ae4e240a
   m_configObjects:

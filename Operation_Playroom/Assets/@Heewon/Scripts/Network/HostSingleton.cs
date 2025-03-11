@@ -9,6 +9,7 @@ using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
+using Unity.Services.Matchmaker.Models;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
@@ -37,8 +38,6 @@ public class HostSingleton : MonoBehaviour
     Allocation allocation;
     public string joinCode;
     public string lobbyId;
-
-    bool isShuttingDown;
 
     public string LobbyId
     {
@@ -135,10 +134,13 @@ public class HostSingleton : MonoBehaviour
 
     private async void HandleClientLeft(string authId)
     {
-        if (isShuttingDown) { return; }
         try
         {
-            await LobbyService.Instance.RemovePlayerAsync(lobbyId,authId);
+            var lobby = await LobbyService.Instance.GetLobbyAsync(lobbyId);
+            if (lobby != null)
+            {
+                await LobbyService.Instance.RemovePlayerAsync(lobbyId, authId);
+            }
         }
         catch (LobbyServiceException e)
         {
@@ -160,7 +162,7 @@ public class HostSingleton : MonoBehaviour
 
     public async void ShutDown()    
     {
-        isShuttingDown = true;
+
         ServerSingleton.Instance.OnClientLeft -= HandleClientLeft;
         StopAllCoroutines();
 
@@ -186,6 +188,5 @@ public class HostSingleton : MonoBehaviour
             lobbyId = null;
         }
 
-        isShuttingDown = false;
     }
 }
