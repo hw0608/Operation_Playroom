@@ -38,6 +38,8 @@ public class HostSingleton : MonoBehaviour
     public string joinCode;
     public string lobbyId;
 
+    bool isShuttingDown;
+
     public string LobbyId
     {
         get { return lobbyId; }
@@ -133,6 +135,7 @@ public class HostSingleton : MonoBehaviour
 
     private async void HandleClientLeft(string authId)
     {
+        if (isShuttingDown) { return; }
         try
         {
             await LobbyService.Instance.RemovePlayerAsync(lobbyId,authId);
@@ -157,6 +160,7 @@ public class HostSingleton : MonoBehaviour
 
     public async void ShutDown()    
     {
+        isShuttingDown = true;
         ServerSingleton.Instance.OnClientLeft -= HandleClientLeft;
         StopAllCoroutines();
 
@@ -181,5 +185,7 @@ public class HostSingleton : MonoBehaviour
             }
             lobbyId = null;
         }
+
+        isShuttingDown = false;
     }
 }
