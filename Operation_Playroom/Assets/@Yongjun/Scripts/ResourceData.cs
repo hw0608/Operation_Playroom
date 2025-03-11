@@ -69,6 +69,7 @@ public class ResourceData : NetworkBehaviour
         }
         else
         {
+            isHolding.Value = false;
             NetworkObject go = NetworkManager.Singleton.SpawnManager.SpawnedObjects[targetId];
             GetComponent<NetworkObject>().TrySetParent(originalTransform);
             Vector3 newPos = go.transform.position + go.transform.forward * 0.4f;

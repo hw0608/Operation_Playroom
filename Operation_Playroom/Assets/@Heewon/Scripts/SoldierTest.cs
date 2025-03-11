@@ -16,6 +16,7 @@ public class SoldierTest : Character
     Transform king;
     Vector3 offset;
     NavMeshAgent agent;
+    Health health;
     NetworkVariable<State> currentState = new NetworkVariable<State>(State.Idle, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     [SerializeField] GameObject spearHitbox;
@@ -43,7 +44,7 @@ public class SoldierTest : Character
         }
     }
 
-    public bool CanReceiveCommand => !isHoldingItem && (currentState.Value == State.Idle || currentState.Value == State.Following);
+    public bool CanReceiveCommand => !health.isDead && !isHoldingItem && (currentState.Value == State.Idle || currentState.Value == State.Following);
     public bool HasItem => isHoldingItem;
 
 
@@ -52,9 +53,9 @@ public class SoldierTest : Character
     {
         if (!IsOwner) { return; }
 
+        health = GetComponent<Health>();
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
-        agent.avoidancePriority = UnityEngine.Random.Range(30, 50);
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 
         currentState.OnValueChanged += HandleAnimation;
@@ -92,17 +93,19 @@ public class SoldierTest : Character
         float distanceToKing = Vector3.SqrMagnitude(transform.position - GetFormationPosition());
 
         bool isNearKing = distanceToKing <= sqrDistance * 1.2f;
-        bool isFarKing = distanceToKing > sqrDistance * 1.5f;
+        bool isFarKing = distanceToKing > sqrDistance * 1.7f;
         bool hasArrived = false;
 
         if (target != null)
-            hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance + float.Epsilon
-                || (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance);
+        {
+            hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance * 1.5f;
+        }
 
         if (Input.GetKeyDown(KeyCode.O))
         {
             Debug.Log(hasArrived);
-            Debug.Log(agent.remainingDistance);
+            Debug.Log(Vector3.SqrMagnitude(transform.position - target.transform.position));
+            Debug.Log(sqrDistance);
         }
 
         RotateToDestination(hasArrived);
@@ -213,10 +216,10 @@ public class SoldierTest : Character
         {
             DeliverItemToOccupy();
         }
-        else
-        {
-            agent.SetDestination(target.transform.position);
-        }
+        //else
+        //{
+        //    agent.SetDestination(target.transform.position);
+        //}
     }
     // 점령지로 이동
     public void TryDeliverItemToOccupy(GameObject occupy)
@@ -237,6 +240,7 @@ public class SoldierTest : Character
             return;
         }
 
+        myItem.GetComponent<ResourceData>().isMarked = false;
         myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
         myItem = null;
         isHoldingItem = false;
@@ -256,16 +260,16 @@ public class SoldierTest : Character
 
     void PickupItem()
     {
+        Debug.Log("PickupItem");
         currentState.Value = State.Following;
         isHoldingItem = true;
         target.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true);
         myItem = target;
         SetAvatarLayerWeight(1);
         SetTriggerAnimation("Holding");
-        agent.stoppingDistance = 0.1f;
+        agent.stoppingDistance = 0.2f;
         agent.SetDestination(GetFormationPosition());
     }
-
 
     #endregion
 
@@ -384,12 +388,13 @@ public class SoldierTest : Character
 
     void ResetState()
     {
-        if (target!=null && target.TryGetComponent(out ResourceData data))
+        if (target != null && target.TryGetComponent(out ResourceData data))
         {
+            Debug.Log("Mark 해제");
             data.isMarked = false;
         }
         target = null;
-        agent.stoppingDistance = 0.1f;
+        agent.stoppingDistance = 0.2f;
         currentState.Value = State.Following;
     }
 
@@ -412,11 +417,14 @@ public class SoldierTest : Character
 
     public void HandleOnDie(Health health)
     {
+        target = null;
+        myItem = null;
         king.GetComponent<KingTest>().HandleSoldierDie(this);
     }
 
     #endregion
 
+    #region Animation
     void HandleAnimation(State previousValue, State newValue)
     {
         float speed = newValue == State.Following || newValue == State.MoveToward ? 1f : 0f;
@@ -431,7 +439,42 @@ public class SoldierTest : Character
         {
             agent.avoidancePriority = 49;
         }
+
+        if (newValue == State.Attack)
+        {
+            agent.speed = 0.4f;
+        }
+        else
+        {
+            agent.speed = 0.25f;
+        }
+
     }
+
+    // Animation Event
+    public void HadItemBefore()
+    {
+        if (myItem != null)
+        {
+            if (!health.isDead)
+            {
+                SetTriggerAnimation("Holding");
+            }
+            else
+            {
+                Debug.Log("PutDownItem");
+                myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false);
+            }
+        }
+        else
+        {
+            SetAvatarLayerWeight(0);
+        }
+    }
+
+    #endregion
+
+
 
     public void Init(Transform king, Vector3 offset)
     {

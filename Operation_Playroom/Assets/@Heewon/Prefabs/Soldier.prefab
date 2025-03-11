@@ -18104,12 +18104,12 @@ NavMeshAgent:
   m_GameObject: {fileID: 8455552684458472438}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 0.4
+  m_Radius: 0.4
+  m_Speed: 0.25
   m_Acceleration: 6
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0.1
+  m_StoppingDistance: 0.2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -18134,10 +18134,10 @@ MonoBehaviour:
   targetItem: {fileID: 0}
   weaponObject: {fileID: 0}
   teamMaterials: []
+  damageMaterials: []
   playerRenderers: []
   team:
     m_InternalValue: -1
-  itemContainer: {fileID: 2959140947267073897}
   spearHitbox: {fileID: 7270544927865333249}
   isAttacking: 0
 --- !u!114 &7541565092657274071
