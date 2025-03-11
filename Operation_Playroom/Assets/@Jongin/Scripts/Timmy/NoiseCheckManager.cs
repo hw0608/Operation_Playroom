@@ -27,7 +27,7 @@ public class NoiseCheckManager : NetworkBehaviour
         }
     }
 
-    void AddNoiseGage(float value)
+    public void AddNoiseGage(float value)
     {
         if (IsClient) // 클라이언트에서 서버에 요청
         {

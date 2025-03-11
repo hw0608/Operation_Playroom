@@ -47,13 +47,11 @@ public class Swordman : Character
         if (isHoldingItem)
         {
             Drop();
-            attackAble = true;
         }
         // 아이템 들기
         else
         {
             PickUp();
-            attackAble = false;
         }
     }
 
@@ -61,8 +59,12 @@ public class Swordman : Character
     IEnumerator SwordAttack()
     {
         swordHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId, team.Value);
+
         SetAvatarLayerWeight(1); // 상체 움직임으로 설정
+
         attackAble = false; // 재공격 비활성화
+        holdItemAble = false;
+
         SetTriggerAnimation("SwordAttack"); // 공격 모션 실행
 
         yield return new WaitForSeconds(0.4f);
@@ -76,6 +78,8 @@ public class Swordman : Character
         yield return new WaitForSeconds(0.4f);
 
         attackAble = true; // 공격 가능
+        holdItemAble = true;
+
         SetAvatarLayerWeight(0); // 상체 움직임 해제
     }
 
@@ -89,6 +93,5 @@ public class Swordman : Character
     void EnableHitboxClientRpc(bool state)
     {
         swordHitbox.GetComponent<Collider>().enabled = state;
-        Debug.Log("Collider enabled: " + swordHitbox.GetComponent<Collider>().enabled);
     }
 }

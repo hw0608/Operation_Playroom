@@ -21,6 +21,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     float detectItemRange = 0.2f;
 
     protected bool attackAble;
+    protected bool holdItemAble;
     protected bool isHoldingItem;
     protected float maxHp = 100;
     protected float currentHp;
@@ -38,6 +39,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
         networkAnimator = GetComponent<NetworkAnimator>();
 
         attackAble = true;
+        holdItemAble = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -232,8 +235,9 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public void PickUp()
     {
         targetItem = FindNearestItem();
-        if (targetItem != null)
+        if (targetItem != null && holdItemAble)
         {
+            attackAble = false;
             PickupItem();
         }
     }
@@ -243,6 +247,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     {
         if (targetItem == null) return;
 
+        attackAble = true;
         DropItem();
     }
 
@@ -273,6 +278,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         // 무기 감추기 및 들고있는 상태
         weaponObject.SetActive(false);
         isHoldingItem = true;
+        holdItemAble = false;
 
         // 아이템 오브젝트 위치시킴
         targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true, team.Value);
@@ -288,6 +294,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         // 무기 보이기 및 들고 있지 않은 상태
         weaponObject.SetActive(true);
         isHoldingItem = false;
+        holdItemAble = true;
 
         // 아이템 오브젝트 내려놓기
         targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
