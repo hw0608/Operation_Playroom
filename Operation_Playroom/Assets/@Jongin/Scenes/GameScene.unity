@@ -3400,7 +3400,6 @@ GameObject:
   m_Component:
   - component: {fileID: 853264307}
   - component: {fileID: 853264308}
-  - component: {fileID: 853264306}
   - component: {fileID: 853264309}
   m_Layer: 0
   m_Name: NoiseManager
@@ -3409,21 +3408,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &853264306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 853264305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13889fd7039b6b44cac62f1e099ad09c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  sleepGage: {fileID: 2033196828}
-  noiseGage: {fileID: 463248451}
 --- !u!4 &853264307
 Transform:
   m_ObjectHideFlags: 0
@@ -8689,7 +8673,6 @@ GameObject:
   - component: {fileID: 1828205551}
   - component: {fileID: 1828205552}
   - component: {fileID: 1828205553}
-  - component: {fileID: 1828205554}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -8754,25 +8737,6 @@ MonoBehaviour:
     m_InternalValue: 0
   notiText: {fileID: 223766265}
   timerText: {fileID: 1146810969}
---- !u!114 &1828205554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1828205550}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28020486b4289fb409ee4562da39aacc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  resourcePrefab: {fileID: 5763857477266137759, guid: d5a243cbaa5622949a7f3b6c186898d0, type: 3}
-  initSpawnCount: 10
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 640
-  currentSpawnCount: 0
 --- !u!1001 &1833932617
 PrefabInstance:
   m_ObjectHideFlags: 0

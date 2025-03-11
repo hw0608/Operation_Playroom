@@ -39,6 +39,7 @@ public class Managers : MonoBehaviour
 
         s_instance = go.GetComponent<Managers>();
         Addressables.InitializeAsync();
+        Resource.Init();
         Pool.Init();
         //s_instance._sound.Init();
 

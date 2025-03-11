@@ -9,7 +9,6 @@ using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
-using Unity.Services.Matchmaker.Models;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
@@ -21,7 +20,7 @@ public class HostSingleton : MonoBehaviour
 
     public static HostSingleton Instance
     {
-        get 
+        get
         {
             if (instance == null)
             {
@@ -30,7 +29,7 @@ public class HostSingleton : MonoBehaviour
 
                 DontDestroyOnLoad(singletonObject);
             }
-            return instance; 
+            return instance;
         }
     }
 
@@ -126,6 +125,7 @@ public class HostSingleton : MonoBehaviour
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
 
+        ServerSingleton.Instance.OnClientLeft -= HandleClientLeft;
         ServerSingleton.Instance.OnClientLeft += HandleClientLeft;
 
         NetworkManager.Singleton.StartHost();
@@ -136,11 +136,7 @@ public class HostSingleton : MonoBehaviour
     {
         try
         {
-            var lobby = await LobbyService.Instance.GetLobbyAsync(lobbyId);
-            if (lobby != null)
-            {
-                await LobbyService.Instance.RemovePlayerAsync(lobbyId, authId);
-            }
+            await LobbyService.Instance.RemovePlayerAsync(lobbyId, authId);
         }
         catch (LobbyServiceException e)
         {
@@ -160,9 +156,8 @@ public class HostSingleton : MonoBehaviour
     }
 
 
-    public async void ShutDown()    
+    public async void ShutDown()
     {
-
         ServerSingleton.Instance.OnClientLeft -= HandleClientLeft;
         StopAllCoroutines();
 
