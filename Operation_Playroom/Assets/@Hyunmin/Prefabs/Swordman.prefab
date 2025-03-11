@@ -3684,6 +3684,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  isPlayable: 0
 --- !u!136 &4163147820075246991
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3751,6 +3752,7 @@ MonoBehaviour:
   currentHealth:
     m_InternalValue: 0
   isDead: 0
+  hpBar: {fileID: 0}
 --- !u!114 &-7497378250188054321
 MonoBehaviour:
   m_ObjectHideFlags: 0

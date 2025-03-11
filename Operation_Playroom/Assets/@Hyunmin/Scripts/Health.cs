@@ -2,6 +2,9 @@ using System.Threading;
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
+using Unity.Cinemachine;
+using System.Collections;
 
 public class Health : NetworkBehaviour
 {
@@ -12,6 +15,7 @@ public class Health : NetworkBehaviour
 
     public Action<Health> OnDie;
 
+    [SerializeField] Image hpBar;
     Character character;
 
     void Start()
@@ -21,11 +25,17 @@ public class Health : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (IsServer)
+        {
+            currentHealth.Value = maxHealth;
+        }
+
+        if (IsClient && IsOwner)
+        {
+            StartCoroutine(FindHpbar());
+        }
+
         currentHealth.OnValueChanged += OnHealthChanged;
-
-        if (!IsServer) return;
-
-        currentHealth.Value = maxHealth;
     }
 
     public void TakeDamage(int damage, ulong clientId)
@@ -47,9 +57,17 @@ public class Health : NetworkBehaviour
 
     void OnHealthChanged(int previousValue, int newValue)
     {
+        Debug.Log("Health Changed");
+
+        if (IsClient && IsOwner)
+        {
+            UpdateHpbar();
+        }
+
         if (newValue == 0)
         {
             isDead = true;
+            GetComponent<PlayerController>().isPlayable = false;
         }
     }
 
@@ -62,6 +80,8 @@ public class Health : NetworkBehaviour
         if (currentHealth.Value == 0)
         {
             isDead = true;
+            GetComponent<PlayerController>().isPlayable = false;
+
             character.Die();
 
             if (GetComponent<PlayerController>() != null)
@@ -74,5 +94,18 @@ public class Health : NetworkBehaviour
             OnDie?.Invoke(this);
 
         }
+    }
+    IEnumerator FindHpbar()
+    {
+        yield return new WaitUntil(() => GameObject.FindWithTag("HPBar"));
+
+        hpBar = GameObject.FindWithTag("HPBar").GetComponent<Image>();
+    }
+
+    void UpdateHpbar()
+    {
+        Debug.Log("Update HPbar");
+        hpBar.fillAmount = (float)currentHealth.Value / maxHealth;
+        Debug.Log(hpBar.fillAmount);
     }
 }

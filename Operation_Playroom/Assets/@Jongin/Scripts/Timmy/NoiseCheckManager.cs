@@ -35,6 +35,12 @@ public class NoiseCheckManager : NetworkBehaviour
         }
     }
 
+    public void SubmitNoiseTo(float noiseValue)
+    {
+        totalNoise.Value += noiseValue;
+        totalNoise.Value = Mathf.Clamp(totalNoise.Value, 0, 30);
+    }
+
     [ServerRpc(RequireOwnership = false)]
     void SubmitNoiseToServerRpc(float noiseValue)
     {
