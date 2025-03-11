@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Item
   - Occupy
+  - HPBar
   layers:
   - Default
   - TransparentFX

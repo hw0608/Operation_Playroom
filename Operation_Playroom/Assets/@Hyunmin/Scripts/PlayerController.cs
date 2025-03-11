@@ -9,10 +9,10 @@ public class PlayerController : NetworkBehaviour
 
     public static Action<PlayerController> OnPlayerSpawn;
     public static Action<PlayerController> OnPlayerDespawn;
+    public bool isPlayable;
 
     Vector3 velocity;
     bool isGrounded;
-    bool isPlayable;
 
     Rigidbody rb;
     Character character;
@@ -32,7 +32,6 @@ public class PlayerController : NetworkBehaviour
     void FixedUpdate()
     {
         if (!IsOwner) return;
-
         if (!IsOwner || !isPlayable) return;
 
         character.Move(character.cam.gameObject.GetComponent<CinemachineCamera>(), rb); // 캐릭터 이동
@@ -42,6 +41,7 @@ public class PlayerController : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner) return;
+        if (!IsOwner || !isPlayable) return;
 
         character.HandleInput(); // 캐릭터 입력처리
     }

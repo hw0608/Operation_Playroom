@@ -19,41 +19,44 @@ public class WeaponDamage : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // 본인이 아닐 경우 리턴
-        if (!IsOwner) return;
-
-        // 본인을 타격했을경우 리턴
-        if (other.TryGetComponent<NetworkObject>(out NetworkObject obj))
+        if (!isCollision) 
         {
-            if (ownerClientId == obj.OwnerClientId)
+            // 본인이 아닐 경우 리턴
+            if (!IsOwner) return;
+
+            // 본인을 타격했을경우 리턴
+            if (other.TryGetComponent<NetworkObject>(out NetworkObject obj))
             {
-                return;
+                if (ownerClientId == obj.OwnerClientId)
+                {
+                    return;
+                }
             }
-        }
 
-        // 같은 팀 타격 시 리턴
-        if (other.TryGetComponent<Character>(out Character character))
-        {
-            if (ownerTeam == character.team.Value)
+            // 같은 팀 타격 시 리턴
+            if (other.TryGetComponent<Character>(out Character character))
             {
-                Debug.Log("Team Kill");
-                return;
+                if (ownerTeam == character.team.Value)
+                {
+                    Debug.Log("Team Kill");
+                    return;
+                }
             }
-        }
 
-        // 건물 타격 시 데미지
-        if (other.TryGetComponent<Building>(out Building building))
-        {
-            isCollision = true;
+            // 건물 타격 시 데미지
+            if (other.TryGetComponent<Building>(out Building building))
+            {
+                isCollision = true;
 
-            building.TakeDamageServerRpc(damage);
+                building.TakeDamageServerRpc(damage);
 
-            StartCoroutine(ResetCollisionRoutine());
-        }
+                NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+                noise.AddNoiseGage(2);
 
-        // 상대 팀 타격 시 데미지
-        if (!isCollision)
-        {
+                StartCoroutine(ResetCollisionRoutine());
+            }
+
+            // 상대 팀 타격 시 데미지
             if (other.TryGetComponent<Health>(out Health health))
             {
                 isCollision = true;
@@ -68,6 +71,9 @@ public class WeaponDamage : NetworkBehaviour
                     Debug.Log("else Damage");
                     health.TakeDamageServerRpc(damage, ownerClientId);
                 }
+
+                NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+                noise.AddNoiseGage(2);
 
                 StartCoroutine(ResetCollisionRoutine());
             }

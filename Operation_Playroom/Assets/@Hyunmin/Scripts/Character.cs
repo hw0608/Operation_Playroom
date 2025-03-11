@@ -166,7 +166,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     void ApplyMaterial(int teamIndex)
     {
         if (teamIndex < 0) return;
-        Debug.Log("Apply");
         Material targetMaterial = teamMaterials[teamIndex];
         foreach (var renderer in playerRenderers)
         {
@@ -181,7 +180,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     void ApplyMaterialClientRpc(int teamIndex)
     {
         if (teamIndex < 0) return;
-        Debug.Log("Apply");
         foreach (var renderer in playerRenderers)
         {
             if (renderer != null)
@@ -195,7 +193,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     void ApplyDamageMaterialClientRpc(int teamIndex)
     {
         if (teamIndex < 0) return;
-        Debug.Log("Damage Apply");
         foreach (var renderer in playerRenderers)
         {
             if (renderer != null)

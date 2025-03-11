@@ -40,6 +40,9 @@ public class ProjectileDamage : MonoBehaviour
         {
             building.TakeDamage(damage);
 
+            NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+            noise.SubmitNoiseTo(2);
+
             Managers.Pool.Push(gameObject);
         }
 
@@ -47,6 +50,9 @@ public class ProjectileDamage : MonoBehaviour
         if (other.TryGetComponent<Health>(out Health health))
         {
             health.TakeDamage(damage, ownerClientId);
+
+            NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+            noise.SubmitNoiseTo(2);
 
             Managers.Pool.Push(gameObject);
         }
