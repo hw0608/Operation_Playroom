@@ -75,14 +75,17 @@ public class KingTest : Character
         {
             if (FindNearestOccupy() != null && HasSoldierWithItem())
             {
+                Debug.Log("CommandSoldierToDeliverItem");
                 CommandSoldierToDeliverItem();
             }
             else if (FindNearestItem() != null)
             {
+                Debug.Log("CommandSoldierToPickupItem");
                 CommandSoldierToPickupItem();
             }
             else if (FindNearestEnemy() != null)
             {
+                Debug.Log("CommandSoldierToAdvance");
                 CommandSoldierToAdvance();
             }
 
@@ -109,16 +112,20 @@ public class KingTest : Character
         GameObject nearestOccupy = null;
         float minDistance = Mathf.Infinity;
 
-        foreach (Collider col in colliders)
+        var results = colliders
+            .Select(col => col.GetComponent<OccupySystem>())
+            .Where(o => o != null && !o.hasBuilding.Value)
+            .ToArray();
+
+        foreach (OccupySystem occupy in results)
         {
-            GameObject occupy = col.gameObject;
             if (occupy != null)
             {
-                float distance = Vector3.Distance(transform.position, col.transform.position);
+                float distance = Vector3.Distance(transform.position, occupy.transform.position);
                 if (distance < minDistance)
                 {
                     minDistance = distance;
-                    nearestOccupy = occupy;
+                    nearestOccupy = occupy.gameObject;
                 }
             }
         }
@@ -159,7 +166,7 @@ public class KingTest : Character
 
         var items = colliders
             .Select(col => col.GetComponent<ResourceData>())
-            .Where(c => c != null && !c.isMarked && !c.isHolding.Value)
+            .Where(r => r != null && !r.isMarked && !r.isHolding.Value)
             .ToArray();
 
         foreach (ResourceData resource in items) // 탐색된 모든 자원 순회하며

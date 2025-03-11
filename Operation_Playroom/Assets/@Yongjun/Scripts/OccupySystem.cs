@@ -8,6 +8,8 @@ public class OccupySystem : NetworkBehaviour
     [SerializeField] NetworkVariable<int> redTeamResourceCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<int> blueTeamResourceCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    public NetworkVariable<bool> hasBuilding = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
     // 채워야 할 자원
     const int resourceFillCount = 3;
 
@@ -122,6 +124,11 @@ public class OccupySystem : NetworkBehaviour
         networkObject.TrySetParent(transform.GetComponent<NetworkObject>());
         ActiveNetworkObjectClientRpc(networkObject.NetworkObjectId, true);
         building.GetComponent<Building>().BuildingInit();
+
+        if (IsServer)
+        {
+            hasBuilding.Value = true;
+        }
     }
 
     [ClientRpc]
@@ -155,5 +162,10 @@ public class OccupySystem : NetworkBehaviour
 
         redTeamResourceCount.Value = 0;
         blueTeamResourceCount.Value = 0;
+
+        if (IsServer)
+        {
+            hasBuilding.Value = false;
+        }
     }
 }

@@ -3533,9 +3533,9 @@ GameObject:
   - component: {fileID: 141585091533852052}
   - component: {fileID: 4943261774732861824}
   - component: {fileID: -7497378250188054321}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Swordman
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

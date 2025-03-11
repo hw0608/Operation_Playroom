@@ -18,9 +18,9 @@ GameObject:
   - component: {fileID: 141585091533852052}
   - component: {fileID: 7588611022480350649}
   - component: {fileID: 6105073392146069887}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Archer
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

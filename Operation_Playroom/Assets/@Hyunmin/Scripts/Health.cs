@@ -21,10 +21,11 @@ public class Health : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        currentHealth.OnValueChanged += OnHealthChanged;
+
         if (!IsServer) return;
 
         currentHealth.Value = maxHealth;
-        //currentHealth.OnValueChanged += OnHealthChanged;
     }
 
     public void TakeDamage(int damage, ulong clientId)
@@ -46,7 +47,10 @@ public class Health : NetworkBehaviour
 
     void OnHealthChanged(int previousValue, int newValue)
     {
-        //throw new NotImplementedException();
+        if (newValue == 0)
+        {
+            isDead = true;
+        }
     }
 
     void ModifyHealth(int value, ulong clientId)
