@@ -158,6 +158,14 @@ public class Building : NetworkBehaviour
         }
     }
 
+    public void TakeDamage(int damage)
+    {
+        if (health.Value > 0)
+        {
+            health.Value -= damage;
+        }
+    }
+
     void UpdateBuildingMesh(int health)
     {
         float healthPer = (float)health / buildingData.health;

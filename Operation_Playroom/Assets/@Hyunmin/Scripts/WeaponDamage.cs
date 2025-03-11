@@ -41,13 +41,23 @@ public class WeaponDamage : NetworkBehaviour
             }
         }
 
-        // 상대 팀 타격 시 데미지
-        if (!isCollision)
+        // 건물 타격 시 데미지
+        if (other.TryGetComponent<Building>(out Building building))
         {
             isCollision = true;
 
+            building.TakeDamageServerRpc(damage);
+
+            StartCoroutine(ResetCollisionRoutine());
+        }
+
+        // 상대 팀 타격 시 데미지
+        if (!isCollision)
+        {
             if (other.TryGetComponent<Health>(out Health health))
             {
+                isCollision = true;
+
                 if (health.IsServer)
                 {
                     Debug.Log("IsServer Damage");
@@ -58,6 +68,7 @@ public class WeaponDamage : NetworkBehaviour
                     Debug.Log("else Damage");
                     health.TakeDamageServerRpc(damage, ownerClientId);
                 }
+
                 StartCoroutine(ResetCollisionRoutine());
             }
         }

@@ -35,6 +35,14 @@ public class ProjectileDamage : MonoBehaviour
             }
         }
 
+        // 건물 타격 시 데미지
+        if (other.TryGetComponent<Building>(out Building building))
+        {
+            building.TakeDamage(damage);
+
+            Managers.Pool.Push(gameObject);
+        }
+
         // 상대 팀 타격 시 데미지
         if (other.TryGetComponent<Health>(out Health health))
         {

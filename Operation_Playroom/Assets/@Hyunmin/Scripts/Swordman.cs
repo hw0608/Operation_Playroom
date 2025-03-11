@@ -69,7 +69,7 @@ public class Swordman : Character
 
         EnableHitboxServerRpc(true);
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.5f);
 
         EnableHitboxServerRpc(false);
 
@@ -89,5 +89,6 @@ public class Swordman : Character
     void EnableHitboxClientRpc(bool state)
     {
         swordHitbox.GetComponent<Collider>().enabled = state;
+        Debug.Log("Collider enabled: " + swordHitbox.GetComponent<Collider>().enabled);
     }
 }

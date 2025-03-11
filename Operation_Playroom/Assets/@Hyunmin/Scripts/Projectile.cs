@@ -64,5 +64,9 @@ public class Projectile : MonoBehaviour
         {
             Managers.Pool.Push(gameObject);
         }
+        else if (other.GetComponent<Building>())
+        {
+            Managers.Pool.Push(gameObject);
+        }
     }
 }
