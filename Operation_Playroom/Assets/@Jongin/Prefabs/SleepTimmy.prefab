@@ -42,7 +42,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34456307b55a70044b41f08dfe6ff8a0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.591
+      value: -1.073
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 34456307b55a70044b41f08dfe6ff8a0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -748,8 +748,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 834301579
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 342816180
+  InScenePlacedSourceGlobalObjectIdHash: 834301579
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0

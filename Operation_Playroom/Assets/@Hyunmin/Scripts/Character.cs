@@ -340,5 +340,4 @@ public abstract class Character : NetworkBehaviour, ICharacter
         networkAnimator.SetTrigger(name);
     }
 
-
 }

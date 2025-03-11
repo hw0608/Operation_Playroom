@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8944582029856936438}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RedMainCamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7275597241540509231}
   - component: {fileID: 7188684744482222565}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: KingSpawnPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6170598552932594488}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Objects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3631701817389202068}
   - component: {fileID: 9175710630097570141}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: KnightSpawnPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,6 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5284713848370261022}
   - component: {fileID: 7319517776876942942}
+  - component: {fileID: 4043066539379467206}
   m_Layer: 9
   m_Name: RedZone
   m_TagString: Untagged
@@ -255,6 +256,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!135 &4043066539379467206
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3994900192934732915}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 2.5600019
+  m_Center: {x: 0.00000047683716, y: 0.00000047683716, z: 0}
 --- !u!1 &6828658299179103411
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,7 +287,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7475813288014047661}
   - component: {fileID: 5990914357712573542}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Range
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -351,7 +373,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3911589584139169439}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FlagPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -384,7 +406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8759178095781155676}
   - component: {fileID: 2512642628906623124}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ArcherSpawnPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -431,6 +453,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: cba5dcbe606db5c489d9a7269c56598a, type: 3}
       propertyPath: m_Name
       value: Wall_A_corner (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: cba5dcbe606db5c489d9a7269c56598a, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: cba5dcbe606db5c489d9a7269c56598a, type: 3}
       propertyPath: m_LocalScale.x
@@ -510,6 +536,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall_B_wall (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.05
@@ -587,6 +617,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: cba5dcbe606db5c489d9a7269c56598a, type: 3}
       propertyPath: m_Name
       value: Wall_A_corner
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: cba5dcbe606db5c489d9a7269c56598a, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: cba5dcbe606db5c489d9a7269c56598a, type: 3}
       propertyPath: m_LocalScale.x
@@ -666,6 +700,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall_B_wall
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.05
@@ -743,6 +781,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
       propertyPath: m_Name
       value: Wall_B_wall (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
       propertyPath: m_LocalScale.x
@@ -822,6 +864,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall_B_wall (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 6dc5d495c37d65043b022964d98631b9, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.05
@@ -899,6 +945,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: 637b3bb1a53fd584b8b2f29eddb05290, type: 3}
       propertyPath: m_Name
       value: Castle
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 637b3bb1a53fd584b8b2f29eddb05290, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 637b3bb1a53fd584b8b2f29eddb05290, type: 3}
       propertyPath: m_LocalScale.x
@@ -981,6 +1031,10 @@ PrefabInstance:
     - target: {fileID: 100000, guid: f38b9a56b23e4df499eaede1c2276296, type: 3}
       propertyPath: m_Name
       value: Tower_B
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: f38b9a56b23e4df499eaede1c2276296, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: f38b9a56b23e4df499eaede1c2276296, type: 3}
       propertyPath: m_LocalScale.x
