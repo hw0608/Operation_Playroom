@@ -20,19 +20,20 @@ public class OccupySystem : NetworkBehaviour
     [SerializeField] Image redTeamResourceCountImage;
     [SerializeField] Image blueTeamResourceCountImage;
 
-    // 점령지 데이터 스크립터블 오브젝트
-    [SerializeField] OccupyScriptableObject occupyData;
-
     ResourceSpawner resourceSpawner;
+    OccupyManager occupyManager;
 
     void Update()
     {
         if (IsServer)
             DetectResources();
     }
+
     public override void OnNetworkSpawn()
     {
         resourceSpawner = GameObject.FindFirstObjectByType<ResourceSpawner>();
+        occupyManager = GameObject.FindFirstObjectByType<OccupyManager>();
+
         if (!IsServer)
         {
             redTeamResourceCount.OnValueChanged += (oldValue, newValue) => UpdateVisuals();
@@ -92,6 +93,15 @@ public class OccupySystem : NetworkBehaviour
     {
         currentOwner = newOwner;
 
+        if (newOwner == Owner.Red)
+        {
+            occupyManager.UpdateOccupyCount(Owner.Red, 1);
+        }
+        else if (newOwner == Owner.Blue)
+        {
+            occupyManager.UpdateOccupyCount(Owner.Blue, 1);
+        }
+
         InstantiateBuilding(newOwner);
         ChangeOwnershipClientRpc(newOwner);
     }
@@ -142,11 +152,8 @@ public class OccupySystem : NetworkBehaviour
 
     void UpdateVisuals() // 자원 적재 시각 효과
     {
-        float redFill = Mathf.Clamp((float)redTeamResourceCount.Value / resourceFillCount, 0f, 1f);
-        float blueFill = Mathf.Clamp((float)blueTeamResourceCount.Value / resourceFillCount, 0f, 1f);
-
-        redTeamResourceCountImage.fillAmount = redFill;
-        blueTeamResourceCountImage.fillAmount = blueFill;
+        redTeamResourceCountImage.fillAmount = Mathf.Clamp((float)redTeamResourceCount.Value / resourceFillCount, 0f, 1f);
+        blueTeamResourceCountImage.fillAmount = Mathf.Clamp((float)blueTeamResourceCount.Value / resourceFillCount, 0f, 1f);
     }
 
     void ResetFillAmount() // 자원 적재 시각 효과 초기화
@@ -157,6 +164,15 @@ public class OccupySystem : NetworkBehaviour
 
     public void ResetOwnership() // 건물 파괴 시 소유권 초기화 서버RPC
     {
+        if (currentOwner == Owner.Red)
+        {
+            occupyManager.UpdateOccupyCount(Owner.Red, -1);
+        }
+        else if (currentOwner == Owner.Blue)
+        {
+            occupyManager.UpdateOccupyCount(Owner.Blue, -1);
+        }
+
         currentOwner = Owner.Neutral;
         ChangeOwnershipClientRpc(currentOwner);
 

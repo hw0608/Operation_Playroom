@@ -1,6 +1,7 @@
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using TMPro;
 
 public class OccupyManager : NetworkBehaviour
 {
@@ -8,13 +9,34 @@ public class OccupyManager : NetworkBehaviour
     [SerializeField] Transform occupyPoints;
     [SerializeField] Transform occupyPool;
 
+    [SerializeField] TextMeshProUGUI redTeamOccupyCountText;
+    [SerializeField] TextMeshProUGUI blueTeamOccupyCountText;
+
+    private NetworkVariable<int> redTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    private NetworkVariable<int> blueTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            Managers.Resource.LoadAllAsync<GameObject>("default",null);
+            Managers.Resource.LoadAllAsync<GameObject>("default", null);
             GenerateOccupy();
         }
+
+        redTeamOccupyCount.OnValueChanged += OnRedTeamOccupyCountChanged;
+        blueTeamOccupyCount.OnValueChanged += OnBlueTeamOccupyCountChanged;
+
+        UpdateUI();
+    }
+
+    private void OnRedTeamOccupyCountChanged(int oldValue, int newValue)
+    {
+        UpdateUI();
+    }
+
+    private void OnBlueTeamOccupyCountChanged(int oldValue, int newValue)
+    {
+        UpdateUI();
     }
 
     private void GenerateOccupy()
@@ -28,7 +50,7 @@ public class OccupyManager : NetworkBehaviour
             {
                 networkObject.TrySetParent(occupyPool.GetComponent<NetworkObject>());
             }
-            occupyInstance.transform.position = child.position; 
+            occupyInstance.transform.position = child.position;
         }
     }
 
@@ -50,5 +72,26 @@ public class OccupyManager : NetworkBehaviour
         }
 
         return paths;
+    }
+
+    public void UpdateOccupyCount(Owner owner, int amount)
+    {
+        if (IsServer)
+        {
+            if (owner == Owner.Red)
+            {
+                redTeamOccupyCount.Value += amount;
+            }
+            else if (owner == Owner.Blue)
+            {
+                blueTeamOccupyCount.Value += amount;
+            }
+        }
+    }
+
+    private void UpdateUI()
+    {
+        redTeamOccupyCountText.text = $"{redTeamOccupyCount.Value}";
+        blueTeamOccupyCountText.text = $"{blueTeamOccupyCount.Value}";
     }
 }
