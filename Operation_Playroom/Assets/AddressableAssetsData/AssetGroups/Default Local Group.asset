@@ -15,12 +15,6 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: c55a1a6dc211d9c46bb936f060bb0b5d
   m_SerializeEntries:
-  - m_GUID: 0a2926fe475d8744bb41d519ba9ec0d9
-    m_Address: BuildingDamageEffect
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - default
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0fd3c3c86dfe1744d8c57249e89c4323
     m_Address: Swordman
     m_ReadOnly: 0
