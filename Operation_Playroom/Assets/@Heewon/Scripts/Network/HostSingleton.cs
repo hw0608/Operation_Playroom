@@ -164,6 +164,15 @@ public class HostSingleton : MonoBehaviour
         {
             try
             {
+                var netObjs = FindObjectsByType<NetworkObject>(FindObjectsSortMode.None);
+                foreach (var obj in netObjs)
+                {
+                    if (obj.IsSpawned)
+                    {
+                        obj.Despawn();
+                    }
+                }
+
                 await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
             }
             catch (LobbyServiceException e)

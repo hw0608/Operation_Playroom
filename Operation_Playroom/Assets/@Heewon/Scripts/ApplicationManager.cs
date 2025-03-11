@@ -27,12 +27,24 @@ public class ApplicationManager : MonoBehaviour
 
         await tcs.Task;
 
+        ServerSingleton.Instance.Init();
+
+        float timer = 10f;
+
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+
+            if (ServerSingleton.Instance.gameRoleToPrefabHash.Count >= 3)
+            {
+                break;
+            }
+        }
+
         if (isDedicatedServer)
         {
             appData = new ApplicationData();
             
-
-            ServerSingleton.Instance.Init();
             await ServerSingleton.Instance.CreateServer();
             await ServerSingleton.Instance.serverManager.StartGameServerAsync();
         }
