@@ -9,10 +9,10 @@ public class MiniMap : NetworkBehaviour
     private Character character;
     private bool IsLocalPlayer => IsOwner && NetworkManager.Singleton.LocalClientId == NetworkObject.OwnerClientId;
 
-    //public override void OnNetworkSpawn()
-    //{
-    //    StartCoroutine(DelayedInitialization());
-    //}
+    public override void OnNetworkSpawn()
+    {
+        StartCoroutine(DelayedInitialization());
+    }
     private IEnumerator DelayedInitialization()
     {
         yield return null;
