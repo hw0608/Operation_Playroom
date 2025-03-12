@@ -10450,6 +10450,7 @@ GameObject:
   - component: {fileID: 6435931387812751357}
   - component: {fileID: 2309042108532790557}
   - component: {fileID: 842060771552245000}
+  - component: {fileID: 1986757405888230532}
   m_Layer: 0
   m_Name: HeadIcon
   m_TagString: Untagged
@@ -10525,6 +10526,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1986757405888230532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7014643195576844709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac6794c04ffccb547a1dd70c25998f6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &7028876704240046857
 GameObject:
   m_ObjectHideFlags: 0
