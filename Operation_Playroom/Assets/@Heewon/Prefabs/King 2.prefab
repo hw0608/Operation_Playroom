@@ -13865,7 +13865,8 @@ MonoBehaviour:
     m_InternalValue: -1
   initialSoldiersCount: 3
   itemDetectRange: 0.7
-  occupyDetectRange: 0.7
+  occupyDetectRange: 0.5
+  enemyDetectRange: 0.3
   soldierSpacing: 0.15
   maxSoldierCount: 10
   soldiers: []

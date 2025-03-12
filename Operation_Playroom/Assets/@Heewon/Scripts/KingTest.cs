@@ -9,6 +9,7 @@ public class KingTest : Character
     [SerializeField] int initialSoldiersCount;
     [SerializeField] float itemDetectRange;
     [SerializeField] float occupyDetectRange; // 점령지 감지 범위
+    [SerializeField] float enemyDetectRange;
     [SerializeField] float soldierSpacing = 0.2f;
     [SerializeField] int maxSoldierCount = 10;
 
@@ -108,7 +109,7 @@ public class KingTest : Character
     // 근처 점령지 찾기
     GameObject FindNearestOccupy()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, occupyDetectRange, LayerMask.GetMask("Occupy"));
+        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, occupyDetectRange, LayerMask.GetMask("Occupy"));
         GameObject nearestOccupy = null;
         float minDistance = Mathf.Infinity;
 
@@ -136,7 +137,7 @@ public class KingTest : Character
     // 적을 찾는 메서드 (범위 내 가장 가까운 적)
     private GameObject FindNearestEnemy()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, 1f, LayerMask.GetMask("Enemy")); // 나중에 콜라이더로 수정
+        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.4f, enemyDetectRange, LayerMask.GetMask("Enemy")); // 나중에 콜라이더로 수정
         GameObject nearestEnemy = null; // 가장 가까운 적을 저장할 오브젝트
         float minDistance = Mathf.Infinity; // 가장 가까운 거리를 저장. 초기 값은 무한대로 설정
 
@@ -298,4 +299,16 @@ public class KingTest : Character
         Debug.Log("King Interaction");
     }
 
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position + transform.forward * 0.5f, itemDetectRange);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position + transform.forward * 0.5f, occupyDetectRange);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position + transform.forward * 0.4f, enemyDetectRange);
+    }
 }
