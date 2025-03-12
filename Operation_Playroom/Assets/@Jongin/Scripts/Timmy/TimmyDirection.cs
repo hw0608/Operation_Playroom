@@ -23,26 +23,39 @@ public class TimmyDirection : NetworkBehaviour
     public NetworkVariable<int> cameraIndex = new NetworkVariable<int>(0);
     public override void OnNetworkSpawn()
     {
-        imageColor = fadeImage.color;
-        imageColor.a = 0; // 시작 시 투명
-        fadeImage.color = imageColor;
+        if (IsServer)
+        {
+            GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
+            sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
+            sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();
 
-        cameraIndex.OnValueChanged -= ActiveCamera;
-        cameraIndex.OnValueChanged += ActiveCamera;
+            GameObject moveTimmyObject = Instantiate(moveTimmyPrefab);
+            moveTimmyObject.GetComponent<NetworkObject>().Spawn();
+            moveTimmy = moveTimmyObject.GetComponent<MoveTimmy>();
+        }
+        if (IsClient)
+        {
+            imageColor = fadeImage.color;
+            imageColor.a = 0; // 시작 시 투명
+            fadeImage.color = imageColor;
 
-        fadeAlpha.OnValueChanged -= ChangeImageAlpha;
-        fadeAlpha.OnValueChanged += ChangeImageAlpha;
+            cameraIndex.OnValueChanged -= ActiveCamera;
+            cameraIndex.OnValueChanged += ActiveCamera;
+
+            fadeAlpha.OnValueChanged -= ChangeImageAlpha;
+            fadeAlpha.OnValueChanged += ChangeImageAlpha;
+        }
     }
 
     public override void OnNetworkDespawn()
     {
         cameraIndex.OnValueChanged -= ActiveCamera;
         fadeAlpha.OnValueChanged -= ChangeImageAlpha;
-        if (sleepTimmy.GetComponent<NetworkObject>().IsSpawned)
+        if (sleepTimmy != null && sleepTimmy.GetComponent<NetworkObject>().IsSpawned)
         {
             sleepTimmy.GetComponent<NetworkObject>().Despawn();
         }
-        if (moveTimmy.GetComponent<NetworkObject>().IsSpawned)
+        if (moveTimmy != null && moveTimmy.GetComponent<NetworkObject>().IsSpawned)
         {
             moveTimmy.GetComponent<NetworkObject>().Despawn();
         }
@@ -51,23 +64,45 @@ public class TimmyDirection : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            if (IsServer)
-            {
-                Debug.Log("server");
+        //if (Input.GetKeyDown(KeyCode.A))
+        //{
+        //    if (IsClient)
+        //    {
+        //        Debug.Log("client");
+        //        imageColor = fadeImage.color;
+        //        imageColor.a = 0; // 시작 시 투명
+        //        fadeImage.color = imageColor;
 
-                GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
-                sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
-                sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();
+        //        cameraIndex.OnValueChanged -= ActiveCamera;
+        //        cameraIndex.OnValueChanged += ActiveCamera;
 
-                GameObject moveTimmyObject = Instantiate(moveTimmyPrefab);
-                moveTimmyObject.GetComponent<NetworkObject>().Spawn();
-                moveTimmy = moveTimmyObject.GetComponent<MoveTimmy>();
+        //        fadeAlpha.OnValueChanged -= ChangeImageAlpha;
+        //        fadeAlpha.OnValueChanged += ChangeImageAlpha;
+        //    }
 
-                StartTimmy();
-            }
-        }
+        //}
+        //if (Input.GetKeyDown(KeyCode.S))
+        //{
+        //    if (IsServer)
+        //    {
+        //        Debug.Log("server");
+        //        GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
+        //        sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
+        //        sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();
+
+        //        GameObject moveTimmyObject = Instantiate(moveTimmyPrefab);
+        //        moveTimmyObject.GetComponent<NetworkObject>().Spawn();
+        //        moveTimmy = moveTimmyObject.GetComponent<MoveTimmy>();
+        //    }
+        //}
+        //if (Input.GetKeyDown(KeyCode.D))
+        //{
+        //    if (IsServer)
+        //    {
+        //        Debug.Log("start");
+        //        StartTimmy();
+        //    }
+        //}
     }
 
     public void StartTimmy()
@@ -140,6 +175,7 @@ public class TimmyDirection : NetworkBehaviour
 
     public void ChangeImageAlpha(float oldValue, float newValue)
     {
+        Debug.Log("222222");
         imageColor.a = newValue;
         fadeImage.color = imageColor;
     }
@@ -150,7 +186,7 @@ public class TimmyDirection : NetworkBehaviour
         {
             camera.Priority = 0;
         }
-
+        Debug.Log("111111");
         cameras[newIndex].Priority = 10;
         activeCameraIndex = newIndex;
     }
