@@ -12,11 +12,9 @@ public class OccupyManager : NetworkBehaviour
     [SerializeField] TextMeshProUGUI redTeamOccupyCountText;
     [SerializeField] TextMeshProUGUI blueTeamOccupyCountText;
 
-    [SerializeField]
-    private NetworkVariable<int> redTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [SerializeField]
-    private NetworkVariable<int> blueTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
+    [SerializeField] NetworkVariable<int> redTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> blueTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -25,10 +23,13 @@ public class OccupyManager : NetworkBehaviour
             GenerateOccupy();
         }
 
-        redTeamOccupyCount.OnValueChanged += OnRedTeamOccupyCountChanged;
-        blueTeamOccupyCount.OnValueChanged += OnBlueTeamOccupyCountChanged;
+        if (IsClient)
+        {
+            redTeamOccupyCount.OnValueChanged += OnRedTeamOccupyCountChanged;
+            blueTeamOccupyCount.OnValueChanged += OnBlueTeamOccupyCountChanged;
 
-        UpdateUI();
+            UpdateUI();
+        }
     }
 
     private void OnRedTeamOccupyCountChanged(int oldValue, int newValue)
@@ -94,6 +95,6 @@ public class OccupyManager : NetworkBehaviour
     private void UpdateUI()
     {
         redTeamOccupyCountText.text = $"{redTeamOccupyCount.Value}";
-        blueTeamOccupyCountText.text = $"{blueTeamOccupyCount.Value}";
+        blueTeamOccupyCountText.text = $"{blueTeamOccupyCount.Value}"; 
     }
 }

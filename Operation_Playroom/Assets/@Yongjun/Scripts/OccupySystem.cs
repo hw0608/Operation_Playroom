@@ -50,13 +50,19 @@ public class OccupySystem : NetworkBehaviour
         {
             if (collider.CompareTag("Item"))
             {
-                Debug.Log("detect!");
-                ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
+                Debug.Log($"{collider.name} 자원 감지 성공!"); 
+
                 ResourceData data = collider.GetComponent<ResourceData>();
-                data.isColliderEnable.Value = false;
-                data.resourceCollider.enabled = false;
+                if (data.isColliderEnable.Value)
+                {
+                    data.isColliderEnable.Value = false;
+                    data.resourceCollider.enabled = false;
+                }
+
+                ulong resourceId = collider.GetComponent<NetworkObject>().NetworkObjectId;
                 if (data.CurrentOwner == Owner.Red) redTeamResourceCount.Value++;
                 else if (data.CurrentOwner == Owner.Blue) blueTeamResourceCount.Value++;
+                
                 Managers.Pool.Push(collider.gameObject);
                 PushObjectClientRpc(resourceId);
                 resourceSpawner.currentSpawnCount--;
