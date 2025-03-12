@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,11 +5,13 @@ public class Spawner : NetworkBehaviour
 {
     public int index = 0;
     [SerializeField] GameObject soldierPrefab;
+    KingTest king;
 
     public void SpawnSoldiers(int count)
     {
-        KingTest king = GetComponent<KingTest>();
         int cnt = 0;
+
+        king = GetComponent<KingTest>();
 
         for (int i = 0; i < king.soldiers.Count; i++)
         {
@@ -20,12 +20,12 @@ public class Spawner : NetworkBehaviour
 
         if (cnt >= 10)
         {
-            return;
+            return; 
         }
 
         for (int i = 0; i < count; i++)
         {
-            SpawnSoldierServerRpc(transform.position, NetworkManager.Singleton.LocalClientId);
+            SpawnSoldierServerRpc(NetworkManager.Singleton.LocalClientId, (GameTeam)king.team.Value);
         }
     }
 
@@ -35,9 +35,9 @@ public class Spawner : NetworkBehaviour
     }
 
     [ServerRpc]
-    void SpawnSoldierServerRpc(Vector3 position, ulong clientId)
+    void SpawnSoldierServerRpc(ulong clientId, GameTeam team)
     {
-        GameObject soldier = Instantiate(soldierPrefab, position + Vector3.back, Quaternion.identity);
+        GameObject soldier = Instantiate(soldierPrefab, SpawnPoint.GetSpawnPoint(team, GameRole.None), Quaternion.identity);
         NetworkObject netObj = soldier.GetComponent<NetworkObject>();
         netObj.SpawnWithOwnership(clientId, true);
 
