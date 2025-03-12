@@ -65,6 +65,7 @@ public class ClientSingleton : MonoBehaviour
                 userAuthId = AuthenticationService.Instance.PlayerId
             };
 
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnDisconnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnDisconnected;
             return true;
         }

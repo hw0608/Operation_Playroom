@@ -13,6 +13,16 @@ public class ResourceManager
 
     public void Init()
     {
+        //Clear();
+        foreach (var resource in _resources.Values)
+        {
+            Addressables.Release(resource);
+        }
+        foreach (var handle in _handles.Values)
+        {
+            Addressables.Release(handle);
+        }
+
         _resources.Clear();
         _handles.Clear();
     }

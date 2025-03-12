@@ -6531,7 +6531,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ffb565f8c5d5ead42a3f9340aa5a5563, type: 2}
+  - {fileID: 2100000, guid: fe9e3657b70afea4c9804c8cdd7cb1eb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13865,7 +13865,8 @@ MonoBehaviour:
     m_InternalValue: -1
   initialSoldiersCount: 3
   itemDetectRange: 0.7
-  occupyDetectRange: 0.7
+  occupyDetectRange: 0.5
+  enemyDetectRange: 0.3
   soldierSpacing: 0.15
   maxSoldierCount: 10
   soldiers: []
