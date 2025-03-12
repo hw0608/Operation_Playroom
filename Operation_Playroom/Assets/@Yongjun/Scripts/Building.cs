@@ -19,9 +19,17 @@ public class Building : NetworkBehaviour
     // 건물 체력 상태
     int currentState = 3; // 3: 기본, 2: 손상, 1: 많이 손상
 
+    // 건물 팀
+    [SerializeField] Owner buildingOwner;
+
     void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
+    }
+
+    void Update()
+    {
+        buildingOwner = GetComponentInParent<OccupySystem>().currentOwner;
     }
 
     public override void OnNetworkSpawn()
@@ -29,6 +37,7 @@ public class Building : NetworkBehaviour
         Debug.Log("BuildingSpawn!");
         health.OnValueChanged -= OnHealthChange;
         health.OnValueChanged += OnHealthChange;
+
     }
 
     public override void OnNetworkDespawn()
@@ -38,7 +47,6 @@ public class Building : NetworkBehaviour
 
     public void OnHealthChange(int oldVal, int newVal)
     {
-        //// ~
         int damage = oldVal - newVal;
         if (damage > 0)
         {
@@ -48,7 +56,6 @@ public class Building : NetworkBehaviour
             }
         }
         UpdateBuildingMesh(newVal);
-        //// ~
 
         if (newVal <= 0 && !isDestruction)
         {
@@ -67,19 +74,6 @@ public class Building : NetworkBehaviour
         Debug.Log(health.Value);
 
         StartCoroutine(RaiseBuilding(2f));
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            TakeDamageServerRpc(10);
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            TakeDamageServerRpc(100);
-        }
     }
 
     IEnumerator RaiseBuilding(float duration)
@@ -150,7 +144,7 @@ public class Building : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(int damage) // 테스트용도 서버한테 건물 체력감소 요청. 나중에 지워도 됩니다
+    public void TakeDamageServerRpc(int damage)
     {
         if (health.Value > 0)
         {
@@ -169,7 +163,7 @@ public class Building : NetworkBehaviour
     void UpdateBuildingMesh(int health)
     {
         float healthPer = (float)health / buildingData.health;
-        int state = (healthPer > 0.6f) ? 3 : (healthPer > 0.2f) ? 2 : 1; // 건물체력이 60%이상일때 보통, 20~60%일때 손상, 20%미만일때 많이손상
+        int state = (healthPer > 0.6f) ? 3 : (healthPer > 0.2f) ? 2 : 1;
 
         if (currentState == state) return;
 
@@ -193,7 +187,6 @@ public class Building : NetworkBehaviour
 
     IEnumerator PlayDamageEffect()
     {
-        // 건물 피해 입을 때 이펙트
         GameObject damageEffect = Managers.Resource.Instantiate("BuildingDamageEffect", null, true);
         ActiveNetworkObjectClientRpc(damageEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
         if (damageEffect.GetComponent<NetworkObject>().TrySetParent(transform.parent, true))

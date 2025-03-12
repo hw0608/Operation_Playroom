@@ -14,7 +14,7 @@ public class OccupySystem : NetworkBehaviour
     const int resourceFillCount = 3;
 
     // 점령지 초기 상태
-    Owner currentOwner = Owner.Neutral;
+    public Owner currentOwner = Owner.Neutral; 
 
     // 이미지 위치
     [SerializeField] Image redTeamResourceCountImage;
