@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class KingTest : Character
@@ -19,6 +20,8 @@ public class KingTest : Character
 
     public SoldierTest debugSoldier;
 
+    OccupyManager occupyManager;
+
     Vector3 GetFormationOffset(int index, int[] colOffsets)
     {
         float verticalSpacing = soldierSpacing * 1.2f;
@@ -34,6 +37,7 @@ public class KingTest : Character
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
         int[] colOffsets = { 0, -1, 1, -2, 2 };
         if (!IsOwner) return;
         base.Start();
@@ -42,10 +46,39 @@ public class KingTest : Character
             soldierOffsets.Add(GetFormationOffset(i, colOffsets));
         }
 
+        occupyManager = FindFirstObjectByType<OccupyManager>();
+
+        if (team.Value == 0)
+        {
+            occupyManager.blueTeamOccupyCount.OnValueChanged -= HandleSoldierSpawn;
+            occupyManager.blueTeamOccupyCount.OnValueChanged += HandleSoldierSpawn;
+        }
+        else
+        {
+            occupyManager.redTeamOccupyCount.OnValueChanged -= HandleSoldierSpawn;
+            occupyManager.redTeamOccupyCount.OnValueChanged += HandleSoldierSpawn;
+        }
+
         soldierSpawner = GetComponent<Spawner>();
         soldierSpawner.SpawnSoldiers(initialSoldiersCount);
 
         StartCoroutine(WaitForSpawnSoldiers());
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        if (!IsOwner) return;
+
+        if (team.Value == 0)
+        {
+            occupyManager.blueTeamOccupyCount.OnValueChanged -= HandleSoldierSpawn;
+        }
+        else
+        {
+            occupyManager.redTeamOccupyCount.OnValueChanged -= HandleSoldierSpawn;
+        }
     }
 
     IEnumerator WaitForSpawnSoldiers()
@@ -141,18 +174,30 @@ public class KingTest : Character
         GameObject nearestEnemy = null; // 가장 가까운 적을 저장할 오브젝트
         float minDistance = Mathf.Infinity; // 가장 가까운 거리를 저장. 초기 값은 무한대로 설정
 
-        var enemies = colliders
-            .Select(col => col.GetComponent<Character>())
-            .Where(c => c != null && c.team.Value != team.Value)
-            .ToArray();
+        Owner myTeam = team.Value == 0 ? Owner.Blue : Owner.Red;
 
-        foreach (Character enemy in enemies) // 탐색된 모든 적 순회
+        var enemies = colliders
+            .SelectMany(col =>
+                {
+                    var character = col.GetComponent<Character>();
+                    if (character != null && character.team.Value != team.Value)
+                        return new[] { character.gameObject };
+
+                    var building = col.GetComponent<Building>();
+
+                    if (building != null && building.buildingOwner != myTeam)
+                        return new[] { building.gameObject };
+
+                    return Enumerable.Empty<GameObject>();
+                }).ToArray();
+
+        foreach (GameObject enemy in enemies) // 탐색된 모든 적 순회
         {
             float distance = Vector3.Distance(transform.position, enemy.transform.position); // 왕, 각 적의 거리를 계산
             if (distance < minDistance) // 현재 계산된 거리가 최소 거리보다 작으면 
             {
                 minDistance = distance; // 최소거리를 현재 계산 거리로 업데이트
-                nearestEnemy = enemy.gameObject; // 가까운 적 오브젝트에 현재 적의 오브젝트로 저장 
+                nearestEnemy = enemy; // 가까운 적 오브젝트에 현재 적의 오브젝트로 저장 
             }
         }
         return nearestEnemy; // 가까운 적 오브젝트를 반환
@@ -249,6 +294,16 @@ public class KingTest : Character
     }
 
     #endregion
+
+    void HandleSoldierSpawn(int previousValue, int newValue)
+    {
+        Debug.Log("HandleSoldierSpawn");
+        if (newValue > previousValue)
+        {
+            Debug.Log("SpawnSoldier.");
+            soldierSpawner.SpawnSoldiers(1);
+        }
+    }
 
     public void HandleSoldierDie(SoldierTest deadSoldier)
     {

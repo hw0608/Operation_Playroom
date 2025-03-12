@@ -12659,7 +12659,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 05febd379fa91904e8493544482a2e50, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -12714,9 +12714,9 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!114 &2008463518462838688
 MonoBehaviour:
@@ -12848,6 +12848,7 @@ MonoBehaviour:
   currentHealth:
     m_InternalValue: 0
   isDead: 0
+  hpBar: {fileID: 0}
 --- !u!114 &-5649720786405146396
 MonoBehaviour:
   m_ObjectHideFlags: 0
