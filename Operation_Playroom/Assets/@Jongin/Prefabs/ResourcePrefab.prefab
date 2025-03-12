@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  currentOwner: 0
+  currentOwner: 2
   isColliderEnable:
     m_InternalValue: 1
   resourceCollider: {fileID: 0}
