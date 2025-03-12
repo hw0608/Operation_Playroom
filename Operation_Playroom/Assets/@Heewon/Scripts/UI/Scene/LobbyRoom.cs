@@ -44,12 +44,15 @@ public class LobbyRoom : NetworkBehaviour
             joinCode.Value = HostSingleton.Instance.joinCode;
             string userName = ServerSingleton.Instance.clientIdToUserData[NetworkManager.Singleton.LocalClientId].userName;
             AddPlayerServerRpc(AuthenticationService.Instance.PlayerId, NetworkManager.Singleton.LocalClientId, userName);
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         }
 
         if (IsClient)
         {
+            players.OnListChanged -= HandlePlayerStateChanged;
             players.OnListChanged += HandlePlayerStateChanged;
 
             foreach (var player in players)
