@@ -59,7 +59,10 @@ public class SoldierTest : Character
         agent.updateRotation = false;
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
 
+        currentState.OnValueChanged -= HandleAnimation;
         currentState.OnValueChanged += HandleAnimation;
+
+        GetComponent<Health>().OnDie -= HandleOnDie;
         GetComponent<Health>().OnDie += HandleOnDie;
     }
 
@@ -284,6 +287,15 @@ public class SoldierTest : Character
             }
         }
 
+        if (target.TryGetComponent(out Building building))
+        {
+            if (building.health.Value <= 0)
+            {
+                ResetState();
+                return;
+            }
+        }
+
         if (hasArrived && attackAble)
         {
             Attack();
@@ -304,6 +316,12 @@ public class SoldierTest : Character
         currentState.Value = State.MoveToward;
         target = enemy;
         agent.stoppingDistance = 0.1f;
+
+        if (enemy.GetComponent<Building>() != null)
+        {
+            agent.stoppingDistance = 0.3f;
+        }
+
         agent.SetDestination(target.transform.position);
     }
 

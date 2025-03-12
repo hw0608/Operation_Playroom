@@ -5,7 +5,7 @@ using UnityEngine;
 public class Building : NetworkBehaviour
 {
     // 건물 체력
-    [SerializeField] NetworkVariable<int> health = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> health = new NetworkVariable<int>(100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     // 스크립터블 오브젝트
     [SerializeField] BuildingScriptableObject buildingData;

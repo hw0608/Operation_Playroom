@@ -2,6 +2,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class OccupyManager : NetworkBehaviour
 {
@@ -12,9 +13,9 @@ public class OccupyManager : NetworkBehaviour
     [SerializeField] TextMeshProUGUI redTeamOccupyCountText;
     [SerializeField] TextMeshProUGUI blueTeamOccupyCountText;
 
-    [SerializeField] NetworkVariable<int> redTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [SerializeField] NetworkVariable<int> blueTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    
+    public NetworkVariable<int> redTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> blueTeamOccupyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
