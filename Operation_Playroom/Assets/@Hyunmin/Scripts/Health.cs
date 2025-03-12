@@ -38,6 +38,16 @@ public class Health : NetworkBehaviour
         currentHealth.OnValueChanged += OnHealthChanged;
     }
 
+    public void InitializeHealth()
+    {
+        Debug.Log("Restore");
+        if (IsServer)
+        {
+            isDead = false;
+            currentHealth.Value = maxHealth;
+        }
+    }
+
     public void TakeDamage(int damage, ulong clientId)
     {
         ModifyHealth(-damage, clientId);
@@ -57,8 +67,6 @@ public class Health : NetworkBehaviour
 
     void OnHealthChanged(int previousValue, int newValue)
     {
-        Debug.Log("Health Changed");
-
         if (IsClient && IsOwner)
         {
             UpdateHpbar();
@@ -67,7 +75,11 @@ public class Health : NetworkBehaviour
         if (newValue == 0)
         {
             isDead = true;
-            GetComponent<PlayerController>().isPlayable = false;
+
+            if(GetComponent<PlayerController>() != null)
+            {
+                GetComponent<PlayerController>().isPlayable = false;
+            }
         }
     }
 
@@ -104,7 +116,6 @@ public class Health : NetworkBehaviour
 
     void UpdateHpbar()
     {
-        Debug.Log("Update HPbar");
         hpBar.fillAmount = (float)currentHealth.Value / maxHealth;
         Debug.Log(hpBar.fillAmount);
     }

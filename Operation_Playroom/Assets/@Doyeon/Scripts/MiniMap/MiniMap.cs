@@ -62,7 +62,7 @@ public class MiniMap : NetworkBehaviour
     //    UpdateIconColor(newValue);
     //}
     [ClientRpc]
-    private void UpdateIconColorClientRpc(int newTeam)
+    public void UpdateIconColorClientRpc(int newTeam)
     {
         if (iconRenderer == null)
         {
@@ -71,6 +71,7 @@ public class MiniMap : NetworkBehaviour
 
         if (IsLocalPlayer) 
         {
+            Debug.Log("Local Minimap");
             iconRenderer.material.color = Color.green;
         }
         else

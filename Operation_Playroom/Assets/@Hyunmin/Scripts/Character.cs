@@ -23,8 +23,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     protected bool attackAble;
     protected bool holdItemAble;
     protected bool isHoldingItem;
-    protected float maxHp = 100;
-    protected float currentHp;
     protected float moveSpeed = 5;
 
     protected Animator animator;
@@ -128,7 +126,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
         ApplyMaterialClientRpc(team.Value);
 
-        SetAvatarLayerWeight(0);
+        SetAvatarLayerWeightClientRpc(0);
 
         attackAble = true;
         damageRoutine = null;
@@ -157,6 +155,16 @@ public abstract class Character : NetworkBehaviour, ICharacter
         if (teamValue < 0 || teamValue >= teamMaterials.Length)
         {
             teamValue = 0;
+        }
+
+        MiniMap miniMap = GetComponentInChildren<MiniMap>();
+        if (miniMap != null)
+        {
+            miniMap.UpdateIconColorClientRpc(teamValue);
+        }
+        else
+        {
+            Debug.Log("None Minimap");
         }
 
         UpdateTeamMaterialClientRpc(teamValue);
@@ -225,6 +233,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 사망 메서드
     public void Die()
     {
+        DropClientRpc();
         SetTriggerAnimation("Die");
     }
 
@@ -241,6 +250,17 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     // 아이템 내려놓기 메서드
     public void Drop()
+    {
+        if (targetItem == null) return;
+
+        attackAble = true;
+        DropItem();
+    }
+
+
+    // 아이템 내려놓기 메서드
+    [ClientRpc]
+    public void DropClientRpc()
     {
         if (targetItem == null) return;
 
@@ -300,7 +320,11 @@ public abstract class Character : NetworkBehaviour, ICharacter
         // 애니메이션 해제
         SetAvatarLayerWeight(0);
         SetTriggerAnimation("Idle");
+    }
 
+    public void InitializeAnimator()
+    {
+        networkAnimator.Animator.Rebind();
     }
 
     // 애니메이션 Trigger 메서드
