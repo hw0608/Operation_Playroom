@@ -80,6 +80,17 @@ public class LobbyRoom : NetworkBehaviour
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
         }
     }
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        if (IsServer)
+        {
+            if (NetworkObject != null && NetworkObject.IsSpawned)
+            {
+                NetworkObject.Despawn();
+            }
+        }
+    }
 
     private void OnClientConnected(ulong clientId)
     {
@@ -243,7 +254,24 @@ public class LobbyRoom : NetworkBehaviour
 
         if (CheckAllPlayersReady())
         {
-            MatchmakeAsync();
+            MatchmakeAsync(HandleMatchmakeAssignment);
+        }
+    }
+
+    void HandleMatchmakeAssignment(MatchmakerPollingResult result)
+    {
+        if (result != MatchmakerPollingResult.Success)
+        {
+            if (IsServer)
+            {
+                NetworkManager.Singleton.SceneManager.UnloadScene(SceneManager.GetSceneByName("LoadingScene"));
+                MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
+                if (popup != null)
+                {
+                    popup.SetText("서버 연결에 실패했습니다.\n다시 시도해 주세요.");
+                    popup.Show();
+                }
+            }
         }
     }
 
@@ -287,6 +315,11 @@ public class LobbyRoom : NetworkBehaviour
 
         if (result.result == MatchmakerPollingResult.Success)
         {
+            if (result.ip == "0.0.0.0")
+            {
+                return MatchmakerPollingResult.MatchAssignmentError;
+            }
+
             // 클라이언트 시작
             SwitchToDSClientRpc(result.ip, (ushort)result.port);
         }
