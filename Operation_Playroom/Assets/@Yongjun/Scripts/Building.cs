@@ -20,7 +20,7 @@ public class Building : NetworkBehaviour
     int currentState = 3; // 3: 기본, 2: 손상, 1: 많이 손상
 
     // 건물 팀
-    [SerializeField] Owner buildingOwner;
+    public Owner buildingOwner;
 
     void Start()
     {
