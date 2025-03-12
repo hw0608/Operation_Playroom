@@ -10,7 +10,15 @@ public class Spawner : NetworkBehaviour
 
     public void SpawnSoldiers(int count)
     {
-        if (GetComponent<KingTest>().soldiers.Count >= 10)
+        KingTest king = GetComponent<KingTest>();
+        int cnt = 0;
+
+        for (int i = 0; i < king.soldiers.Count; i++)
+        {
+            if (king.soldiers[i] != null) cnt++;
+        }
+
+        if (cnt >= 10)
         {
             return;
         }
@@ -43,7 +51,7 @@ public class Spawner : NetworkBehaviour
 
         NetworkObject soldierObj = NetworkManager.Singleton.SpawnManager.SpawnedObjects[soldierId];
         SoldierTest soldier = soldierObj.GetComponent<SoldierTest>();
-        
+
         NetworkObject kingObj = GetComponent<NetworkObject>();
         KingTest king = NetworkManager.Singleton.SpawnManager.SpawnedObjects[kingObj.NetworkObjectId].GetComponent<KingTest>();
 
@@ -55,7 +63,7 @@ public class Spawner : NetworkBehaviour
         {
             king.soldiers.Add(soldierObj.GetComponent<SoldierTest>());
         }
-        
+
         soldier.Init(king.transform, king.soldierOffsets[index]);
         index++;
     }

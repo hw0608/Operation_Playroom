@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 7723559226809612553}
   - component: {fileID: 9138538393873395376}
   - component: {fileID: -5494391914170651}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Building Red
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -131,6 +131,7 @@ MonoBehaviour:
   health:
     m_InternalValue: 0
   buildingData: {fileID: 11400000, guid: 2240b267c512f574d8a4edd7fb6ca780, type: 2}
+  buildingOwner: 0
 --- !u!65 &9138538393873395376
 BoxCollider:
   m_ObjectHideFlags: 0
