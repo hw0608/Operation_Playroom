@@ -121,7 +121,7 @@ public class Building : NetworkBehaviour
         isDestruction = false;
     }
 
-    void DestructionBuilding()
+    public void DestructionBuilding()
     {
         GetComponentInParent<OccupySystem>().ResetOwnership();
         GameObject destructionEffect = Managers.Resource.Instantiate("BuildingDestroyEffect", null, true);

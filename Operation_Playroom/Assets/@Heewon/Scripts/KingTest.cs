@@ -99,12 +99,6 @@ public class KingTest : Character
     // 키 입력 메서드
     public override void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            debugSoldier.HandleOnDie(debugSoldier.GetComponent<Health>());
-            debugSoldier.gameObject.SetActive(false);
-        }
-
         // E 버튼 누르면
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -180,7 +174,7 @@ public class KingTest : Character
             .SelectMany(col =>
                 {
                     var character = col.GetComponent<Character>();
-                    if (character != null && character.team.Value != team.Value)
+                    if (character != null && !character.GetComponent<Health>().isDead && character.team.Value != team.Value)
                         return new[] { character.gameObject };
 
                     var building = col.GetComponent<Building>();
@@ -302,22 +296,6 @@ public class KingTest : Character
         {
             Debug.Log("SpawnSoldier.");
             soldierSpawner.SpawnSoldiers(1);
-        }
-    }
-
-    public void HandleSoldierDie(SoldierTest deadSoldier)
-    {
-        int index = soldiers.IndexOf(deadSoldier);
-
-        if (soldiers[index + 5] != null)
-        {
-            soldiers[index] = soldiers[index + 5];
-            soldiers[index + 5] = null;
-            soldiers[index].Offset = soldierOffsets[index];
-        }
-        else
-        {
-            soldiers[index] = null;
         }
     }
 

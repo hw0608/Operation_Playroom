@@ -92,7 +92,7 @@ public class ClientSingleton : MonoBehaviour
         }
     }
 
-    public async Task StartClientAsync(string joinCode)
+    public async Task<bool> StartClientAsync(string joinCode)
     {
         try
         {
@@ -101,7 +101,7 @@ public class ClientSingleton : MonoBehaviour
         catch (RelayServiceException e)
         {
             Debug.LogError(e);
-            return;
+            return false;
         }
 
         UnityTransport transport= NetworkManager.Singleton.GetComponent<UnityTransport>();
@@ -109,6 +109,7 @@ public class ClientSingleton : MonoBehaviour
         transport.SetRelayServerData(relayServerData);
 
         ConnectClient();
+        return true;
     }
 
     public async void MatchmakeAsync(Action<MatchmakerPollingResult> onMatchmakeResponse)

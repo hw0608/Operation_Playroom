@@ -1,9 +1,7 @@
-using System.Threading;
 using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Cinemachine;
 using System.Collections;
 
 public class Health : NetworkBehaviour
@@ -43,9 +41,9 @@ public class Health : NetworkBehaviour
         Debug.Log("Restore");
         if (IsServer)
         {
-            isDead = false;
             currentHealth.Value = maxHealth;
         }
+        isDead = false;
     }
 
     public void TakeDamage(int damage, ulong clientId)
@@ -92,19 +90,18 @@ public class Health : NetworkBehaviour
         if (currentHealth.Value == 0)
         {
             isDead = true;
-            GetComponent<PlayerController>().isPlayable = false;
-
+            
             character.Die();
 
             if (GetComponent<PlayerController>() != null)
             {
+                GetComponent<PlayerController>().isPlayable = false;
             }
             else if (GetComponent<Character>() != null)
             {
             }
 
             OnDie?.Invoke(this);
-
         }
     }
     IEnumerator FindHpbar()

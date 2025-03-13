@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using TMPro;
 using Unity.Netcode;
@@ -10,8 +11,6 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<float> remainTime = new NetworkVariable<float>();
     public TMP_Text notiText;
     public TMP_Text timerText; 
-    private Color textColor;
-    float textAlpha = 0;
     EGameState gameState;
 
     Sequence textSequence;
@@ -44,8 +43,7 @@ public class GameManager : NetworkBehaviour
     {
         remainTime.OnValueChanged -= OnChangeTimer;
     }
-    private float lastSyncTime = 0f;
-    private float syncInterval = 1f;
+
 
     void Update()
     {
@@ -100,5 +98,6 @@ public class GameManager : NetworkBehaviour
     {
         notiText.text = text;
         textSequence.Restart();
+
     }
 }

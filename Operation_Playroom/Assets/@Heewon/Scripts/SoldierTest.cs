@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
@@ -51,10 +52,16 @@ public class SoldierTest : Character
     #region Network
     public override void OnNetworkSpawn()
     {
-        base.OnNetworkSpawn();
+        health = GetComponent<Health>();
+
+        if (IsServer)
+        {
+            health.OnDie -= HandleOnDie;
+            health.OnDie += HandleOnDie;
+        }
+
         if (!IsOwner) { return; }
 
-        health = GetComponent<Health>();
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
@@ -62,8 +69,7 @@ public class SoldierTest : Character
         currentState.OnValueChanged -= HandleAnimation;
         currentState.OnValueChanged += HandleAnimation;
 
-        GetComponent<Health>().OnDie -= HandleOnDie;
-        GetComponent<Health>().OnDie += HandleOnDie;
+        
     }
 
     public override void OnNetworkDespawn()
@@ -71,7 +77,7 @@ public class SoldierTest : Character
         if (!IsOwner) { return; }
 
         currentState.OnValueChanged -= HandleAnimation;
-        GetComponent<Health>().OnDie -= HandleOnDie;
+        health.OnDie -= HandleOnDie;
     }
 
     [ServerRpc]
@@ -92,6 +98,7 @@ public class SoldierTest : Character
     {
         if (!IsOwner) { return; }
         if (king == null) { return; }
+        if (health.isDead) { return; }
 
         float sqrDistance = agent.stoppingDistance * agent.stoppingDistance;
         float distanceToKing = Vector3.SqrMagnitude(transform.position - GetFormationPosition());
@@ -103,13 +110,6 @@ public class SoldierTest : Character
         if (target != null)
         {
             hasArrived = Vector3.SqrMagnitude(transform.position - target.transform.position) <= sqrDistance * 1.5f;
-        }
-
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            Debug.Log(hasArrived);
-            Debug.Log(Vector3.SqrMagnitude(transform.position - target.transform.position));
-            Debug.Log(sqrDistance);
         }
 
         RotateToDestination(hasArrived);
@@ -282,8 +282,18 @@ public class SoldierTest : Character
         {
             if (health.isDead)
             {
-                ResetState();
-                return;
+                GameObject enemy = FindNearestEnemy();
+
+                if (enemy != null)
+                {
+                    TryAttack(enemy);
+                }
+                else
+                {
+                    ResetState();
+                    return;
+                }
+
             }
         }
 
@@ -437,9 +447,52 @@ public class SoldierTest : Character
 
     public void HandleOnDie(Health health)
     {
-        target = null;
-        myItem = null;
-        king.GetComponent<KingTest>().HandleSoldierDie(this);
+        Debug.Log("HandleOnDie");
+
+        StartCoroutine(RespawnSoldierRoutine());
+    }
+
+    IEnumerator RespawnSoldierRoutine()
+    {
+        float respawnTime = 10f;
+        while (respawnTime > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            respawnTime -= 1f;
+        }
+
+        GameTeam gameTeam = (GameTeam)team.Value;
+        Vector3 spawnPosition = SpawnPoint.GetSpawnPoint(gameTeam, GameRole.None);
+
+        Debug.Log($"Respawn Position: {spawnPosition}, Team: {gameTeam}");
+
+        // 서버에서 위치 설정
+        transform.position = spawnPosition;
+
+        health.InitializeHealth();
+
+        // 클라이언트에 위치 동기화
+        UpdatePlayerStateClientRpc(NetworkObject, spawnPosition);
+    }
+
+    [ClientRpc]
+    void UpdatePlayerStateClientRpc(NetworkObjectReference playerRef, Vector3 position)
+    {
+        if (playerRef.TryGet(out NetworkObject playerObj))
+        {
+            target = null;
+            myItem = null;
+
+            Character character = playerObj.GetComponent<Character>();
+            Health health = playerObj.GetComponent<Health>();
+
+            // 클라이언트에서 위치, 상태, 애니메이터 초기화
+            playerObj.transform.position = position;
+            health.InitializeHealth();
+            character.InitializeAnimator();
+
+            Debug.Log($"Client {OwnerClientId} respawned at {position}");
+        }
     }
 
     #endregion
@@ -484,17 +537,6 @@ public class SoldierTest : Character
 
     #endregion
 
-    void PutDownItem()
-    {
-        if (myItem == null) return;
-
-        myItem.GetComponent<ResourceData>().isMarked = false;
-        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
-        myItem = null;
-        isHoldingItem = false;
-        SetAvatarLayerWeight(0);
-    }
-
     public void Init(Transform king, Vector3 offset)
     {
         this.king = king;
@@ -522,6 +564,51 @@ public class SoldierTest : Character
         float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         float smoothAngle = Mathf.LerpAngle(transform.eulerAngles.y, targetAngle, Time.deltaTime * 5f);
         transform.eulerAngles = Vector3.up * smoothAngle;
+    }
+    void PutDownItem()
+    {
+        if (myItem == null) return;
+
+        myItem.GetComponent<ResourceData>().isMarked = false;
+        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
+        myItem = null;
+        isHoldingItem = false;
+        SetAvatarLayerWeight(0);
+    }
+
+    private GameObject FindNearestEnemy()
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 0.2f, LayerMask.GetMask("Enemy")); // 나중에 콜라이더로 수정
+        GameObject nearestEnemy = null; // 가장 가까운 적을 저장할 오브젝트
+        float minDistance = Mathf.Infinity; // 가장 가까운 거리를 저장. 초기 값은 무한대로 설정
+
+        Owner myTeam = team.Value == 0 ? Owner.Blue : Owner.Red;
+
+        var enemies = colliders
+            .SelectMany(col =>
+            {
+                var character = col.GetComponent<Character>();
+                if (character != null && !character.GetComponent<Health>().isDead && character.team.Value != team.Value)
+                    return new[] { character.gameObject };
+
+                var building = col.GetComponent<Building>();
+
+                if (building != null && building.buildingOwner != myTeam)
+                    return new[] { building.gameObject };
+
+                return Enumerable.Empty<GameObject>();
+            }).ToArray();
+
+        foreach (GameObject enemy in enemies) // 탐색된 모든 적 순회
+        {
+            float distance = Vector3.Distance(transform.position, enemy.transform.position); // 왕, 각 적의 거리를 계산
+            if (distance < minDistance) // 현재 계산된 거리가 최소 거리보다 작으면 
+            {
+                minDistance = distance; // 최소거리를 현재 계산 거리로 업데이트
+                nearestEnemy = enemy; // 가까운 적 오브젝트에 현재 적의 오브젝트로 저장 
+            }
+        }
+        return nearestEnemy; // 가까운 적 오브젝트를 반환
     }
 
     public override void HandleInput()
