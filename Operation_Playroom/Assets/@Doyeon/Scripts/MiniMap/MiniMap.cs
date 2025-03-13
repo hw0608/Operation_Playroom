@@ -40,12 +40,12 @@ public class MiniMap : NetworkBehaviour
             yield break;
         }
 
-        iconRenderer = GetComponent<Renderer>();
-        if (iconRenderer == null)
-        {
-            Debug.LogError("랜더러 ㄴㄴ");
-            yield break;
-        }
+        //iconRenderer = GetComponent<Renderer>();
+        //if (iconRenderer == null)
+        //{
+        //    Debug.LogError("랜더러 ㄴㄴ");
+        //    yield break;
+        //}
 
         //UpdateIconColor(character.team.Value);
         //character.team.OnValueChanged += OnTeamValueChanged;
