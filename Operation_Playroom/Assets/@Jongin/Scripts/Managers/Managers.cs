@@ -41,6 +41,6 @@ public class Managers : MonoBehaviour
         Addressables.InitializeAsync();
         Resource.Init();
         Pool.Init();
-        s_instance._sound.Init();
+        //s_instance._sound.Init();
     }
 }

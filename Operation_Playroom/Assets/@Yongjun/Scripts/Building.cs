@@ -9,12 +9,16 @@ public class Building : NetworkBehaviour
 
     // 스크립터블 오브젝트
     [SerializeField] BuildingScriptableObject buildingData;
+    [SerializeField] SoundScriptableObject soundData;
 
     // 중복 철거 방지
     bool isDestruction = false;
 
     // 건물 메쉬
     MeshFilter meshFilter;
+
+    // 오디오 소스
+    [SerializeField] AudioSource audioSource;
 
     // 건물 체력 상태
     int currentState = 3; // 3: 기본, 2: 손상, 1: 많이 손상
@@ -25,6 +29,11 @@ public class Building : NetworkBehaviour
     void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
+        audioSource = gameObject.GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     void Update()
@@ -34,7 +43,6 @@ public class Building : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log("BuildingSpawn!");
         health.OnValueChanged -= OnHealthChange;
         health.OnValueChanged += OnHealthChange;
 
@@ -69,13 +77,8 @@ public class Building : NetworkBehaviour
 
     public void BuildingInit()
     {
-        Debug.Log("Building Init!");
         health.Value = buildingData.health;
         Debug.Log(health.Value);
-
-        int buildSoundIndex = Random.Range(0, 3);
-        string soundKey = $"Sounds/Build_{buildSoundIndex + 1}";
-        PlaySFXClientRpc(soundKey);
 
         StartCoroutine(RaiseBuilding(2f));
     }
@@ -92,6 +95,8 @@ public class Building : NetworkBehaviour
         {
             buildEffect.transform.localPosition = Vector3.zero;
         }
+
+        PlaySFXClientRpc(Random.Range(0, 3), 0.5f);
 
         while (elapsedTime < duration)
         {
@@ -118,8 +123,6 @@ public class Building : NetworkBehaviour
 
     void DestructionBuilding()
     {
-        PlaySFXClientRpc("Sounds/Destruction");
-
         GetComponentInParent<OccupySystem>().ResetOwnership();
         GameObject destructionEffect = Managers.Resource.Instantiate("BuildingDestroyEffect", null, true);
         ActiveNetworkObjectClientRpc(destructionEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
@@ -129,7 +132,9 @@ public class Building : NetworkBehaviour
             StartCoroutine(DelayPushEffect(destructionEffect, 3.25f));
             transform.localPosition = new Vector3(0, -25f, 0);
         }
-    }
+
+        PlaySFXClientRpc(3);
+    } 
 
     IEnumerator DelayPushEffect(GameObject effect, float time)
     {
@@ -192,16 +197,15 @@ public class Building : NetworkBehaviour
     }
 
     [ClientRpc]
-    void PlaySFXClientRpc(string soundKey)
+    void PlaySFXClientRpc(int index, float volume = 1)
     {
-        Debug.Log($"{soundKey} 재생 시작");
-        if (Managers.Sound == null)
-        {
-            Debug.LogError("Managers.Sound가 초기화되지 않았습니다.");
-            return;
-        }
-        Managers.Sound.Play(Define.ESound.Effect, soundKey);
-        Debug.Log($"{soundKey} 재생 완료");
+        Debug.Assert(audioSource != null, $"{gameObject}: AudioSource is null");
+        Debug.Assert(index >= 0 && index < soundData.soundClips.Length, $"{gameObject}: AudioClip is invalid");
+        
+        AudioClip clip = soundData.soundClips[index];
+        Debug.Assert(clip != null, $"{gameObject}: AudioClip is not assigned");
+        audioSource.volume = volume;
+        audioSource.PlayOneShot(clip);
     }
 
     IEnumerator PlayDamageEffect()
