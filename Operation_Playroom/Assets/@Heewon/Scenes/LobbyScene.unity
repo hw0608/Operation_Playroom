@@ -3125,7 +3125,7 @@ AudioSource:
   m_GameObject: {fileID: 2077847338}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -4840992377751955649, guid: 0bba5580c03d9a6408f2a51e04907118, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -3227,7 +3227,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverSound: {fileID: 8300000, guid: 0e211787c7ddb4f9b89f2c1301dffa0a, type: 3}
   clickSound: {fileID: 8300000, guid: 9121f8bc264294682979a0a4290487b1, type: 3}
-  backgroundMusic: {fileID: 8300000, guid: 10ea0c6ecdfbe594d85161c221bce875, type: 3}
+  audioMixer: {fileID: 24100000, guid: 0bba5580c03d9a6408f2a51e04907118, type: 2}
   button: {fileID: 1222439741}
 --- !u!4 &2077847341
 Transform:
