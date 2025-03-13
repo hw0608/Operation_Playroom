@@ -4,15 +4,13 @@ using System.Collections;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using DG.Tweening;
 using static Define;
+using Unity.Cinemachine;
 
 public class GameManager : NetworkBehaviour
 {
-    enum ETeam
-    {
-        Blue,
-        Red
-    }
+    ETeam myTeam;
 
     public NetworkVariable<float> remainTime = new NetworkVariable<float>();
     public TMP_Text notiText;
@@ -20,13 +18,14 @@ public class GameManager : NetworkBehaviour
 
     public GameObject winPanel;
     public GameObject losePanel;
+
+    public CinemachineCamera[] kingCams; 
     EGameState gameState;
 
     Sequence textSequence;
 
     public override void OnNetworkSpawn()
     {
-
         gameState = EGameState.Ready;
 
         textSequence = DOTween.Sequence();
@@ -47,6 +46,10 @@ public class GameManager : NetworkBehaviour
             remainTime.OnValueChanged += OnChangeTimer;
         }
     } 
+    public void SetMyTeam(int team)
+    {
+        myTeam = (ETeam)team;
+    }
 
     public override void OnNetworkDespawn()
     {
@@ -101,6 +104,39 @@ public class GameManager : NetworkBehaviour
         StartCoroutine(TimerRoutine());
     }
 
+    public void OnKingDead(int team)
+    {
+        if(myTeam == (ETeam)team)
+        {
+            
+        }
+    }
+
+    void KingDeadRoutine(int team)
+    {
+        //TODO: ÀüÃ¼ ÀÌµ¿ ¸ØÃã
+
+        Sequence kingDeadSeq = DOTween.Sequence();
+        kingDeadSeq.AppendCallback(() =>
+        {
+            kingCams[team].Priority = 2;
+        })
+        .AppendInterval(3f)
+        .AppendCallback(() =>
+        {
+            kingCams[team].Priority = 0;
+            if(myTeam == (ETeam)team)
+            {
+                winPanel.SetActive(true);
+            }
+            else
+            {
+                losePanel.SetActive(true);
+            }
+        });
+       
+
+    }
 
     [ClientRpc]
     public void CallNotiTextClientRpc(string text)
