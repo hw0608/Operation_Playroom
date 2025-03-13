@@ -23,4 +23,11 @@ public static class Define
         Move,
         PickUp
     }
+
+    public enum ETeam
+    {
+        Blue,
+        Red
+    }
+
 }
