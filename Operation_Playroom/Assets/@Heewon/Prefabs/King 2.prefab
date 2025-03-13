@@ -13948,6 +13948,9 @@ MonoBehaviour:
   - {fileID: 5982702547882145453}
   - {fileID: 7501434248230187032}
   - {fileID: 8751855008651745310}
+  Icons:
+  - {fileID: 4092326656478274360}
+  - {fileID: 635687925927266021}
   team:
     m_InternalValue: -1
   initialSoldiersCount: 3

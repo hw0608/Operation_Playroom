@@ -17,9 +17,9 @@ public class SoldierTest : Character
     Transform king;
     Vector3 offset;
     NavMeshAgent agent;
-    Health health;
     NetworkVariable<State> currentState = new NetworkVariable<State>(State.Idle, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
+    [SerializeField] int damage;
     [SerializeField] GameObject spearHitbox;
     GameObject target;
     GameObject myItem;
@@ -350,7 +350,7 @@ public class SoldierTest : Character
     IEnumerator SpearAttack()
     {
         StartCoroutine(RotateToTarget());
-        spearHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId, team.Value);
+        spearHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId, team.Value, damage);
         attackAble = false;
         SetTriggerAnimation("SpearAttack");
 
@@ -610,7 +610,18 @@ public class SoldierTest : Character
         }
         return nearestEnemy; // 가까운 적 오브젝트를 반환
     }
-
+    public void InitializeCharacterStat()
+    {
+        if (Managers.Data.UnitDic.TryGetValue(201003, out Data.UnitData soldierData))
+        {
+            health.SetHp((int)soldierData.HP);
+            damage = (int)soldierData.Atk;
+        }
+        else
+        {
+            Debug.LogError("Soldier 데이터(ID: 201003)를 찾을 수 없습니다.");
+        }
+    }
     public override void HandleInput()
     {
         

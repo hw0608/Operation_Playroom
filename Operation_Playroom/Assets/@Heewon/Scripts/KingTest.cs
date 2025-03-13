@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class KingTest : Character
 {
+    [SerializeField] int damage;
     [SerializeField] int initialSoldiersCount;
     [SerializeField] float itemDetectRange;
     [SerializeField] float occupyDetectRange; // 점령지 감지 범위
@@ -22,6 +23,11 @@ public class KingTest : Character
 
     OccupyManager occupyManager;
 
+    public override void Start()
+    {
+        base.Start();
+        InitializeCharacterStat();
+    }
     Vector3 GetFormationOffset(int index, int[] colOffsets)
     {
         float verticalSpacing = soldierSpacing * 1.2f;
@@ -343,5 +349,18 @@ public class KingTest : Character
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position + transform.forward * 0.4f, enemyDetectRange);
+    }
+
+    public void InitializeCharacterStat()
+    {
+        if (Managers.Data.UnitDic.TryGetValue(201002, out Data.UnitData kingData))
+        {
+            health.SetHp((int)kingData.HP);
+            damage = (int)kingData.Atk;
+        }
+        else
+        {
+            Debug.LogError("King 데이터(ID: 201002)를 찾을 수 없습니다.");
+        }
     }
 }

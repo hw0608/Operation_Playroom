@@ -36,7 +36,7 @@ public class Health : NetworkBehaviour
         currentHealth.OnValueChanged += OnHealthChanged;
     }
 
-    public void InitializeHealth()
+    public void InitializeHealth() 
     {
         Debug.Log("Restore");
         if (IsServer)
@@ -67,7 +67,10 @@ public class Health : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            UpdateHpbar();
+            if(!GetComponent<SoldierTest>())
+            {
+                UpdateHpbar();
+            }
         }
 
         if (newValue == 0)
@@ -113,7 +116,16 @@ public class Health : NetworkBehaviour
 
     void UpdateHpbar()
     {
-        hpBar.fillAmount = (float)currentHealth.Value / maxHealth;
-        Debug.Log(hpBar.fillAmount);
+        if(hpBar != null)
+        {
+            hpBar.fillAmount = (float)currentHealth.Value / maxHealth;
+            Debug.Log(hpBar.fillAmount);
+        }
+    }
+
+    public void SetHp(int hp)
+    {
+        maxHealth = hp;
+        currentHealth.Value = maxHealth;
     }
 }

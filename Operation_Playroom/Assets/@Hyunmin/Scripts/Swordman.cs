@@ -5,9 +5,16 @@ using UnityEngine;
 public class Swordman : Character
 {
     [SerializeField] GameObject swordHitbox;
+    [SerializeField] int damage;
     public float attackCooldown = 1f;
 
     IEnumerator attackRoutine;
+
+    public override void Start()
+    {
+        base.Start();
+        InitializeCharacterStat();
+    }
 
     // 공격 메서드
     public override void Attack()
@@ -58,7 +65,7 @@ public class Swordman : Character
     // 칼 공격 코루틴
     IEnumerator SwordAttack()
     {
-        swordHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId, team.Value);
+        swordHitbox.GetComponent<WeaponDamage>().SetOwner(OwnerClientId, team.Value, damage);
 
         SetAvatarLayerWeight(1); // 상체 움직임으로 설정
 
@@ -93,5 +100,19 @@ public class Swordman : Character
     void EnableHitboxClientRpc(bool state)
     {
         swordHitbox.GetComponent<Collider>().enabled = state;
+    }
+
+    // 캐릭터 스탯을 초기화하는 메서드
+    public void InitializeCharacterStat()
+    {
+        if (Managers.Data.UnitDic.TryGetValue(201000, out Data.UnitData swordmanData))
+        {
+            health.SetHp((int)swordmanData.HP);
+            damage = (int)swordmanData.Atk;
+        }
+        else
+        {
+            Debug.LogError("Swordman 데이터(ID: 201000)를 찾을 수 없습니다.");
+        }
     }
 }

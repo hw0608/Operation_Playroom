@@ -8,6 +8,7 @@ public class Archer : Character
     [SerializeField] CinemachineCamera aimCamera;
     [SerializeField] GameObject aimCanvas;
     [SerializeField] GameObject arrowObject;
+    [SerializeField] public int damage;
 
     bool isAiming;
     float xRotation = 0;
@@ -15,6 +16,11 @@ public class Archer : Character
 
     Quaternion lastAimRotation;
 
+    public override void Start()
+    {
+        base.Start();
+        InitializeCharacterStat();
+    }
 
     // 공격 메서드
     public override void Attack()
@@ -181,6 +187,19 @@ public class Archer : Character
         yield return new WaitForSeconds(1f);
 
         attackAble = true;
+    }
+
+    public void InitializeCharacterStat()
+    {
+        if (Managers.Data.UnitDic.TryGetValue(201001, out Data.UnitData archerData))
+        {
+            health.SetHp((int)archerData.HP);
+            damage = (int)archerData.Atk;
+        }
+        else
+        {
+            Debug.LogError("Archer 데이터(ID: 201001)를 찾을 수 없습니다.");
+        }
     }
 
 }

@@ -156,11 +156,15 @@ MonoBehaviour:
   - {fileID: 7858767670652734736}
   - {fileID: 6637046735245298041}
   - {fileID: 3405450302463200794}
+  Icons:
+  - {fileID: 7014643195576844709}
+  - {fileID: 8921240949497364547}
   team:
     m_InternalValue: -1
   aimCamera: {fileID: 8114598411042677039}
   aimCanvas: {fileID: 5010046624809275930}
   arrowObject: {fileID: 2154582282572986278}
+  damage: 0
 --- !u!114 &-3931345857987243654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10451,14 +10455,13 @@ GameObject:
   - component: {fileID: 6435931387812751357}
   - component: {fileID: 2309042108532790557}
   - component: {fileID: 842060771552245000}
-  - component: {fileID: 1986757405888230532}
   m_Layer: 0
   m_Name: BlueArcherHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6435931387812751357
 Transform:
   m_ObjectHideFlags: 0
@@ -10527,19 +10530,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &1986757405888230532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7014643195576844709}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac6794c04ffccb547a1dd70c25998f6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &7028876704240046857
 GameObject:
   m_ObjectHideFlags: 0
@@ -13027,7 +13017,6 @@ GameObject:
   - component: {fileID: 4947349392866945382}
   - component: {fileID: 738169405528305589}
   - component: {fileID: 5772208811802680616}
-  - component: {fileID: 732183846510663011}
   m_Layer: 0
   m_Name: RedArcherHead
   m_TagString: Untagged
@@ -13103,19 +13092,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &732183846510663011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8921240949497364547}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac6794c04ffccb547a1dd70c25998f6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &8966410006376031286
 GameObject:
   m_ObjectHideFlags: 0

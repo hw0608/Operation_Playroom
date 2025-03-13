@@ -15,6 +15,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     [SerializeField] Material[] teamMaterials;
     [SerializeField] Material[] damageMaterials;
     [SerializeField] Renderer[] playerRenderers;
+    [SerializeField] GameObject[] Icons;
 
     public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
@@ -28,6 +29,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     protected Animator animator;
     protected NetworkAnimator networkAnimator;
     protected Quaternion currentRotation;
+    protected Health health;
 
     Coroutine damageRoutine;
 
@@ -35,6 +37,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     {
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
+        health = GetComponent<Health>();
 
         attackAble = true;
         holdItemAble = true;
@@ -57,7 +60,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         {
             SyncMaterialsOnSpawn();
         }
-
+        
         OnTeamValueChanged(team.Value);
     }
 
@@ -157,14 +160,9 @@ public abstract class Character : NetworkBehaviour, ICharacter
             teamValue = 0;
         }
 
-        MiniMap miniMap = GetComponentInChildren<MiniMap>();
-        if (miniMap != null)
+        if (Icons.Length >= 0)
         {
-            miniMap.UpdateIconColorClientRpc(teamValue);
-        }
-        else
-        {
-            Debug.Log("None Minimap");
+            SetIcons(team.Value);
         }
 
         UpdateTeamMaterialClientRpc(teamValue);
@@ -230,6 +228,15 @@ public abstract class Character : NetworkBehaviour, ICharacter
         }
     }
 
+    public void SetIcons(int teamIndex)
+    {
+        foreach(var icon in Icons)
+        {
+            icon.SetActive(false);
+        }
+        Icons[teamIndex].SetActive(true);
+    }
+
     // 사망 메서드
     public void Die()
     {
@@ -293,7 +300,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
     void PickupItem()
     {
         // 무기 감추기 및 들고있는 상태
-        weaponObject.SetActive(false);
+        WeaponObjectActiveServerRpc(false);
+
         isHoldingItem = true;
         holdItemAble = false;
 
@@ -309,7 +317,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
     void DropItem()
     {
         // 무기 보이기 및 들고 있지 않은 상태
-        weaponObject.SetActive(true);
+        WeaponObjectActiveServerRpc(true);
+
         isHoldingItem = false;
         holdItemAble = true;
 
@@ -320,6 +329,17 @@ public abstract class Character : NetworkBehaviour, ICharacter
         // 애니메이션 해제
         SetAvatarLayerWeight(0);
         SetTriggerAnimation("Idle");
+    }
+    [ServerRpc]
+    void WeaponObjectActiveServerRpc(bool state)
+    {
+        WeaponObjectActiveClientRpc(state);
+    }
+
+    [ClientRpc]
+    void WeaponObjectActiveClientRpc(bool state)
+    {
+        weaponObject.SetActive(state);
     }
 
     public void InitializeAnimator()

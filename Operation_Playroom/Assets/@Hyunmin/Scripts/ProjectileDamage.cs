@@ -3,15 +3,16 @@ using UnityEngine;
 
 public class ProjectileDamage : MonoBehaviour
 {
-    [SerializeField] int damage = 10;
+    [SerializeField] int damage;
 
     ulong ownerClientId;
     int ownerTeam;
 
-    public void SetOwner(ulong ownerClientId, int ownerTeam)
+    public void SetOwner(ulong ownerClientId, int ownerTeam, int damage)
     {
         this.ownerClientId = ownerClientId;
         this.ownerTeam = ownerTeam;
+        this.damage = damage;
     }
 
     void OnTriggerEnter(Collider other)
@@ -38,11 +39,16 @@ public class ProjectileDamage : MonoBehaviour
         // 건물 타격 시 데미지
         if (other.TryGetComponent<Building>(out Building building))
         {
-            building.TakeDamage(damage);
+            Owner myTeam = ownerTeam == 0 ? Owner.Blue : Owner.Red;
 
-            NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
-            noise.SubmitNoiseTo(2);
+            if (myTeam != building.buildingOwner)
+            {
+                building.TakeDamage(damage);
 
+                NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+                noise.SubmitNoiseTo(2);
+
+            }
             Managers.Pool.Push(gameObject);
         }
 

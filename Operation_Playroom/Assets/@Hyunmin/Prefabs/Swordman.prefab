@@ -3668,9 +3668,13 @@ MonoBehaviour:
   - {fileID: 2369422}
   - {fileID: 2378074}
   - {fileID: 6787240893079423190}
+  Icons:
+  - {fileID: 939561791228623785}
+  - {fileID: 7703479042891083261}
   team:
     m_InternalValue: 0
   swordHitbox: {fileID: 171234}
+  damage: 0
   attackCooldown: 2
 --- !u!114 &-3931345857987243654
 MonoBehaviour:
@@ -4227,14 +4231,13 @@ GameObject:
   - component: {fileID: 795889008288066798}
   - component: {fileID: 5880903817005705269}
   - component: {fileID: 3244732036618506570}
-  - component: {fileID: 3489421640776250694}
   m_Layer: 0
   m_Name: BlueSwordHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &795889008288066798
 Transform:
   m_ObjectHideFlags: 0
@@ -4303,19 +4306,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3489421640776250694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 939561791228623785}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac6794c04ffccb547a1dd70c25998f6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &1947635618377802464
 GameObject:
   m_ObjectHideFlags: 0
@@ -4359,7 +4349,6 @@ GameObject:
   - component: {fileID: 7478403026463756561}
   - component: {fileID: 1107408343412807062}
   - component: {fileID: 4717593017566088317}
-  - component: {fileID: 4265081205197012503}
   m_Layer: 0
   m_Name: 'RedSwordHead '
   m_TagString: Untagged
@@ -4435,19 +4424,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4265081205197012503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7703479042891083261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac6794c04ffccb547a1dd70c25998f6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &8051531970575748235
 GameObject:
   m_ObjectHideFlags: 0

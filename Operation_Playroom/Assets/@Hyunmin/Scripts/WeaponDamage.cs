@@ -1,20 +1,22 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
 public class WeaponDamage : NetworkBehaviour
 {
-    [SerializeField] int damage = 10;
+    [SerializeField] int damage;
 
     ulong ownerClientId;
     int ownerTeam;
 
     bool isCollision;
 
-    public void SetOwner(ulong ownerClientId, int ownerTeam)
+    public void SetOwner(ulong ownerClientId, int ownerTeam, int damage)
     {
         this.ownerClientId = ownerClientId;
         this.ownerTeam = ownerTeam;
+        this.damage = damage;
     }
 
     void OnTriggerEnter(Collider other)
@@ -46,14 +48,20 @@ public class WeaponDamage : NetworkBehaviour
             // 건물 타격 시 데미지
             if (other.TryGetComponent<Building>(out Building building))
             {
-                isCollision = true;
+                // 같은 팀 건물 타격 시
+                Owner myTeam = ownerTeam == 0 ? Owner.Blue : Owner.Red;
 
-                building.TakeDamageServerRpc(damage);
+                if (myTeam != building.buildingOwner)
+                {
+                    isCollision = true;
 
-                NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
-                noise.AddNoiseGage(2);
+                    building.TakeDamageServerRpc(damage);
 
-                StartCoroutine(ResetCollisionRoutine());
+                    NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+                    noise.AddNoiseGage(2);
+
+                    StartCoroutine(ResetCollisionRoutine());
+                }
             }
 
             // 상대 팀 타격 시 데미지
