@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class BGMSound : MonoBehaviour
 {
     public AudioClip backgroundMusic;
-
+    public AudioMixer audioMixer;
     private AudioSource audioSource;
 
     private string[] scenesMusic = { "LoadingScene", "MainScene", "LobbyScene" };
@@ -19,9 +20,12 @@ public class BGMSound : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
             Debug.Log("AudioSource가 없어서 자동으로 추가");
         }
+        
+        audioSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("BGM")[0];
+        
         audioSource.clip = backgroundMusic;
         audioSource.loop = true;
-
+        
         CheckScenePlayMusic();
     }
 
