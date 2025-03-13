@@ -1,5 +1,4 @@
 using DG.Tweening;
-using System;
 using System.Collections;
 using TMPro;
 using Unity.Netcode;
@@ -101,6 +100,5 @@ public class GameManager : NetworkBehaviour
     {
         notiText.text = text;
         textSequence.Restart();
-
     }
 }

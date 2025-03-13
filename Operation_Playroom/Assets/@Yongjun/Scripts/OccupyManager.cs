@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using TMPro;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using TMPro;
+using System.Collections.Generic;
 
 public class OccupyManager : NetworkBehaviour
 {
@@ -57,34 +58,24 @@ public class OccupyManager : NetworkBehaviour
         }
     }
 
-    public List<Transform> GetRandomPoints()
+    public Vector3[] GetRandomPoints()
     {
-        List<Transform> points = new List<Transform>();
-        for (int i = 0; i < occupyPool.childCount; i++)
+        Vector3[] paths = new Vector3[3];
+        int pointsCount = occupyPoints.childCount;
+        int i = 0;
+        while (i < 3)
         {
-            if (occupyPool.GetChild(i).TryGetComponent<OccupySystem>(out OccupySystem occupySystem))
+            int num = Random.Range(0, pointsCount);
+
+            if (!paths.Contains(occupyPoints.GetChild(num).position))
             {
-                if (occupySystem.currentOwner != Owner.Neutral)
-                {
-                    points.Add(occupyPool.GetChild(i));
-                }
+                paths[i] = occupyPoints.GetChild(num).position;
+                i++;
+                Debug.Log(occupyPoints.GetChild(num).name);
             }
         }
 
-        if (points.Count <= 3)
-        {
-            return points;
-        }
-        else
-        {
-            while (points.Count > 3)
-            {
-                int num = Random.Range(0, points.Count);
-                points.RemoveAt(num);
-            }
-        }
-
-        return points;
+        return paths;
     }
 
     public void UpdateOccupyCount(Owner owner, int amount)
@@ -105,6 +96,6 @@ public class OccupyManager : NetworkBehaviour
     private void UpdateUI()
     {
         redTeamOccupyCountText.text = $"{redTeamOccupyCount.Value}";
-        blueTeamOccupyCountText.text = $"{blueTeamOccupyCount.Value}";
+        blueTeamOccupyCountText.text = $"{blueTeamOccupyCount.Value}"; 
     }
 }

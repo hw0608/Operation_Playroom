@@ -1,7 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
-using static Define;
 
 public class NoiseCheckManager : NetworkBehaviour
 {
@@ -13,11 +12,6 @@ public class NoiseCheckManager : NetworkBehaviour
 
     private NetworkVariable<float> totalNoise = new NetworkVariable<float>(0); // 서버에서 관리하는 총 소음 값
 
-    TimmyDirection timmyDirection;
-    public override void OnNetworkSpawn()
-    {
-        timmyDirection = GameObject.FindFirstObjectByType<TimmyDirection>();
-    }
     void Update()
     {
 
@@ -64,31 +58,22 @@ public class NoiseCheckManager : NetworkBehaviour
 
     void DecreaseSleepGage()
     {
-        if (timmyDirection.timmyState != ETimmyState.Sleep) return;
-        
         float change = 0f;
 
         if (totalNoise.Value >= 0 && totalNoise.Value < 5)
         {
-            change = 2f * Time.deltaTime; // 초당 1 증가
+            change = 1f * Time.deltaTime; // 초당 1 증가
         }
         else if (totalNoise.Value >= 10 && totalNoise.Value < 20)
         {
-            change = -0.5f * Time.deltaTime; // 초당 1 감소
+            change = -1f * Time.deltaTime; // 초당 1 감소
         }
         else if (totalNoise.Value >= 20 && totalNoise.Value <= 30)
         {
-            change = -1f * Time.deltaTime; // 초당 2 감소
+            change = -2f * Time.deltaTime; // 초당 2 감소
         }
 
         sleep.Value = Mathf.Clamp(sleep.Value + change, 0, 100); // sleep 값 범위 제한
         totalNoise.Value = Mathf.Max(0, totalNoise.Value - Time.deltaTime); // 점진적으로 noise 감소
-        if(sleep.Value <= 0)
-        {
-            timmyDirection.timmyState = ETimmyState.Move;
-            sleep.Value = 100;
-            totalNoise.Value = 0;
-            timmyDirection.StartTimmy();
-        }
     }
 }

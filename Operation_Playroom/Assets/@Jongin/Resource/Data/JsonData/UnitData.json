@@ -11,15 +11,15 @@
       "DataId": 201001,
       "DescriptionTextId": "Archer",
       "PrefabLabel": "UnitPrefab",
-      "HP": 120.0,
-      "Atk": 30.0
+      "HP": 150.0,
+      "Atk": 40.0
     },
     {
       "DataId": 201002,
       "DescriptionTextId": "King",
       "PrefabLabel": "UnitPrefab",
-      "HP": 600.0,
-      "Atk": 0.0
+      "HP": 200.0,
+      "Atk": 40.0
     },
     {
       "DataId": 201003,
