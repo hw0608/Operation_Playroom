@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
-using static Define;
 public class MoveTimmy : NetworkBehaviour
 {
     public List<Transform> path = new List<Transform>();
     public NetworkVariable<bool> timmyActive = new NetworkVariable<bool>(true);
     public GameObject[] BuildingDummy;
 
-    ETimmyState timmyState = ETimmyState.Sleep;
 
     int pathIndex = 0;
 
@@ -30,13 +28,13 @@ public class MoveTimmy : NetworkBehaviour
     {
         timmyActive.OnValueChanged -= OnSetActiveSelf;
         timmyActive.OnValueChanged += OnSetActiveSelf;
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
 
         if (!IsServer) return;
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
-        timmyActive.Value = false;
+        //timmyActive.Value = false;
         startPos = transform.position;
         startRot = transform.rotation;
 
@@ -68,11 +66,12 @@ public class MoveTimmy : NetworkBehaviour
             }
             else
             {
-                if (HasReachedDestination())
+                if (HasReachedDestination(path[pathIndex].position))
                 {
                     animator.SetTrigger("Lifting");
                     yield return new WaitForSeconds(1.5f);
                     SetBuildingDummyClientRpc(pathIndex);
+                    path[pathIndex].GetComponentInChildren<Building>().DestructionBuilding();
                     yield return new WaitForSeconds(4.5f);
                     isMove = false;
                     pathIndex++;
@@ -88,12 +87,12 @@ public class MoveTimmy : NetworkBehaviour
     void SetBuildingDummyClientRpc(int pathIndex)
     {
         BuildingDummy[pathIndex].SetActive(true);
-    } 
+    }
 
     [ClientRpc]
     void ResetBuildingDummyClientRpc()
     {
-        for(int i = 0; i< BuildingDummy.Length; i++)
+        for (int i = 0; i < BuildingDummy.Length; i++)
         {
             BuildingDummy[i].SetActive(false);
         }
@@ -101,10 +100,11 @@ public class MoveTimmy : NetworkBehaviour
 
     void MoveToPath(int index)
     {
+        Vector3 dir = Vector3.Normalize(transform.position - path[index].position);
         agent.SetDestination(path[index].position);
     }
 
-    bool HasReachedDestination()
+    bool HasReachedDestination(Vector3 currentPath)
     {
         // 에이전트가 경로를 가지고 있고, 남은 거리가 정지 거리보다 작으면 도착한 것으로 판단
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)

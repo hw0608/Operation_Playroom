@@ -1,7 +1,7 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
-
+using static Define; 
 public enum Owner { Red, Blue, Neutral }
 
 public class ResourceData : NetworkBehaviour
@@ -12,7 +12,6 @@ public class ResourceData : NetworkBehaviour
     public Collider resourceCollider;
     Coroutine delayColliderEnable;
     Coroutine delayPushObject;
-
 
     public bool isMarked = false;
     public NetworkVariable<bool> isHolding = new NetworkVariable<bool>(false);
