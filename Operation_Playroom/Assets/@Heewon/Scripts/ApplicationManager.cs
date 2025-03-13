@@ -17,13 +17,13 @@ public class ApplicationManager : MonoBehaviour
     async Task LaunchInMode(bool isDedicatedServer)
     {
         TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-        Managers.Resource.LoadAllAsync<GameObject>("default", (name, loadCount, totalCount) =>
+        Managers.Resource.LoadAllAsync<Object>("default", (name, loadCount, totalCount) =>
         {
             if (loadCount >= totalCount)
             {
                 Debug.Log($"({loadCount}/{totalCount})");
                 Debug.Log("addressables load complete");
-
+                Managers.Data.Init();
                 tcs.SetResult(true);
             }
         });
