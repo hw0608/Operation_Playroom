@@ -96,7 +96,7 @@ public class Building : NetworkBehaviour
             buildEffect.transform.localPosition = Vector3.zero;
         }
 
-        PlaySFXClientRpc(Random.Range(0, 3), 0.5f);
+        PlaySFXClientRpc(Random.Range(0, 3), 0.25f);
 
         while (elapsedTime < duration)
         {
@@ -133,7 +133,7 @@ public class Building : NetworkBehaviour
             transform.localPosition = new Vector3(0, -25f, 0);
         }
 
-        PlaySFXClientRpc(3);
+        PlaySFXClientRpc(3, 0.5f);
     } 
 
     IEnumerator DelayPushEffect(GameObject effect, float time)
@@ -168,6 +168,7 @@ public class Building : NetworkBehaviour
         if (health.Value > 0)
         {
             health.Value -= damage;
+            PlaySFXClientRpc(Random.Range(4, 9), 0.5f);
         }
     }
 
