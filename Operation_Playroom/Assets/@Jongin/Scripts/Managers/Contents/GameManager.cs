@@ -125,7 +125,7 @@ public class GameManager : NetworkBehaviour
         .AppendCallback(() =>
         {
             kingCams[team].Priority = 0;
-            if(myTeam == (ETeam)team)
+            if (myTeam == (ETeam)team)
             {
                 winPanel.SetActive(true);
             }
@@ -133,7 +133,13 @@ public class GameManager : NetworkBehaviour
             {
                 losePanel.SetActive(true);
             }
-        });
+        })
+        .AppendInterval(5f)
+        .AppendCallback(() =>
+         {
+             NetworkManager.Singleton.Shutdown();
+         });
+        
        
 
     }
