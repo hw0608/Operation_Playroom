@@ -140,6 +140,7 @@ public class LobbyList : MonoBehaviour
 
     public async void JoinByJoinCodeAsync()
     {
+        joinCodeInputField.text = "";
         joinCodePanel.SetActive(true);
 
         string joinCode = await InputJoinCode();
@@ -151,33 +152,42 @@ public class LobbyList : MonoBehaviour
         else
         {
             joiningProgressPanel.SetActive(true);
-            await ClientSingleton.Instance.StartClientAsync(joinCodeInputField.text);
+
+            bool connected = await ClientSingleton.Instance.StartClientAsync(joinCodeInputField.text);
+            if (!connected)
+            {
+                joiningProgressPanel.SetActive(false);
+                joinCodePanel.SetActive(false);
+                MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
+                if (popup != null)
+                {
+                    popup.SetText("코드와 일치하는 방이 없습니다.");
+                    popup.Show();
+                }
+            }
         }
     }
 
     async Task<string> InputJoinCode()
     {
-        bool waiting = true;
-        bool cancel = false;
+        var tcs = new TaskCompletionSource<string>();
 
-        joinByJoinCodeButton.onClick.AddListener(() => waiting = false);
-        closeJoinCodePanelButton.onClick.AddListener(() => cancel = true);
+        joinByJoinCodeButton.onClick.AddListener(() => tcs.TrySetResult(joinCodeInputField.text));
+        closeJoinCodePanelButton.onClick.AddListener(() => { tcs.TrySetResult(""); Debug.Log("Cancel Pressed"); });
 
-        while (!cancel && waiting)
-        {
-            await Task.Yield();
-        }
+        string result = await tcs.Task;
 
         joinByJoinCodeButton.onClick.RemoveAllListeners();
         closeJoinCodePanelButton.onClick.RemoveAllListeners();
 
-        return cancel ? "" : joinCodeInputField.text;
+        return result;
     }
 
     async Task<string> InputPassword()
     {
         bool waiting = true;
         bool cancel = false;
+        joinPasswordInputField.text = "";
         joinPasswordPanel.SetActive(true);
 
         joinPasswordButton.onClick.AddListener(() => waiting = false);
