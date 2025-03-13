@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] TMP_Text findButtonText;
 
     bool isMatchmaking;
-    bool isCancelling;
+    private bool isCancelling;
     void Start()
     {
         if (GameObject.FindFirstObjectByType<NetworkManager>() == null)
