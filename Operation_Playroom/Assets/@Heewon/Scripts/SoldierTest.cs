@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -48,51 +49,11 @@ public class SoldierTest : Character
     public bool CanReceiveCommand => !health.isDead && !isHoldingItem && (currentState.Value == State.Idle || currentState.Value == State.Following);
     public bool HasItem => isHoldingItem;
 
-
-    #region Network
-    public override void OnNetworkSpawn()
+    public override void Start()
     {
-        health = GetComponent<Health>();
-
-        if (IsServer)
-        {
-            health.OnDie -= HandleOnDie;
-            health.OnDie += HandleOnDie;
-        }
-
-        if (!IsOwner) { return; }
-
-        agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = false;
-        agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
-
-        currentState.OnValueChanged -= HandleAnimation;
-        currentState.OnValueChanged += HandleAnimation;
-
-        
+        base.Start();
+        InitializeCharacterStat();
     }
-
-    public override void OnNetworkDespawn()
-    {
-        if (!IsOwner) { return; }
-
-        currentState.OnValueChanged -= HandleAnimation;
-        health.OnDie -= HandleOnDie;
-    }
-
-    [ServerRpc]
-    void EnableHitboxServerRpc(bool state)
-    {
-        EnableHitboxClientRpc(state);
-    }
-
-    [ClientRpc]
-    void EnableHitboxClientRpc(bool state)
-    {
-        spearHitbox.GetComponent<Collider>().enabled = state;
-    }
-
-    #endregion
 
     private void FixedUpdate()
     {
@@ -131,6 +92,54 @@ public class SoldierTest : Character
         }
     }
 
+
+    #region Network
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        health = GetComponent<Health>();
+
+
+        if (!IsOwner) { return; }
+
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+
+        currentState.OnValueChanged -= HandleAnimation;
+        currentState.OnValueChanged += HandleAnimation;
+
+        health.OnDie -= PutDownItem;
+        health.OnDie += PutDownItem;
+
+        health.OnDie -= HandleOnDie;
+        health.OnDie += HandleOnDie;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (!IsOwner) { return; }
+        
+        king.GetComponent<KingTest>().SpawnSoldier();
+
+        currentState.OnValueChanged -= HandleAnimation;
+        health.OnDie -= HandleOnDie;
+        health.OnDie -= PutDownItem;
+    }
+
+    [ServerRpc]
+    void EnableHitboxServerRpc(bool state)
+    {
+        EnableHitboxClientRpc(state);
+    }
+
+    [ClientRpc]
+    void EnableHitboxClientRpc(bool state)
+    {
+        spearHitbox.GetComponent<Collider>().enabled = state;
+    }
+
+    #endregion
 
     #region IDLE
 
@@ -449,10 +458,10 @@ public class SoldierTest : Character
     {
         Debug.Log("HandleOnDie");
 
-        StartCoroutine(RespawnSoldierRoutine());
+        StartCoroutine(DespawnSoldierRoutine());
     }
 
-    IEnumerator RespawnSoldierRoutine()
+    IEnumerator DespawnSoldierRoutine()
     {
         float respawnTime = 10f;
         while (respawnTime > 0)
@@ -461,38 +470,7 @@ public class SoldierTest : Character
             respawnTime -= 1f;
         }
 
-        GameTeam gameTeam = (GameTeam)team.Value;
-        Vector3 spawnPosition = SpawnPoint.GetSpawnPoint(gameTeam, GameRole.None);
-
-        Debug.Log($"Respawn Position: {spawnPosition}, Team: {gameTeam}");
-
-        // 서버에서 위치 설정
-        transform.position = spawnPosition;
-
-        health.InitializeHealth();
-
-        // 클라이언트에 위치 동기화
-        UpdatePlayerStateClientRpc(NetworkObject, spawnPosition);
-    }
-
-    [ClientRpc]
-    void UpdatePlayerStateClientRpc(NetworkObjectReference playerRef, Vector3 position)
-    {
-        if (playerRef.TryGet(out NetworkObject playerObj))
-        {
-            target = null;
-            myItem = null;
-
-            Character character = playerObj.GetComponent<Character>();
-            Health health = playerObj.GetComponent<Health>();
-
-            // 클라이언트에서 위치, 상태, 애니메이터 초기화
-            playerObj.transform.position = position;
-            health.InitializeHealth();
-            character.InitializeAnimator();
-
-            Debug.Log($"Client {OwnerClientId} respawned at {position}");
-        }
+        king.GetComponent<KingTest>().DespawnSoldier(this);
     }
 
     #endregion
@@ -565,7 +543,7 @@ public class SoldierTest : Character
         float smoothAngle = Mathf.LerpAngle(transform.eulerAngles.y, targetAngle, Time.deltaTime * 5f);
         transform.eulerAngles = Vector3.up * smoothAngle;
     }
-    void PutDownItem()
+    void PutDownItem(Health health = null)
     {
         if (myItem == null) return;
 
@@ -610,6 +588,7 @@ public class SoldierTest : Character
         }
         return nearestEnemy; // 가까운 적 오브젝트를 반환
     }
+
     public void InitializeCharacterStat()
     {
         if (Managers.Data.UnitDic.TryGetValue(201003, out Data.UnitData soldierData))

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class KingTest : Character
     public List<SoldierTest> soldiers = new List<SoldierTest>();
     public List<Vector3> soldierOffsets = new List<Vector3>();
 
-    public SoldierTest debugSoldier;
+    public List<SoldierTest> deadSoldiers = new List<SoldierTest>();
 
     OccupyManager occupyManager;
 
@@ -127,13 +128,6 @@ public class KingTest : Character
         if (Input.GetKeyDown(KeyCode.Q))
         {
             CommandSoldierToReturn();
-        }
-
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            int idx = GetAvailableSoldierIndex();
-            soldierSpawner.index = idx == -1 ? soldiers.Count : idx;
-            soldierSpawner.SpawnSoldiers(1);
         }
     }
 
@@ -298,11 +292,53 @@ public class KingTest : Character
     void HandleSoldierSpawn(int previousValue, int newValue)
     {
         Debug.Log("HandleSoldierSpawn");
-        if (newValue > previousValue)
+        if (newValue > previousValue && initialSoldiersCount + newValue > CountAllSoldiers())
         {
-            Debug.Log("SpawnSoldier.");
-            soldierSpawner.SpawnSoldiers(1);
+            SpawnSoldier();
         }
+    }
+
+    public void SpawnSoldier()
+    {
+        int occupyCount = team.Value == 0 ? occupyManager.blueTeamOccupyCount.Value : occupyManager.redTeamOccupyCount.Value;
+
+        Debug.Log($"{occupyCount} , {CountAliveSoldiers()}");
+
+        if (occupyCount + initialSoldiersCount <= CountAliveSoldiers()) { return; }
+
+        Debug.Log("SpawnSoldier.");
+
+        int idx = GetAvailableSoldierIndex();
+        soldierSpawner.index = idx == -1 ? soldiers.Count : idx;
+        soldierSpawner.SpawnSoldiers(1);
+    }
+
+    public void DespawnSoldier(SoldierTest soldier)
+    {
+        soldierSpawner.DespawnSoldier(soldier.GetComponent<NetworkObject>().NetworkObjectId);
+    }
+
+    int CountAllSoldiers()
+    {
+        int count = 0;
+
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            if (soldiers[i] != null) count++;
+        }
+
+        return count;
+    }
+
+    int CountAliveSoldiers()
+    {
+        int count = 0;
+
+        for (int i = 0; i < soldiers.Count; i++) {
+            if (soldiers[i] != null && !soldiers[i].GetComponent<Health>().isDead) count++;
+        }
+
+        return count;
     }
 
     int GetAvailableSoldierIndex()
@@ -322,7 +358,7 @@ public class KingTest : Character
 
     bool HasSoldierWithItem()
     {
-        return soldiers.Any(soldier => soldier.HasItem);
+        return soldiers.Any(soldier => soldier != null && soldier.HasItem);
     }
 
     // 공격 메서드

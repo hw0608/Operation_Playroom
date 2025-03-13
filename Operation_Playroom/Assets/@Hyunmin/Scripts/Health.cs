@@ -77,7 +77,12 @@ public class Health : NetworkBehaviour
         {
             isDead = true;
 
-            if(GetComponent<PlayerController>() != null)
+            if (IsOwner)
+            {
+                OnDie?.Invoke(this);
+            }
+
+            if (GetComponent<PlayerController>() != null)
             {
                 GetComponent<PlayerController>().isPlayable = false;
             }
