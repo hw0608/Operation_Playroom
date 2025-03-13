@@ -36,14 +36,14 @@ public class WeaponDamage : NetworkBehaviour
             }
 
             // 같은 팀 타격 시 리턴
-            //if (other.TryGetComponent<Character>(out Character character))
-            //{
-            //    if (ownerTeam == character.team.Value)
-            //    {
-            //        Debug.Log("Team Kill");
-            //        return;
-            //    }
-            //}
+            if (other.TryGetComponent<Character>(out Character character))
+            {
+                if (ownerTeam == character.team.Value)
+                {
+                    Debug.Log("Team Kill");
+                    return;
+                }
+            }
 
             // 건물 타격 시 데미지
             if (other.TryGetComponent<Building>(out Building building))
