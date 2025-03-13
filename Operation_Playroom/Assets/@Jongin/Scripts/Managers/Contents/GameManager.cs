@@ -8,9 +8,18 @@ using static Define;
 
 public class GameManager : NetworkBehaviour
 {
+    enum ETeam
+    {
+        Blue,
+        Red
+    }
+
     public NetworkVariable<float> remainTime = new NetworkVariable<float>();
     public TMP_Text notiText;
-    public TMP_Text timerText; 
+    public TMP_Text timerText;
+
+    public GameObject winPanel;
+    public GameObject losePanel;
     EGameState gameState;
 
     Sequence textSequence;
