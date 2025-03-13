@@ -6,13 +6,13 @@ using System.Collections;
 
 public class Health : NetworkBehaviour
 {
-    public int maxHealth = 100;
     public NetworkVariable<int> currentHealth = new NetworkVariable<int>();
 
     public bool isDead;
 
     public Action<Health> OnDie;
 
+    int maxHealth;
     [SerializeField] Image hpBar;
     Character character;
 
@@ -126,6 +126,9 @@ public class Health : NetworkBehaviour
     public void SetHp(int hp)
     {
         maxHealth = hp;
+
+        if (!IsServer) return;
+
         currentHealth.Value = maxHealth;
     }
 }

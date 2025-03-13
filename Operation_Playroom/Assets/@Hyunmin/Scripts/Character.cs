@@ -160,7 +160,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
             teamValue = 0;
         }
 
-        if (Icons.Length >= 0)
+        if (Icons.Length > 0 && team.Value >= 0)
         {
             SetIcons(team.Value);
         }

@@ -19,9 +19,9 @@ public enum GameTeam
 
 public enum GameRole
 {
-    Archer,
     Swordman,
     King,
+    Archer,
     None
 }
 

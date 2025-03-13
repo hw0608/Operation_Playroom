@@ -3753,7 +3753,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  maxHealth: 100
   currentHealth:
     m_InternalValue: 0
   isDead: 0

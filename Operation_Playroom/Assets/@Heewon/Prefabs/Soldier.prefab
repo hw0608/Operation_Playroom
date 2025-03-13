@@ -12827,8 +12827,10 @@ MonoBehaviour:
   - {fileID: 5822080125726909449}
   - {fileID: 858814550522876497}
   - {fileID: 8213975747523946636}
+  Icons: []
   team:
     m_InternalValue: -1
+  damage: 0
   spearHitbox: {fileID: 7270544927865333249}
   isAttacking: 0
 --- !u!114 &7541565092657274071
