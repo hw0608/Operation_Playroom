@@ -143,6 +143,7 @@ public class TimmyDirection : NetworkBehaviour
             sleepTimmy.timmyActive.Value = true;
             moveTimmy.timmyActive.Value = false;
             moveTimmy.ResetTimmy();
+            GameManager.Instance.AllPlayerStopClientRpc(true);
             timmyState = ETimmyState.Sleep;
         });
         timmySequence.AppendInterval(1f);

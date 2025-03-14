@@ -55,14 +55,15 @@ public class GameManager : NetworkBehaviour
 
         respawnManager = FindFirstObjectByType<PlayerRespawnManager>();
         occupyManager = FindFirstObjectByType<OccupyManager>();
-        myTeam = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
+
         if (IsServer)
         {
-            remainTime.Value = 30f;
+            remainTime.Value = 600f;
             StartCoroutine(CallReadyMessage());
         }
         else
         {
+            myTeam = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
             remainTime.OnValueChanged -= OnChangeTimer;
             remainTime.OnValueChanged += OnChangeTimer;
         }
@@ -77,7 +78,18 @@ public class GameManager : NetworkBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            if (IsServer)
+            {
+                AllPlayerRespawn();
+            }
+        }
+
+
         if (gameState != EGameState.Play) return;
+
+
     }
 
 
@@ -124,27 +136,38 @@ public class GameManager : NetworkBehaviour
         StartCoroutine(TimerRoutine());
     }
 
-    public void AllPlayerStop()
+    [ClientRpc]
+    public void AllPlayerStopClientRpc(bool isStop, bool isSoldierSpawn = false)
     {
         players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         for (int i = 0; i < players.Length; i++)
         {
-            players[i].isPlayable = false;
+            players[i].isPlayable = isStop;
+            if (!isSoldierSpawn) continue;
+
+
+            if (players[i].gameObject.GetComponent<KingTest>() != null)
+            {
+                Debug.Log(players[i]);
+                KingTest king = players[i].gameObject.GetComponent<KingTest>();
+                StartCoroutine(SoldierSpawnDelay(king));
+            }
+
         }
+    }
+
+    IEnumerator SoldierSpawnDelay(KingTest king)
+    {
+        yield return new WaitForSeconds(1);
+        king.CommandSoldierToWarp();
     }
 
     public void AllPlayerRespawn()
     {
-        AllPlayerStop();
+        AllPlayerStopClientRpc(false, true);
         //¸®½ºÆù
         respawnManager.ReTransformPostion();
-        for (int i = 0; i < players.Length; i++)
-        {
-            if (players[i].TryGetComponent<KingTest>(out KingTest king))
-            {
-                king.CommandSoldierToWarp();
-            }
-        }
+
     }
 
     public void OnKingDead(Health health)
@@ -164,7 +187,7 @@ public class GameManager : NetworkBehaviour
         .AppendInterval(2f)
         .AppendCallback(() =>
         {
-            AllPlayerStop();
+            AllPlayerStopClientRpc(false);
             Time.timeScale = 1f;
         })
         .AppendInterval(1f)
@@ -198,7 +221,7 @@ public class GameManager : NetworkBehaviour
         Sequence gameOverSeq = DOTween.Sequence();
         gameOverSeq.AppendCallback(() =>
         {
-            AllPlayerStop();
+            AllPlayerStopClientRpc(false);
         })
         .AppendInterval(1f)
         .AppendCallback(() =>
