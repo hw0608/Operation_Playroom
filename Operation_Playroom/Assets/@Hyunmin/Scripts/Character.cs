@@ -20,7 +20,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     float detectItemRange = 0.2f;
-    Collider characterCollider;
     Coroutine damageRoutine;
 
     protected bool attackAble;
@@ -44,7 +43,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
         health = GetComponent<Health>();
-        characterCollider = GetComponent<Collider>();
 
         attackAble = true;
         holdItemAble = true;
@@ -112,6 +110,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 피격 메서드
     public virtual void TakeDamage()
     {
+        if(health.isDead) return;
+
         if (damageRoutine != null)
         {
             StopCoroutine(damageRoutine);
@@ -331,16 +331,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
         // 애니메이션 해제
         SetAvatarLayerWeight(0);
         SetTriggerAnimation("Idle");
-    }
-
-    public void EnalbleCollider()
-    {
-        characterCollider.enabled = true;
-    }
-
-    public void UnEnalbleCollider()
-    {
-        characterCollider.enabled = false;
     }
 
     [ServerRpc]

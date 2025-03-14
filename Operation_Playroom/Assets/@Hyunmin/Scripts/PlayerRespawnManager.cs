@@ -68,7 +68,6 @@ public class PlayerRespawnManager : NetworkBehaviour
         player.isPlayable = true;
         health.InitializeHealth();
         character.InitializeAnimator();
-        character.EnalbleCollider();
 
         // 클라이언트에 위치 동기화
         UpdatePlayerStateClientRpc(player.NetworkObject, spawnPosition);
@@ -104,7 +103,6 @@ public class PlayerRespawnManager : NetworkBehaviour
             player.isPlayable = true;
             health.InitializeHealth();
             character.InitializeAnimator();
-            character.EnalbleCollider();
 
             // 타이머 해제
             if (playerObj.IsOwner)

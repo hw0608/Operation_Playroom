@@ -12828,6 +12828,9 @@ MonoBehaviour:
   - {fileID: 858814550522876497}
   - {fileID: 8213975747523946636}
   Icons: []
+  characterColliders:
+  - {fileID: 3915501742564724871}
+  - {fileID: 981276222956811405}
   team:
     m_InternalValue: -1
   damage: 0
