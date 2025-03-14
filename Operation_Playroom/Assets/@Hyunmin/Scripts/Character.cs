@@ -167,7 +167,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
         {
             SetIcons(team.Value);
         }
-        GameManager.Instance.SetMyTeam(team.Value);
         UpdateTeamMaterialClientRpc(teamValue);
         SyncMaterialsOnSpawn();
     }

@@ -13,7 +13,7 @@ public class GameManager : NetworkBehaviour
 
     public static GameManager Instance { get { return instance; } }
 
-    ETeam myTeam;
+    int myTeam;
 
     public NetworkVariable<float> remainTime = new NetworkVariable<float>();
     public TMP_Text notiText;
@@ -54,9 +54,11 @@ public class GameManager : NetworkBehaviour
             .SetAutoKill(false).Pause();
 
         respawnManager = FindFirstObjectByType<PlayerRespawnManager>();
+        occupyManager = FindFirstObjectByType<OccupyManager>();
+        myTeam = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
         if (IsServer)
         {
-            remainTime.Value = 600f;
+            remainTime.Value = 30f;
             StartCoroutine(CallReadyMessage());
         }
         else
@@ -65,10 +67,6 @@ public class GameManager : NetworkBehaviour
             remainTime.OnValueChanged += OnChangeTimer;
         }
 
-    }
-    public void SetMyTeam(int team)
-    {
-        myTeam = (ETeam)team;
     }
 
     public override void OnNetworkDespawn()
@@ -97,7 +95,7 @@ public class GameManager : NetworkBehaviour
             yield return new WaitForSeconds(1f);
             remainTime.Value -= 1.0f;
         }
-        TimeOver();
+        TimeOverClientRpc();
         yield return null;
     }
 
@@ -173,7 +171,7 @@ public class GameManager : NetworkBehaviour
         .AppendCallback(() =>
         {
             kingCams[team].Priority = 0;
-            if (myTeam == (ETeam)team)
+            if (myTeam == team)
             {
                 losePanel.SetActive(true);
             }
@@ -194,7 +192,8 @@ public class GameManager : NetworkBehaviour
          });
     }
 
-    void TimeOver()
+    [ClientRpc]
+    void TimeOverClientRpc()
     {
         Sequence gameOverSeq = DOTween.Sequence();
         gameOverSeq.AppendCallback(() =>
@@ -207,7 +206,7 @@ public class GameManager : NetworkBehaviour
             int redPoint = occupyManager.redTeamOccupyCount.Value;
             int bluePoint = occupyManager.blueTeamOccupyCount.Value;
 
-            ETeam winner = redPoint > bluePoint ? ETeam.Red : ETeam.Blue;
+            int winner = redPoint > bluePoint ? 1 : 0;
 
             if (myTeam == winner)
             {

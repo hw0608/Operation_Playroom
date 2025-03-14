@@ -15,9 +15,9 @@ public class KingCam : MonoBehaviour
     // 카메라 할당 루틴
     IEnumerator CamRoutine()
     {
-        yield return new WaitUntil(() => FindObjectsByType<KingTest>(FindObjectsSortMode.None).Length >= 1);
+        yield return new WaitUntil(() => FindObjectsByType<KingTest>(FindObjectsSortMode.None).Length >= 2);
         KingTest[] kings = FindObjectsByType<KingTest>(FindObjectsSortMode.None);
-        target = kings[0].team.Value == (int)team ? kings[0].gameObject : null;
+        target = kings[0].team.Value == (int)team ? kings[0].gameObject : kings[1].gameObject;
         if (target != null)
         {
             GetComponent<CinemachineCamera>().Follow = target.transform;
