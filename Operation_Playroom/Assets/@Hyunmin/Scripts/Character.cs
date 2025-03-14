@@ -20,6 +20,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     float detectItemRange = 0.2f;
+    Collider characterCollider;
+    Coroutine damageRoutine;
 
     protected bool attackAble;
     protected bool holdItemAble;
@@ -31,13 +33,13 @@ public abstract class Character : NetworkBehaviour, ICharacter
     protected Quaternion currentRotation;
     protected Health health;
 
-    Coroutine damageRoutine;
 
     public virtual void Start()
     {
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
         health = GetComponent<Health>();
+        characterCollider = GetComponent<Collider>();
 
         attackAble = true;
         holdItemAble = true;
@@ -330,6 +332,17 @@ public abstract class Character : NetworkBehaviour, ICharacter
         SetAvatarLayerWeight(0);
         SetTriggerAnimation("Idle");
     }
+
+    public void EnalbleCollider()
+    {
+        characterCollider.enabled = true;
+    }
+
+    public void UnEnalbleCollider()
+    {
+        characterCollider.enabled = false;
+    }
+
     [ServerRpc]
     void WeaponObjectActiveServerRpc(bool state)
     {

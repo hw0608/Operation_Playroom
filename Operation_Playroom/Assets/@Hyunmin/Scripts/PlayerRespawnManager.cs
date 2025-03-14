@@ -66,6 +66,7 @@ public class PlayerRespawnManager : NetworkBehaviour
         player.isPlayable = true;
         health.InitializeHealth();
         character.InitializeAnimator();
+        character.EnalbleCollider();
 
         // 클라이언트에 위치 동기화
         UpdatePlayerStateClientRpc(player.NetworkObject, spawnPosition);
@@ -101,6 +102,7 @@ public class PlayerRespawnManager : NetworkBehaviour
             player.isPlayable = true;
             health.InitializeHealth();
             character.InitializeAnimator();
+            character.EnalbleCollider();
 
             // 타이머 해제
             if (playerObj.IsOwner)
@@ -134,5 +136,42 @@ public class PlayerRespawnManager : NetworkBehaviour
 
         PlayerController.OnPlayerSpawn += HandlePlayerSpawn;
         PlayerController.OnPlayerDespawn += HandlePlayerDespawn;
+    }
+
+    // 플레이어들 본진으로 스폰
+    public void ReTransformPostion()
+    {
+        // 플레이어 찾기
+        PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+
+        if (players.Length <= 0)
+        {
+            Debug.Log("None Players");
+        }
+
+        Vector3 spawnPosition = Vector3.zero;
+
+        // 캐릭터 별 위치로 이동
+        foreach (PlayerController player in players)
+        {
+            Character character = player.GetComponent<Character>();
+            GameTeam gameTeam = (GameTeam)character.team.Value;
+
+            if (player.GetComponent<Swordman>())
+            {
+                spawnPosition = SpawnPoint.GetSpawnPoint(gameTeam, GameRole.Swordman);
+            }
+            else if (player.GetComponent<Archer>())
+            {
+                spawnPosition = SpawnPoint.GetSpawnPoint(gameTeam, GameRole.Archer);
+            }
+            else if (player.GetComponent<KingTest>())
+            {
+                spawnPosition = SpawnPoint.GetSpawnPoint(gameTeam, GameRole.King);
+            }
+
+            player.transform.position = spawnPosition;
+        }
+
     }
 }

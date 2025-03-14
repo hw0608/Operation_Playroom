@@ -105,8 +105,9 @@ public class Health : NetworkBehaviour
             {
                 GetComponent<PlayerController>().isPlayable = false;
             }
-            else if (GetComponent<Character>() != null)
+            if (GetComponent<Character>() != null)
             {
+                GetComponent<Character>().UnEnalbleCollider();
             }
 
             OnDie?.Invoke(this);
