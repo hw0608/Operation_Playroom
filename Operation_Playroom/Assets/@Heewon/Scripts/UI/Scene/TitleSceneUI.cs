@@ -167,4 +167,9 @@ public class TitleSceneUI : MonoBehaviour
 
         nicknameSettingPanel.SetActive(false);
     }
+
+    public void OnQuitPressed()
+    {
+        Application.Quit();
+    }
 }

@@ -45,6 +45,7 @@ public class KingTest : Character
     {
         base.OnNetworkSpawn();
 
+        moveSpeed = 5.3f;
         int[] colOffsets = { 0, -1, 1, -2, 2 };
         if (!IsOwner) return;
         base.Start();
@@ -128,6 +129,11 @@ public class KingTest : Character
         if (Input.GetKeyDown(KeyCode.Q))
         {
             CommandSoldierToReturn();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            CommandSoldierToWarp();
         }
     }
 
@@ -284,6 +290,17 @@ public class KingTest : Character
             {
                 soldier.TryAttack(enemy);
             }
+        }
+    }
+
+    public void CommandSoldierToWarp()
+    {
+        foreach(SoldierTest soldier in soldiers)
+        {
+            if (soldier == null) continue;
+            soldier.ResetState();
+
+            soldier.transform.position = soldier.GetFormationPosition();
         }
     }
 
