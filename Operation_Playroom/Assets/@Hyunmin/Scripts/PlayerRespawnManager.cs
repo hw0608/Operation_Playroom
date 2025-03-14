@@ -171,7 +171,19 @@ public class PlayerRespawnManager : NetworkBehaviour
             }
 
             player.transform.position = spawnPosition;
+            UpdatePlayerTransformClientRpc(player.NetworkObject, spawnPosition);
         }
 
+    }
+
+    // 클라이언트에서 위치 초기화
+    [ClientRpc]
+    void UpdatePlayerTransformClientRpc(NetworkObjectReference playerRef, Vector3 position)
+    {
+        if (playerRef.TryGet(out NetworkObject playerObj))
+        {
+            
+            playerObj.transform.position = position;
+        }
     }
 }
