@@ -1,6 +1,5 @@
 using System.Collections;
 using Unity.Cinemachine;
-using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 using static Define;
 public class KingCam : MonoBehaviour
@@ -17,11 +16,17 @@ public class KingCam : MonoBehaviour
     {
         yield return new WaitUntil(() => FindObjectsByType<KingTest>(FindObjectsSortMode.None).Length >= 2);
         KingTest[] kings = FindObjectsByType<KingTest>(FindObjectsSortMode.None);
-        target = kings[0].team.Value == (int)team ? kings[0].gameObject : kings[1].gameObject;
-        if (target != null)
+        for (int i = 0; i < kings.Length; i++)
         {
-            GetComponent<CinemachineCamera>().Follow = target.transform;
-            GetComponent<CinemachineCamera>().LookAt = target.transform;
+            if (kings[i].team.Value == (int)team)
+            {
+                target = kings[i].gameObject;
+            }
+            if (target != null)
+            {
+                GetComponent<CinemachineCamera>().Follow = target.transform;
+                GetComponent<CinemachineCamera>().LookAt = target.transform;
+            }
         }
     }
 }
