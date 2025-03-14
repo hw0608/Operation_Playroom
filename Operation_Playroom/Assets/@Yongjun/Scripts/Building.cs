@@ -45,7 +45,6 @@ public class Building : NetworkBehaviour
     {
         health.OnValueChanged -= OnHealthChange;
         health.OnValueChanged += OnHealthChange;
-
     }
 
     public override void OnNetworkDespawn()
@@ -61,6 +60,7 @@ public class Building : NetworkBehaviour
             if (IsServer)
             {
                 StartCoroutine(PlayDamageEffect());
+                PlaySFXClientRpc(Random.Range(4, 9), 0.5f);
             }
         }
         UpdateBuildingMesh(newVal);
@@ -168,7 +168,6 @@ public class Building : NetworkBehaviour
         if (health.Value > 0)
         {
             health.Value -= damage;
-            PlaySFXClientRpc(Random.Range(4, 9), 0.5f);
         }
     }
 
