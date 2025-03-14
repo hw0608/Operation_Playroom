@@ -21,6 +21,8 @@ public class GameManager : NetworkBehaviour
     public Image circleImage;
     public GameObject winPanel;
     public GameObject losePanel;
+    public GameObject[] doors;
+    public GameObject[] roleImages;
 
     public CinemachineCamera[] kingCams;
     EGameState gameState;
@@ -62,12 +64,14 @@ public class GameManager : NetworkBehaviour
         }
         else
         {
+            ActiveRoleInfoImage();
             myTeam = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
+
             circleImage.rectTransform.DOSizeDelta(new Vector2(2500, 2500), 1f);
             remainTime.OnValueChanged -= OnChangeTimer;
             remainTime.OnValueChanged += OnChangeTimer;
-        }
-
+        } 
+         
     }
 
     public override void OnNetworkDespawn()
@@ -132,10 +136,24 @@ public class GameManager : NetworkBehaviour
         }
         yield return new WaitForSeconds(1);
         CallNotiTextClientRpc("Start!");
+        DoorOpenClientRpc();
         gameState = EGameState.Play;
         StartCoroutine(TimerRoutine());
     }
+    public void ActiveRoleInfoImage()
+    {
+        int role = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameRole;
+        roleImages[role].SetActive(true);
+    }
 
+    [ClientRpc]
+    public void DoorOpenClientRpc()
+    {
+        for(int i = 0; i < doors.Length; i++)
+        {
+            doors[i].SetActive(false);
+        }
+    }
     [ClientRpc]
     public void AllPlayerStopClientRpc(bool isStop, bool isSoldierSpawn = false)
     {
@@ -179,12 +197,13 @@ public class GameManager : NetworkBehaviour
     void KingDeadRoutineClientRpc(int team)
     {
         Sequence kingDeadSeq = DOTween.Sequence();
+        kingDeadSeq.SetUpdate(true);
         kingDeadSeq.AppendCallback(() =>
         {
-            kingCams[team].Priority = 2;
+            kingCams[team].Priority = 10;
             Time.timeScale = 0.5f;
         })
-        .AppendInterval(2f)
+        .AppendInterval(3f)
         .AppendCallback(() =>
         {
             AllPlayerStopClientRpc(false);
