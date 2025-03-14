@@ -11,7 +11,7 @@ public class OccupySystem : NetworkBehaviour
     public NetworkVariable<bool> hasBuilding = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     // 채워야 할 자원
-    const int resourceFillCount = 5;
+    const int resourceFillCount = 3;
 
     // 점령지 초기 상태
     public Owner currentOwner = Owner.Neutral; 
@@ -50,7 +50,7 @@ public class OccupySystem : NetworkBehaviour
         {
             if (collider.CompareTag("Item"))
             {
-                Debug.Log($"{collider.name} 자원 감지 성공!"); 
+                // Debug.Log($"{collider.name} 자원 감지 성공!"); 
 
                 ResourceData data = collider.GetComponent<ResourceData>();
                 if (data.isColliderEnable.Value)
@@ -168,7 +168,7 @@ public class OccupySystem : NetworkBehaviour
         blueTeamResourceCount.Value = 0;
     }
 
-    public void ResetOwnership() // 건물 파괴 시 소유권 초기화 서버RPC
+    public void ResetOwnership() 
     {
         if (currentOwner == Owner.Red)
         {
