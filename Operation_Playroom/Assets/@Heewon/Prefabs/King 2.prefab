@@ -13962,7 +13962,7 @@ MonoBehaviour:
   maxSoldierCount: 10
   soldiers: []
   soldierOffsets: []
-  debugSoldier: {fileID: 0}
+  deadSoldiers: []
 --- !u!114 &7808469528344250338
 MonoBehaviour:
   m_ObjectHideFlags: 0

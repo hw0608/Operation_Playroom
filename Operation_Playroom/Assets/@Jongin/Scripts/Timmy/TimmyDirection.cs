@@ -25,13 +25,12 @@ public class TimmyDirection : NetworkBehaviour
     public NetworkVariable<float> fadeAlpha = new NetworkVariable<float>(0);
     public NetworkVariable<int> cameraIndex = new NetworkVariable<int>(0);
     OccupyManager occupyManager;
-    GameManager gameManager;
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
             occupyManager = FindFirstObjectByType<OccupyManager>();
-            gameManager = FindFirstObjectByType<GameManager>();
             GameObject sleepTimmyObject = Instantiate(sleepTimmyPrefab);
             sleepTimmyObject.GetComponent<NetworkObject>().Spawn();
             sleepTimmy = sleepTimmyObject.GetComponent<SleepTimmy>();
@@ -78,6 +77,7 @@ public class TimmyDirection : NetworkBehaviour
         {
             //화면 전환
             cameraIndex.Value = 1;
+            GameManager.Instance.AllPlayerRespawn();
         });
         timmySequence.AppendInterval(1f);
         //fade out
@@ -121,7 +121,7 @@ public class TimmyDirection : NetworkBehaviour
             }
             else
             {
-                gameManager.CallNotiTextClientRpc("지어진 건물이 없다..");
+                GameManager.Instance.CallNotiTextClientRpc("지어진 건물이 없다..");
                 FinishTimmy();
             }
         });

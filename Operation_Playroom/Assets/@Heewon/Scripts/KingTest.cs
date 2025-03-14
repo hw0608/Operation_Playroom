@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class KingTest : Character
@@ -28,7 +26,9 @@ public class KingTest : Character
     {
         base.Start();
         InitializeCharacterStat();
+
     }
+
     Vector3 GetFormationOffset(int index, int[] colOffsets)
     {
         float verticalSpacing = soldierSpacing * 1.2f;
@@ -47,6 +47,11 @@ public class KingTest : Character
 
         moveSpeed = 5.3f;
         int[] colOffsets = { 0, -1, 1, -2, 2 };
+        if (IsServer)
+        {
+            health.OnDie -= GameManager.Instance.OnKingDead;
+            health.OnDie += GameManager.Instance.OnKingDead;
+        }
         if (!IsOwner) return;
         base.Start();
         for (int i = 0; i < maxSoldierCount; i++)
@@ -295,7 +300,7 @@ public class KingTest : Character
 
     public void CommandSoldierToWarp()
     {
-        foreach(SoldierTest soldier in soldiers)
+        foreach (SoldierTest soldier in soldiers)
         {
             if (soldier == null) continue;
             soldier.ResetState();
@@ -351,7 +356,8 @@ public class KingTest : Character
     {
         int count = 0;
 
-        for (int i = 0; i < soldiers.Count; i++) {
+        for (int i = 0; i < soldiers.Count; i++)
+        {
             if (soldiers[i] != null && !soldiers[i].GetComponent<Health>().isDead) count++;
         }
 

@@ -43,6 +43,8 @@ public class PlayerRespawnManager : NetworkBehaviour
     // 리스폰 루틴
     IEnumerator RespawnPlayerRoutine(PlayerController player)
     {
+        if (player.GetComponent<KingTest>() != null) yield break;
+
         float respawnTime = 10f;
         while (respawnTime > 0)
         {

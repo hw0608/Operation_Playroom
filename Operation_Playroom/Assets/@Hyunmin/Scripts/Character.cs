@@ -36,6 +36,11 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     public virtual void Start()
     {
+
+    }
+
+    public override void OnNetworkSpawn()
+    {
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
         health = GetComponent<Health>();
@@ -47,10 +52,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-    }
-
-    public override void OnNetworkSpawn()
-    {
         if (IsOwner)
         {
             team.Value = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
@@ -166,7 +167,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         {
             SetIcons(team.Value);
         }
-
+        GameManager.Instance.SetMyTeam(team.Value);
         UpdateTeamMaterialClientRpc(teamValue);
         SyncMaterialsOnSpawn();
     }

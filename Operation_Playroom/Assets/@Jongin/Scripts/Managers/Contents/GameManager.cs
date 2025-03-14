@@ -1,40 +1,59 @@
 using DG.Tweening;
-using System;
 using System.Collections;
 using TMPro;
+using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
-using DG.Tweening;
+using UnityEngine.UI;
 using static Define;
-using Unity.Cinemachine;
 
 public class GameManager : NetworkBehaviour
 {
+    private static GameManager instance;
+
+    public static GameManager Instance { get { return instance; } }
+
     ETeam myTeam;
 
     public NetworkVariable<float> remainTime = new NetworkVariable<float>();
     public TMP_Text notiText;
     public TMP_Text timerText;
-
+    public Image circleImage;
     public GameObject winPanel;
     public GameObject losePanel;
 
-    public CinemachineCamera[] kingCams; 
+    public CinemachineCamera[] kingCams;
     EGameState gameState;
 
     Sequence textSequence;
 
+    PlayerController[] players;
+
+    PlayerRespawnManager respawnManager;
+    OccupyManager occupyManager;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     public override void OnNetworkSpawn()
     {
+        circleImage.rectTransform.DOSizeDelta(new Vector2(2500, 2500), 1f);
         gameState = EGameState.Ready;
-
         textSequence = DOTween.Sequence();
         textSequence.Append(notiText.DOFade(1, 1));
         textSequence.AppendInterval(2f);
         textSequence.Append(notiText.DOFade(0, 1))
             .SetAutoKill(false).Pause();
 
-
+        respawnManager = FindFirstObjectByType<PlayerRespawnManager>();
         if (IsServer)
         {
             remainTime.Value = 600f;
@@ -45,7 +64,8 @@ public class GameManager : NetworkBehaviour
             remainTime.OnValueChanged -= OnChangeTimer;
             remainTime.OnValueChanged += OnChangeTimer;
         }
-    } 
+
+    }
     public void SetMyTeam(int team)
     {
         myTeam = (ETeam)team;
@@ -77,6 +97,8 @@ public class GameManager : NetworkBehaviour
             yield return new WaitForSeconds(1f);
             remainTime.Value -= 1.0f;
         }
+        TimeOver();
+        yield return null;
     }
 
     public void OnChangeTimer(float oldVal, float newVal)
@@ -104,28 +126,90 @@ public class GameManager : NetworkBehaviour
         StartCoroutine(TimerRoutine());
     }
 
-    public void OnKingDead(int team)
+    public void AllPlayerStop()
     {
-        if(myTeam == (ETeam)team)
+        players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        for (int i = 0; i < players.Length; i++)
         {
-            
+            players[i].isPlayable = false;
         }
     }
 
-    void KingDeadRoutine(int team)
+    public void AllPlayerRespawn()
     {
-        //TODO: ÀüÃ¼ ÀÌµ¿ ¸ØÃã
+        AllPlayerStop();
+        //¸®½ºÆù
+        respawnManager.ReTransformPostion();
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (players[i].TryGetComponent<KingTest>(out KingTest king))
+            {
+                king.CommandSoldierToWarp();
+            }
+        }
+    }
 
+    public void OnKingDead(Health health)
+    {
+        KingDeadRoutineClientRpc(health.GetComponent<Character>().team.Value);
+    }
+
+    [ClientRpc]
+    void KingDeadRoutineClientRpc(int team)
+    {
         Sequence kingDeadSeq = DOTween.Sequence();
         kingDeadSeq.AppendCallback(() =>
         {
             kingCams[team].Priority = 2;
+            Time.timeScale = 0.5f;
         })
-        .AppendInterval(3f)
+        .AppendInterval(2f)
+        .AppendCallback(() =>
+        {
+            AllPlayerStop();
+            Time.timeScale = 1f;
+        })
+        .AppendInterval(1f)
         .AppendCallback(() =>
         {
             kingCams[team].Priority = 0;
             if (myTeam == (ETeam)team)
+            {
+                losePanel.SetActive(true);
+            }
+            else
+            {
+                winPanel.SetActive(true);
+            }
+        })
+        .AppendInterval(3f)
+        .AppendCallback(() =>
+        {
+            circleImage.rectTransform.DOSizeDelta(new Vector2(0, 0), 1f);
+        })
+        .AppendInterval(2f)
+        .AppendCallback(() =>
+         {
+             NetworkManager.Singleton.Shutdown();
+         });
+    }
+
+    void TimeOver()
+    {
+        Sequence gameOverSeq = DOTween.Sequence();
+        gameOverSeq.AppendCallback(() =>
+        {
+            AllPlayerStop();
+        })
+        .AppendInterval(1f)
+        .AppendCallback(() =>
+        {
+            int redPoint = occupyManager.redTeamOccupyCount.Value;
+            int bluePoint = occupyManager.blueTeamOccupyCount.Value;
+
+            ETeam winner = redPoint > bluePoint ? ETeam.Red : ETeam.Blue;
+
+            if (myTeam == winner)
             {
                 winPanel.SetActive(true);
             }
@@ -134,14 +218,16 @@ public class GameManager : NetworkBehaviour
                 losePanel.SetActive(true);
             }
         })
-        .AppendInterval(5f)
+        .AppendInterval(3f)
         .AppendCallback(() =>
-         {
-             NetworkManager.Singleton.Shutdown();
-         });
-        
-       
-
+        {
+            circleImage.rectTransform.DOSizeDelta(new Vector2(0, 0), 1f);
+        })
+        .AppendInterval(2f)
+        .AppendCallback(() =>
+        {
+            NetworkManager.Singleton.Shutdown();
+        });
     }
 
     [ClientRpc]
@@ -149,6 +235,5 @@ public class GameManager : NetworkBehaviour
     {
         notiText.text = text;
         textSequence.Restart();
-
     }
 }

@@ -12,11 +12,6 @@ public class KingCam : MonoBehaviour
         StartCoroutine(CamRoutine());
     }
 
-    void Update()
-    {
-
-    }
-
     // 카메라 할당 루틴
     IEnumerator CamRoutine()
     {
