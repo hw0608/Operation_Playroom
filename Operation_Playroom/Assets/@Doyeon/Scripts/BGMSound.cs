@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class BGMSound : MonoBehaviour
 {
+    public static BGMSound instance;
+
     public AudioClip backgroundMusic;
     public AudioMixer audioMixer;
     private AudioSource audioSource;
@@ -12,6 +14,8 @@ public class BGMSound : MonoBehaviour
 
     void Awake()
     {
+        if (instance != null) { return; }
+        instance = this;
         DontDestroyOnLoad(gameObject);
         audioSource = GetComponent<AudioSource>();
 
@@ -44,8 +48,8 @@ public class BGMSound : MonoBehaviour
     }
     void CheckScenePlayMusic()
     {
+        if (audioSource == null) return;
         string currentScene = SceneManager.GetActiveScene().name;
-
 
         bool isPlayMusic = System.Array.Exists(scenesMusic, sceneName => sceneName == currentScene);
 

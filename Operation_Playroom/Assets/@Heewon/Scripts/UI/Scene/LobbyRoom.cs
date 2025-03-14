@@ -28,6 +28,7 @@ public class LobbyRoom : NetworkBehaviour
     [SerializeField] TMPList[] playerNameTexts = new TMPList[2];
     [SerializeField] ImageList[] playerReadyImages = new ImageList[2];
     [SerializeField] ImageList[] playerBGImages = new ImageList[2];
+    [SerializeField] Sprite[] leaderBGImages;
     [SerializeField] Sprite[] BGImagesByTeam;
     [SerializeField] GameObject readyButton;
     [SerializeField] GameObject startButton;
@@ -197,10 +198,17 @@ public class LobbyRoom : NetworkBehaviour
                     playerBGImages[team].images[index].sprite = BGImagesByTeam[3];
                 }
 
-                playerNameTexts[team].texts[index].text = player.userName.ToString();
+                playerNameTexts[team].texts[index].text = player.userName.ToString().Split('#')[0];
                 if (player.clientId == clientId)
                 {
-                    playerBGImages[team].images[index].sprite = BGImagesByTeam[team];
+                    if (player.isLeader)
+                    {
+                        playerBGImages[team].images[index].sprite = leaderBGImages[team];
+                    }
+                    else
+                    {
+                        playerBGImages[team].images[index].sprite = BGImagesByTeam[team];
+                    }
                 }
                 if (!player.isLeader && player.isReady)
                     playerReadyImages[team].images[index].gameObject.SetActive(true);

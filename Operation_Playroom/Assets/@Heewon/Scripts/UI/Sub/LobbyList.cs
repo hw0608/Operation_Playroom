@@ -128,7 +128,7 @@ public class LobbyList : MonoBehaviour
                     popup.Show();
                 }
             }
-            else if (e.Reason == LobbyExceptionReason.LobbyNotFound)
+            else if (e.Reason == LobbyExceptionReason.LobbyNotFound || e.Reason == LobbyExceptionReason.InvalidJoinCode)
             {
                 MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
                 if (popup != null)
