@@ -421,7 +421,7 @@ public class SoldierTest : Character
         }
     }
 
-    void ResetState()
+    public void ResetState()
     {
         if (target != null && target.TryGetComponent(out ResourceData data))
         {
@@ -523,7 +523,7 @@ public class SoldierTest : Character
         agent.SetDestination(GetFormationPosition());
     }
 
-    Vector3 GetFormationPosition()
+    public Vector3 GetFormationPosition()
     {
         Vector3 rotatedOffset = Quaternion.LookRotation(king.forward) * offset;
 
