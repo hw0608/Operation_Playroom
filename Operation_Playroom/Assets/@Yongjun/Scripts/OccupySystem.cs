@@ -11,7 +11,7 @@ public class OccupySystem : NetworkBehaviour
     public NetworkVariable<bool> hasBuilding = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     // 채워야 할 자원
-    const int resourceFillCount = 3;
+    const int resourceFillCount = 5;
 
     // 점령지 초기 상태
     public Owner currentOwner = Owner.Neutral; 

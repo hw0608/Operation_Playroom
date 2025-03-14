@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48b2f934ae1f7044d86e8d2c23c3624e, type: 3}
   m_Name: BuildingData
   m_EditorClassIdentifier: 
-  health: 100
+  health: 300
   defaultMesh: {fileID: 4300000, guid: 05035b78d90b21f43854dfe010ccd289, type: 3}
   brokenMesh: {fileID: 4300000, guid: b1ff534b3931e674e8e475faa59eb659, type: 3}
   hardBrokenMesh: {fileID: 4300000, guid: c4bb27f050a2ef4439fb736e16b2bded, type: 3}

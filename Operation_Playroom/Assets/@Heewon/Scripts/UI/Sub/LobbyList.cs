@@ -126,7 +126,7 @@ public class LobbyList : MonoBehaviour
                 MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
                 if (popup != null)
                 {
-                    popup.SetText("비밀번호가 틀립니다");
+                    popup.SetText("비밀번호가 틀립니다.");
                     popup.Show();
                 }
             }
@@ -145,25 +145,36 @@ public class LobbyList : MonoBehaviour
 
         string joinCode = await InputJoinCode();
 
+        if (joinCode == null)
+        {
+            joinCodePanel.SetActive(false);
+            return;
+        }
+
         if (string.IsNullOrEmpty(joinCode))
         {
             joinCodePanel.SetActive(false);
-        }
-        else
-        {
-            joiningProgressPanel.SetActive(true);
-
-            bool connected = await ClientSingleton.Instance.StartClientAsync(joinCodeInputField.text);
-            if (!connected)
+            MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
+            if (popup != null)
             {
-                joiningProgressPanel.SetActive(false);
-                joinCodePanel.SetActive(false);
-                MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
-                if (popup != null)
-                {
-                    popup.SetText("코드와 일치하는 방이 없습니다.");
-                    popup.Show();
-                }
+                popup.SetText("공백은 입력할 수 없습니다.");
+                popup.Show();
+            }
+            return;
+        }
+
+        joiningProgressPanel.SetActive(true);
+
+        bool connected = await ClientSingleton.Instance.StartClientAsync(joinCode);
+        if (!connected)
+        {
+            joiningProgressPanel.SetActive(false);
+            joinCodePanel.SetActive(false);
+            MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
+            if (popup != null)
+            {
+                popup.SetText("코드와 일치하는 방이 없습니다.");
+                popup.Show();
             }
         }
     }
@@ -172,8 +183,20 @@ public class LobbyList : MonoBehaviour
     {
         var tcs = new TaskCompletionSource<string>();
 
-        joinByJoinCodeButton.onClick.AddListener(() => tcs.TrySetResult(joinCodeInputField.text));
-        closeJoinCodePanelButton.onClick.AddListener(() => { tcs.TrySetResult(""); Debug.Log("Cancel Pressed"); });
+        joinByJoinCodeButton.onClick.AddListener(() =>
+        {
+            string code = joinCodeInputField.text.Trim();
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                tcs.TrySetResult(code);
+            }
+            else
+            {
+                tcs.TrySetResult("");
+            }
+        });
+
+        closeJoinCodePanelButton.onClick.AddListener(() => tcs.TrySetResult(null));
 
         string result = await tcs.Task;
 
@@ -190,7 +213,24 @@ public class LobbyList : MonoBehaviour
         joinPasswordInputField.text = "";
         joinPasswordPanel.SetActive(true);
 
-        joinPasswordButton.onClick.AddListener(() => waiting = false);
+        joinPasswordButton.onClick.AddListener(() =>
+        {
+            string password = joinPasswordInputField.text.Trim();
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                waiting = false;
+            }
+            else
+            {
+                MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
+                if (popup != null)
+                {
+                    popup.SetText("공백은 사용할 수 없습니다.");
+                    popup.Show();
+                }
+            }
+        });
+
         closePasswordPanelButton.onClick.AddListener(() => cancel = true);
 
         while (!cancel && waiting)
@@ -202,7 +242,7 @@ public class LobbyList : MonoBehaviour
         closePasswordPanelButton.onClick.RemoveAllListeners();
 
         joinPasswordPanel.SetActive(false);
-        return cancel ? "" : joinPasswordInputField.text;
+        return cancel ? "" : joinPasswordInputField.text.Trim();
     }
 
     public async void OnCreateLobbyButtonPressed()
@@ -212,14 +252,14 @@ public class LobbyList : MonoBehaviour
         bool isPrivate = visibilityToggleGroup.ActiveToggles().FirstOrDefault().name.Equals(VisibilityToggleType.PrivateToggle.ToString());
         string password = createPasswordInputField.text;
 
-        if (password.Length >= 8)
+        if (password.Length >= 4)
         {
             options.Password = password;
         }
         else if (password.Length > 0)
         {
             PasswordSettingWarningText.gameObject.SetActive(true);
-            PasswordSettingWarningText.text = "비밀번호는 최소 8자 이상이어야 합니다.";
+            PasswordSettingWarningText.text = "비밀번호는 최소 4자 이상이어야 합니다.";
             return;
         }
 
