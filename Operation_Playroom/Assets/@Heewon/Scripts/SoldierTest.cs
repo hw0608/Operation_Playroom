@@ -99,7 +99,6 @@ public class SoldierTest : Character
         base.OnNetworkSpawn();
         health = GetComponent<Health>();
 
-
         if (!IsOwner) { return; }
 
         agent = GetComponent<NavMeshAgent>();
@@ -458,6 +457,7 @@ public class SoldierTest : Character
     {
         Debug.Log("HandleOnDie");
 
+        
         StartCoroutine(DespawnSoldierRoutine());
     }
 

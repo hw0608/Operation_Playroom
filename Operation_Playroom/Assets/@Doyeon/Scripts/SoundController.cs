@@ -9,8 +9,6 @@ public class SoundController : MonoBehaviour
     public Slider bgmSlider;      
     public Slider sfxSlider;
 
-    public GameObject OptionPanel;
-
     //private const string MASTER_VOLUME = "MasterVolume";
     //private const string BGM_VOLUME = "BGMVolume";
     //private const string SFX_VOLUME = "SFXVolume";
@@ -33,10 +31,6 @@ public class SoundController : MonoBehaviour
         SetSFXVolume(sfxSlider.value);
     }
 
-    public void OpenOptionMenu()
-    {
-        OptionPanel.SetActive(true);
-    }
     public void SetMasterVolume(float volume)
     {
         float dB = volume > 0 ? Mathf.Log10(volume) * 20 : -80f;
