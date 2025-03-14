@@ -45,7 +45,6 @@ public class GameManager : NetworkBehaviour
     }
     public override void OnNetworkSpawn()
     {
-        circleImage.rectTransform.DOSizeDelta(new Vector2(2500, 2500), 1f);
         gameState = EGameState.Ready;
         textSequence = DOTween.Sequence();
         textSequence.Append(notiText.DOFade(1, 1));
@@ -64,6 +63,7 @@ public class GameManager : NetworkBehaviour
         else
         {
             myTeam = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
+            circleImage.rectTransform.DOSizeDelta(new Vector2(2500, 2500), 1f);
             remainTime.OnValueChanged -= OnChangeTimer;
             remainTime.OnValueChanged += OnChangeTimer;
         }
