@@ -1,16 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Http;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum VisibilityToggleType
+public enum PasswordToggleType
 {
     PublicToggle,
     PrivateToggle
@@ -23,9 +20,10 @@ public class LobbyList : MonoBehaviour
 
     [Header("Create Room")]
     [SerializeField] TMP_InputField roomNameInputField;
-    [SerializeField] ToggleGroup visibilityToggleGroup;
+    [SerializeField] ToggleGroup passwordToggleGroup;
     [SerializeField] TMP_InputField createPasswordInputField;
     [SerializeField] TMP_Text PasswordSettingWarningText;
+    [SerializeField] GameObject passwordSettingPanel;
     [SerializeField] GameObject creatingProgressPanel;
 
     [Header("Join Room")]
@@ -128,6 +126,16 @@ public class LobbyList : MonoBehaviour
                 {
                     popup.SetText("비밀번호가 틀립니다.");
                     popup.Show();
+                }
+            }
+            else if (e.Reason == LobbyExceptionReason.LobbyNotFound)
+            {
+                MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
+                if (popup != null)
+                {
+                    popup.SetText("존재하지 않는 방입니다.");
+                    popup.Show();
+                    RefreshList();
                 }
             }
             else
@@ -248,22 +256,22 @@ public class LobbyList : MonoBehaviour
     public async void OnCreateLobbyButtonPressed()
     {
         CreateLobbyOptions options = new CreateLobbyOptions();
-
-        bool isPrivate = visibilityToggleGroup.ActiveToggles().FirstOrDefault().name.Equals(VisibilityToggleType.PrivateToggle.ToString());
+       
         string password = createPasswordInputField.text;
 
-        if (password.Length >= 4)
+        if (passwordToggleGroup.ActiveToggles().FirstOrDefault().name == PasswordToggleType.PrivateToggle.ToString())
         {
-            options.Password = password;
+            if (password.Length >= 8)
+            {
+                options.Password = password;
+            }
+            else if (password.Length >= 0)
+            {
+                PasswordSettingWarningText.gameObject.SetActive(true);
+                PasswordSettingWarningText.text = "비밀번호는 최소 8자 이상이어야 합니다.";
+                return;
+            }
         }
-        else if (password.Length > 0)
-        {
-            PasswordSettingWarningText.gameObject.SetActive(true);
-            PasswordSettingWarningText.text = "비밀번호는 최소 4자 이상이어야 합니다.";
-            return;
-        }
-
-        options.IsPrivate = isPrivate;
 
         creatingProgressPanel.SetActive(true);
         await HostSingleton.Instance.StartHostAsync(options, roomNameInputField.text);

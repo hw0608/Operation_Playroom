@@ -303,6 +303,7 @@ public class KingTest : Character
         foreach (SoldierTest soldier in soldiers)
         {
             if (soldier == null) continue;
+            if (soldier.GetComponent<Health>().isDead) continue;
             soldier.ResetState();
 
             soldier.transform.position = soldier.GetFormationPosition();
