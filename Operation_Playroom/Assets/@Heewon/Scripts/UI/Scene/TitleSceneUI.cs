@@ -164,6 +164,7 @@ public class TitleSceneUI : MonoBehaviour
         }
 
         await AuthenticationService.Instance.UpdatePlayerNameAsync(userNameInputField.text);
+        ClientSingleton.Instance.UserData.userName = userNameInputField.text;
 
         nicknameSettingPanel.SetActive(false);
     }

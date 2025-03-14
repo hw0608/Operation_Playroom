@@ -119,6 +119,7 @@ public class LobbyList : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            joiningProgressPanel.SetActive(false);
             if (e.Reason == LobbyExceptionReason.IncorrectPassword || e.Reason == LobbyExceptionReason.ValidationError)
             {
                 MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
@@ -128,7 +129,7 @@ public class LobbyList : MonoBehaviour
                     popup.Show();
                 }
             }
-            else if (e.Reason == LobbyExceptionReason.LobbyNotFound || e.Reason == LobbyExceptionReason.InvalidJoinCode)
+            else if (e.Reason == LobbyExceptionReason.LobbyNotFound || e.Reason == LobbyExceptionReason.InvalidJoinCode || e.Reason == LobbyExceptionReason.BadRequest)
             {
                 MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
                 if (popup != null)
