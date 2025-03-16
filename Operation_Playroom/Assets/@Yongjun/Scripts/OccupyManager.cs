@@ -19,7 +19,6 @@ public class OccupyManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            Managers.Resource.LoadAllAsync<GameObject>("default", null);
             GenerateOccupy();
         }
 

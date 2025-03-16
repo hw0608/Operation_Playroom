@@ -1,10 +1,10 @@
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using Unity.Cinemachine;
 using Unity.Netcode;
-using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using static Define;
@@ -46,8 +46,8 @@ public class GameManager : NetworkBehaviour
     PlayerRespawnManager respawnManager;
     OccupyManager occupyManager;
 
-    public PlayData myPlayData;
-
+    //public PlayData myPlayData;
+    public Dictionary<ulong, PlayData> userPlayDatas;
     private void Awake()
     {
         if (instance == null)
@@ -73,16 +73,24 @@ public class GameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            remainTime.Value = 600f;
+            remainTime.Value = 420f;
             StartCoroutine(CallReadyMessage());
+            userPlayDatas = new Dictionary<ulong, PlayData>();
+            foreach (var clientIdToUserData in ServerSingleton.Instance.clientIdToUserData)
+            {
+                ulong clientId = clientIdToUserData.Key;
+                UserData userData = clientIdToUserData.Value;
+                PlayData playData = new PlayData(userData.userName, userData.userGamePreferences.gameRole, userData.userGamePreferences.gameTeam);
+                userPlayDatas.Add(clientId, playData);
+            }
         }
         else
         {
             ActiveRoleInfoImage();
             myTeam = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
-            myPlayData = new PlayData(ClientSingleton.Instance.UserData.userName,
-               ClientSingleton.Instance.UserData.userGamePreferences.gameRole,
-               ClientSingleton.Instance.UserData.userGamePreferences.gameTeam);
+            //myPlayData = new PlayData(ClientSingleton.Instance.UserData.userName,
+            //   ClientSingleton.Instance.UserData.userGamePreferences.gameRole,
+            //   ClientSingleton.Instance.UserData.userGamePreferences.gameTeam);
             circleImage.rectTransform.DOSizeDelta(new Vector2(5000, 5000), 3f);
             remainTime.OnValueChanged -= OnChangeTimer;
             remainTime.OnValueChanged += OnChangeTimer;
@@ -100,25 +108,38 @@ public class GameManager : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-
-            if (!IsServer)
-            {
-                SendPlayDataToServer();
-            }
+            //if (IsServer)
+            //{
+            //    userPlayDatas = new Dictionary<ulong, PlayData>();
+            //    foreach(var clientIdToUserData in ServerSingleton.Instance.clientIdToUserData)
+            //    {
+            //        ulong clientId = clientIdToUserData.Key;
+            //        UserData userData = clientIdToUserData.Value;
+            //        PlayData playData = new PlayData(userData.userName, userData.userGamePreferences.gameRole, userData.userGamePreferences.gameTeam);
+            //        userPlayDatas.Add(clientId, playData);
+            //    }
+            //}
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            //foreach(var playData in userPlayDatas.Values)
+            //{
+            //    SubmitPlayDataClientRpc(playData);
+            //}
         }
 
         if (gameState != EGameState.Play) return;
     }
-    public void SendPlayDataToServer()
-    {
-        SubmitPlayDataServerRpc(myPlayData);
-    }
-    [ServerRpc(RequireOwnership = false)]
-    private void SubmitPlayDataServerRpc(PlayData data, ServerRpcParams rpcParams = default)
-    {
-        Debug.Log($"Received PlayData: {data.name}, Kills: {data.kill}, Deaths: {data.death}");
-        SubmitPlayDataClientRpc(data);
-    }
+    //public void SendPlayDataToServer()
+    //{
+    //    SubmitPlayDataServerRpc(myPlayData);
+    //}
+    //[ServerRpc(RequireOwnership = false)]
+    //private void SubmitPlayDataServerRpc(PlayData data, ServerRpcParams rpcParams = default)
+    //{
+    //    Debug.Log($"Received PlayData: {data.name}, Kills: {data.kill}, Deaths: {data.death}");
+    //    SubmitPlayDataClientRpc(data);
+    //}
     [ClientRpc]
     private void SubmitPlayDataClientRpc(PlayData data, ClientRpcParams rpcParams = default)
     {
@@ -259,7 +280,7 @@ public class GameManager : NetworkBehaviour
         {
             kingCams[team].Priority = 10;
             Time.timeScale = 0.5f;
-            SendPlayDataToServer();
+
         })
         .AppendInterval(3f)
         .AppendCallback(() =>
@@ -278,6 +299,12 @@ public class GameManager : NetworkBehaviour
             else
             {
                 winPanel.SetActive(true);
+            }
+
+
+            foreach (var playData in userPlayDatas.Values)
+            {
+                SubmitPlayDataClientRpc(playData);
             }
         })
         .AppendInterval(3f)
@@ -344,6 +371,11 @@ public class GameManager : NetworkBehaviour
                 {
                     playDataPanelResultImages[1].SetActive(true);
                 }
+            }
+
+            foreach (var playData in userPlayDatas.Values)
+            {
+                SubmitPlayDataClientRpc(playData);
             }
         })
         .AppendInterval(3f)

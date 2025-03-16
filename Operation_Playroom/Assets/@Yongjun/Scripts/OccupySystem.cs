@@ -66,7 +66,7 @@ public class OccupySystem : NetworkBehaviour
                 Managers.Pool.Push(collider.gameObject);
                 PushObjectClientRpc(resourceId);
                 resourceSpawner.currentSpawnCount--;
-                CheckOwnership();
+                CheckOwnership(data.lastHoldClientId);
             }
         }
     }
@@ -84,18 +84,18 @@ public class OccupySystem : NetworkBehaviour
         }
     }
 
-    void CheckOwnership() // 점령지 소유권 검사
+    void CheckOwnership(ulong clientId) // 점령지 소유권 검사
     {
         if (currentOwner == Owner.Neutral)
         {
             if (redTeamResourceCount.Value >= resourceFillCount)
-                ChangeOwnership(Owner.Red);
+                ChangeOwnership(Owner.Red,clientId);
             else if (blueTeamResourceCount.Value >= resourceFillCount)
-                ChangeOwnership(Owner.Blue);
+                ChangeOwnership(Owner.Blue, clientId);
         }
     }
 
-    void ChangeOwnership(Owner newOwner)
+    void ChangeOwnership(Owner newOwner, ulong clientId)
     {
         currentOwner = newOwner;
 
@@ -107,6 +107,9 @@ public class OccupySystem : NetworkBehaviour
         {
             occupyManager.UpdateOccupyCount(Owner.Blue, 1);
         }
+        PlayData buildPlayerData = GameManager.Instance.userPlayDatas[clientId];
+        buildPlayerData.build++;
+        GameManager.Instance.userPlayDatas[clientId] = buildPlayerData;
 
         InstantiateBuilding(newOwner);
         ChangeOwnershipClientRpc(newOwner);

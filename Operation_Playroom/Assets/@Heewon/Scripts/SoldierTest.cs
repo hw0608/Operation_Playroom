@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Linq;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -118,7 +117,7 @@ public class SoldierTest : Character
     public override void OnNetworkDespawn()
     {
         if (!IsOwner) { return; }
-        
+
         king.GetComponent<KingTest>().SpawnSoldier();
 
         currentState.OnValueChanged -= HandleAnimation;
@@ -272,7 +271,7 @@ public class SoldierTest : Character
         Debug.Log("PickupItem");
         currentState.Value = State.Following;
         isHoldingItem = true;
-        target.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true, team.Value);
+        target.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, OwnerClientId, true, team.Value);
         myItem = target;
         SetAvatarLayerWeight(1);
         SetTriggerAnimation("Holding");
@@ -457,7 +456,7 @@ public class SoldierTest : Character
     {
         Debug.Log("HandleOnDie");
 
-        
+
         StartCoroutine(DespawnSoldierRoutine());
     }
 
@@ -548,7 +547,7 @@ public class SoldierTest : Character
         if (myItem == null) return;
 
         myItem.GetComponent<ResourceData>().isMarked = false;
-        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
+        myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, OwnerClientId, false, team.Value);
         myItem = null;
         isHoldingItem = false;
         SetAvatarLayerWeight(0);
@@ -603,7 +602,7 @@ public class SoldierTest : Character
     }
     public override void HandleInput()
     {
-        
+
     }
 
     public override void Interaction()

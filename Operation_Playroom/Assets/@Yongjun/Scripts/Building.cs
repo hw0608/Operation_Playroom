@@ -155,18 +155,21 @@ public class Building : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void TakeDamageServerRpc(int damage)
+    public void TakeDamageServerRpc(int damage, ulong clientId)
     {
-        if (health.Value > 0)
-        {
-            health.Value -= damage;
-        }
+        TakeDamage(damage, clientId);
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, ulong clientId)
     {
         if (health.Value > 0)
         {
+            if(health.Value - damage <= 0 && !isDestruction)
+            {
+                PlayData destroyPlayerData = GameManager.Instance.userPlayDatas[clientId];
+                destroyPlayerData.destroy++;
+                GameManager.Instance.userPlayDatas[clientId] = destroyPlayerData;
+            }
             health.Value -= damage;
         }
     }

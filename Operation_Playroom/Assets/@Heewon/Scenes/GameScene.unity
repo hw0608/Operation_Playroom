@@ -981,14 +981,6 @@ MonoBehaviour:
   bluePlayDataUIPrefab: {fileID: 8767738520489529623, guid: 6319fe161abfbbc41b280943a6dc79c7, type: 3}
   redPlayDataUIParent: {fileID: 130311047}
   redPlayDataUIPrefab: {fileID: 7602475633468179128, guid: 5c552c82d5c88764a9fafb514cd166bf, type: 3}
-  myPlayData:
-    name: 
-    role: 0
-    team: 0
-    kill: 0
-    death: 0
-    build: 0
-    destroy: 0
 --- !u!4 &70157055
 Transform:
   m_ObjectHideFlags: 0
@@ -12802,7 +12794,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 10:00
+  m_text: 07:00
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5153a35f278e2fd40b9630a090bdab34, type: 2}
   m_sharedMaterial: {fileID: 5128784509797673513, guid: 5153a35f278e2fd40b9630a090bdab34, type: 2}

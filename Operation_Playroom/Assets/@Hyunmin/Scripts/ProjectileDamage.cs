@@ -43,7 +43,7 @@ public class ProjectileDamage : MonoBehaviour
 
             if (myTeam != building.buildingOwner)
             {
-                building.TakeDamage(damage);
+                building.TakeDamage(damage, ownerClientId);
 
                 NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
                 noise.SubmitNoiseTo(2);

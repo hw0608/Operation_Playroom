@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using Unity.Cinemachine;
@@ -61,7 +60,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         {
             SyncMaterialsOnSpawn();
         }
-        
+
         OnTeamValueChanged(team.Value);
     }
 
@@ -110,7 +109,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     // 피격 메서드
     public virtual void TakeDamage()
     {
-        if(health.isDead) return;
+        if (health.isDead) return;
 
         if (damageRoutine != null)
         {
@@ -232,7 +231,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
 
     public void SetIcons(int teamIndex)
     {
-        foreach(var icon in Icons)
+        foreach (var icon in Icons)
         {
             icon.SetActive(false);
         }
@@ -244,7 +243,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     {
         DropClientRpc();
         SetTriggerAnimation("Die");
-        GameManager.Instance.myPlayData.death++;
     }
 
     // 아이템 줍기 메서드
@@ -309,8 +307,8 @@ public abstract class Character : NetworkBehaviour, ICharacter
         holdItemAble = false;
 
         // 아이템 오브젝트 위치시킴
-        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, true, team.Value);
-
+        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, OwnerClientId, true, team.Value);
+        targetItem.GetComponent<ResourceData>().lastHoldClientId = OwnerClientId;
         // 줍는 애니메이션
         SetAvatarLayerWeight(1);
         SetTriggerAnimation("Holding");
@@ -326,7 +324,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
         holdItemAble = true;
 
         // 아이템 오브젝트 내려놓기
-        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, false, team.Value);
+        targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, OwnerClientId, false, team.Value);
         targetItem = null;
 
         // 애니메이션 해제

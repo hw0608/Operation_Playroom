@@ -55,12 +55,8 @@ public class WeaponDamage : NetworkBehaviour
                 {
                     isCollision = true;
 
-                    building.TakeDamageServerRpc(damage);
-                    if (building.isDestruction)
-                    {
-                        Debug.Log("destroy building!");
-                        GameManager.Instance.myPlayData.destroy++;
-                    }
+                    building.TakeDamageServerRpc(damage, ownerClientId);
+
                     NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
                     noise.AddNoiseGage(2);
 
@@ -82,11 +78,6 @@ public class WeaponDamage : NetworkBehaviour
                 {
                     Debug.Log("else Damage");
                     health.TakeDamageServerRpc(damage, ownerClientId);
-                }
-                if (health.isDead)
-                {
-                    Debug.Log("kill Enemy!");
-                    GameManager.Instance.myPlayData.kill++;
                 }
                 NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
                 noise.AddNoiseGage(2);
