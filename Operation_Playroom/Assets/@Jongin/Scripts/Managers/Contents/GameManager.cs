@@ -46,8 +46,8 @@ public class GameManager : NetworkBehaviour
     PlayerRespawnManager respawnManager;
     OccupyManager occupyManager;
 
-    //public PlayData myPlayData;
     public Dictionary<ulong, PlayData> userPlayDatas;
+
     private void Awake()
     {
         if (instance == null)
@@ -75,22 +75,12 @@ public class GameManager : NetworkBehaviour
         {
             remainTime.Value = 420f;
             StartCoroutine(CallReadyMessage());
-            userPlayDatas = new Dictionary<ulong, PlayData>();
-            foreach (var clientIdToUserData in ServerSingleton.Instance.clientIdToUserData)
-            {
-                ulong clientId = clientIdToUserData.Key;
-                UserData userData = clientIdToUserData.Value;
-                PlayData playData = new PlayData(userData.userName, userData.userGamePreferences.gameRole, userData.userGamePreferences.gameTeam);
-                userPlayDatas.Add(clientId, playData);
-            }
+
         }
         else
         {
             ActiveRoleInfoImage();
             myTeam = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
-            //myPlayData = new PlayData(ClientSingleton.Instance.UserData.userName,
-            //   ClientSingleton.Instance.UserData.userGamePreferences.gameRole,
-            //   ClientSingleton.Instance.UserData.userGamePreferences.gameTeam);
             circleImage.rectTransform.DOSizeDelta(new Vector2(5000, 5000), 3f);
             remainTime.OnValueChanged -= OnChangeTimer;
             remainTime.OnValueChanged += OnChangeTimer;
@@ -130,19 +120,12 @@ public class GameManager : NetworkBehaviour
 
         if (gameState != EGameState.Play) return;
     }
-    //public void SendPlayDataToServer()
-    //{
-    //    SubmitPlayDataServerRpc(myPlayData);
-    //}
-    //[ServerRpc(RequireOwnership = false)]
-    //private void SubmitPlayDataServerRpc(PlayData data, ServerRpcParams rpcParams = default)
-    //{
-    //    Debug.Log($"Received PlayData: {data.name}, Kills: {data.kill}, Deaths: {data.death}");
-    //    SubmitPlayDataClientRpc(data);
-    //}
+
     [ClientRpc]
     private void SubmitPlayDataClientRpc(PlayData data, ClientRpcParams rpcParams = default)
     {
+        Debug.Log(data.name);
+        Debug.Log(data.kill);
         MakePlayDataUI(data.team, data);
     }
 
@@ -190,6 +173,10 @@ public class GameManager : NetworkBehaviour
             remainTime.Value -= 1.0f;
         }
         TimeOverClientRpc();
+        foreach (var playData in userPlayDatas.Values)
+        {
+            SubmitPlayDataClientRpc(playData);
+        }
         yield return null;
     }
 
@@ -214,6 +201,16 @@ public class GameManager : NetworkBehaviour
         }
         yield return new WaitForSeconds(1);
         CallNotiTextClientRpc("Start!");
+
+        userPlayDatas = new Dictionary<ulong, PlayData>();
+        foreach (var clientIdToUserData in ServerSingleton.Instance.clientIdToUserData)
+        {
+            ulong clientId = clientIdToUserData.Key;
+            UserData userData = clientIdToUserData.Value;
+            PlayData playData = new PlayData(userData.userName, userData.userGamePreferences.gameRole, userData.userGamePreferences.gameTeam);
+            userPlayDatas.Add(clientId, playData);
+        }
+
         DoorOpenClientRpc();
         gameState = EGameState.Play;
         StartCoroutine(TimerRoutine());
@@ -269,6 +266,10 @@ public class GameManager : NetworkBehaviour
     public void OnKingDead(Health health)
     {
         KingDeadRoutineClientRpc(health.GetComponent<Character>().team.Value);
+        foreach (var playData in userPlayDatas.Values)
+        {
+            SubmitPlayDataClientRpc(playData);
+        }
     }
 
     [ClientRpc]
@@ -302,10 +303,10 @@ public class GameManager : NetworkBehaviour
             }
 
 
-            foreach (var playData in userPlayDatas.Values)
-            {
-                SubmitPlayDataClientRpc(playData);
-            }
+            //foreach (var playData in userPlayDatas.Values)
+            //{
+            //    SubmitPlayDataClientRpc(playData);
+            //}
         })
         .AppendInterval(3f)
         .AppendCallback(() =>
@@ -373,10 +374,7 @@ public class GameManager : NetworkBehaviour
                 }
             }
 
-            foreach (var playData in userPlayDatas.Values)
-            {
-                SubmitPlayDataClientRpc(playData);
-            }
+
         })
         .AppendInterval(3f)
         .AppendCallback(() =>
