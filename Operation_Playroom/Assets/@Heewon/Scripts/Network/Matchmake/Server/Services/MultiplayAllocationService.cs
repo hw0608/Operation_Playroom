@@ -34,6 +34,7 @@ public class MultiplayAllocationService : IDisposable
 
         allocationId = null;
         serverCallbacks = new MultiplayEventCallbacks();
+        serverCallbacks.Allocate -= OnMultiplayAllocation;
         serverCallbacks.Allocate += OnMultiplayAllocation;
         serverEvents = await multiplayService.SubscribeToServerEventsAsync(serverCallbacks);
 

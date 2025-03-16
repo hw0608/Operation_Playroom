@@ -244,6 +244,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     {
         DropClientRpc();
         SetTriggerAnimation("Die");
+        GameManager.Instance.myPlayData.death++;
     }
 
     // 아이템 줍기 메서드

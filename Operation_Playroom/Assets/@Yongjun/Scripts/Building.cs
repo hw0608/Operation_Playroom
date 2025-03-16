@@ -12,7 +12,7 @@ public class Building : NetworkBehaviour
     [SerializeField] SoundScriptableObject soundData;
 
     // 중복 철거 방지
-    bool isDestruction = false;
+    public bool isDestruction = false;
 
     // 건물 메쉬
     MeshFilter meshFilter;
@@ -134,7 +134,7 @@ public class Building : NetworkBehaviour
         }
 
         PlaySFXClientRpc(3, 0.5f);
-    } 
+    }
 
     IEnumerator DelayPushEffect(GameObject effect, float time)
     {
@@ -180,7 +180,7 @@ public class Building : NetworkBehaviour
 
         currentState = state;
 
-        switch (state) 
+        switch (state)
         {
             case 3:
                 meshFilter.mesh = buildingData.defaultMesh;
@@ -201,7 +201,7 @@ public class Building : NetworkBehaviour
     {
         Debug.Assert(audioSource != null, $"{gameObject}: AudioSource is null");
         Debug.Assert(index >= 0 && index < soundData.soundClips.Length, $"{gameObject}: AudioClip is invalid");
-        
+
         AudioClip clip = soundData.soundClips[index];
         Debug.Assert(clip != null, $"{gameObject}: AudioClip is not assigned");
         audioSource.volume = volume;
@@ -220,4 +220,4 @@ public class Building : NetworkBehaviour
             ActiveNetworkObjectClientRpc(damageEffect.GetComponent<NetworkObject>().NetworkObjectId, false);
         }
     }
-} 
+}

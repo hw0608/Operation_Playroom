@@ -31,9 +31,10 @@ public class ServerGameManager : IDisposable
             if (matchmakerPayload != null)
             {
                 await StartBackfill(matchmakerPayload);
+                ServerSingleton.Instance.OnUserJoined -= UserJoined;
+                ServerSingleton.Instance.OnUserLeft -= UserLeft;
                 ServerSingleton.Instance.OnUserJoined += UserJoined;
                 ServerSingleton.Instance.OnUserLeft += UserLeft;
-
             }
             else
             {

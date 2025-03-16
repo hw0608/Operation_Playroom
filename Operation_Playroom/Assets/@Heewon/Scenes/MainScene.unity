@@ -518,8 +518,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff56fe870187dad4da91ab17fab9c891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundMusic: {fileID: 8300000, guid: 10ea0c6ecdfbe594d85161c221bce875, type: 3}
   audioMixer: {fileID: 24100000, guid: 0bba5580c03d9a6408f2a51e04907118, type: 2}
+  mainSceneClip:
+  - {fileID: 8300000, guid: ac81e521cc4fffd4cb560d4ddc70d306, type: 3}
+  - {fileID: 8300000, guid: 6b99e4ca54feb1c499bd45b2c95dfde1, type: 3}
+  - {fileID: 8300000, guid: 845f28f9ae11b4b4181d3f627c5c4a1f, type: 3}
+  gameSceneClip: {fileID: 8300000, guid: d4a05f7a77b412e4ea78d0fb4d866cd7, type: 3}
 --- !u!4 &41159552
 Transform:
   m_ObjectHideFlags: 0

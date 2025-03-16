@@ -63,6 +63,8 @@ public class ServerSingleton : MonoBehaviour
 
     void OnEnable()
     {
+        NetworkManager.Singleton.ConnectionApprovalCallback -= ApprovalCheck;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnect;
         NetworkManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
     }

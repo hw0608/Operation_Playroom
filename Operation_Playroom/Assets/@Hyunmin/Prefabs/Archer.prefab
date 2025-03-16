@@ -159,8 +159,6 @@ MonoBehaviour:
   Icons:
   - {fileID: 7014643195576844709}
   - {fileID: 8921240949497364547}
-  characterColliders:
-  - {fileID: 4163147820075246991}
   team:
     m_InternalValue: -1
   aimCamera: {fileID: 8114598411042677039}

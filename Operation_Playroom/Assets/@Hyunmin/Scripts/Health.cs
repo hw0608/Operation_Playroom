@@ -33,6 +33,7 @@ public class Health : NetworkBehaviour
             StartCoroutine(FindHpbar());
         }
 
+        currentHealth.OnValueChanged -= OnHealthChanged;
         currentHealth.OnValueChanged += OnHealthChanged;
     }
 

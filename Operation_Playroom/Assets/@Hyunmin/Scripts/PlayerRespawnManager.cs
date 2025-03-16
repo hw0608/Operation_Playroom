@@ -25,6 +25,7 @@ public class PlayerRespawnManager : NetworkBehaviour
 
     private void HandlePlayerSpawn(PlayerController player)
     {
+        player.GetComponent<Health>().OnDie -= HandlePlayerDie;
         player.GetComponent<Health>().OnDie += HandlePlayerDie;
     }
 
@@ -134,6 +135,8 @@ public class PlayerRespawnManager : NetworkBehaviour
             HandlePlayerSpawn(player);
         }
 
+        PlayerController.OnPlayerSpawn -= HandlePlayerSpawn;
+        PlayerController.OnPlayerDespawn -= HandlePlayerDespawn;
         PlayerController.OnPlayerSpawn += HandlePlayerSpawn;
         PlayerController.OnPlayerDespawn += HandlePlayerDespawn;
     }

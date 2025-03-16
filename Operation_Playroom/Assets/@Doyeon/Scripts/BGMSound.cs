@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -6,9 +7,12 @@ public class BGMSound : MonoBehaviour
 {
     public static BGMSound instance;
 
-    public AudioClip backgroundMusic;
     public AudioMixer audioMixer;
     private AudioSource audioSource;
+
+    public AudioClip[] mainSceneClip; // 3개의 오디오 클립을 담을 배열
+    public AudioClip gameSceneClip;
+    private int currentClipIndex = 0; // 현재 재생 중인 클립 인덱스
 
     private string[] scenesMusic = { "LoadingScene", "MainScene", "LobbyScene" };
 
@@ -27,9 +31,11 @@ public class BGMSound : MonoBehaviour
         
         audioSource.outputAudioMixerGroup = audioMixer.FindMatchingGroups("BGM")[0];
         
-        audioSource.clip = backgroundMusic;
+        //audioSource.clip = backgroundMusic;
         audioSource.loop = true;
-        
+
+        StartCoroutine(PlayAudioLoop());
+
         CheckScenePlayMusic();
     }
 
@@ -42,6 +48,20 @@ public class BGMSound : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+
+    IEnumerator PlayAudioLoop()
+    {
+        while (true)
+        {
+            audioSource.clip = mainSceneClip[currentClipIndex];
+            audioSource.Play();
+
+            yield return new WaitForSeconds(audioSource.clip.length);
+
+            currentClipIndex = (currentClipIndex + 1) % mainSceneClip.Length;
+        }
+    }
+
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         CheckScenePlayMusic();

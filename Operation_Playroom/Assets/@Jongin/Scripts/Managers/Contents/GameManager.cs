@@ -1,8 +1,10 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using TMPro;
 using Unity.Cinemachine;
 using Unity.Netcode;
+using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 using UnityEngine.UI;
 using static Define;
@@ -21,10 +23,20 @@ public class GameManager : NetworkBehaviour
     public Image circleImage;
     public GameObject winPanel;
     public GameObject losePanel;
+    public GameObject drawPanel;
+
     public GameObject[] doors;
     public GameObject[] roleImages;
+    public GameObject[] playDataPanelResultImages;
 
     public CinemachineCamera[] kingCams;
+
+    public GameObject resultPlayDataPanel;
+    public Transform bluePlayDataUIParent;
+    public GameObject bluePlayDataUIPrefab;
+    public Transform redPlayDataUIParent;
+    public GameObject redPlayDataUIPrefab;
+
     EGameState gameState;
 
     Sequence textSequence;
@@ -33,6 +45,8 @@ public class GameManager : NetworkBehaviour
 
     PlayerRespawnManager respawnManager;
     OccupyManager occupyManager;
+
+    public PlayData myPlayData;
 
     private void Awake()
     {
@@ -66,12 +80,14 @@ public class GameManager : NetworkBehaviour
         {
             ActiveRoleInfoImage();
             myTeam = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameTeam;
-
-            circleImage.rectTransform.DOSizeDelta(new Vector2(2500, 2500), 1f);
+            myPlayData = new PlayData(ClientSingleton.Instance.UserData.userName,
+               ClientSingleton.Instance.UserData.userGamePreferences.gameRole,
+               ClientSingleton.Instance.UserData.userGamePreferences.gameTeam);
+            circleImage.rectTransform.DOSizeDelta(new Vector2(5000, 5000), 3f);
             remainTime.OnValueChanged -= OnChangeTimer;
             remainTime.OnValueChanged += OnChangeTimer;
-        } 
-         
+        }
+
     }
 
     public override void OnNetworkDespawn()
@@ -84,18 +100,59 @@ public class GameManager : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            if (IsServer)
+
+            if (!IsServer)
             {
-                AllPlayerRespawn();
+                SendPlayDataToServer();
             }
         }
 
-
         if (gameState != EGameState.Play) return;
-
-
+    }
+    public void SendPlayDataToServer()
+    {
+        SubmitPlayDataServerRpc(myPlayData);
+    }
+    [ServerRpc(RequireOwnership = false)]
+    private void SubmitPlayDataServerRpc(PlayData data, ServerRpcParams rpcParams = default)
+    {
+        Debug.Log($"Received PlayData: {data.name}, Kills: {data.kill}, Deaths: {data.death}");
+        SubmitPlayDataClientRpc(data);
+    }
+    [ClientRpc]
+    private void SubmitPlayDataClientRpc(PlayData data, ClientRpcParams rpcParams = default)
+    {
+        MakePlayDataUI(data.team, data);
     }
 
+    void MakePlayDataUI(GameTeam team, PlayData data)
+    {
+        GameObject playDataUI;
+        Transform parent;
+        if (team == GameTeam.Blue)
+        {
+            parent = bluePlayDataUIParent;
+            playDataUI = Instantiate(bluePlayDataUIPrefab, bluePlayDataUIParent);
+        }
+        else
+        {
+            parent = redPlayDataUIParent;
+            playDataUI = Instantiate(redPlayDataUIPrefab, redPlayDataUIParent);
+        }
+
+        playDataUI.transform.Find("Name").GetComponent<TMP_Text>().text = data.name;
+        playDataUI.transform.Find("Kill").GetComponent<TMP_Text>().text = data.kill.ToString();
+        playDataUI.transform.Find("Death").GetComponent<TMP_Text>().text = data.death.ToString();
+        playDataUI.transform.Find("Build").GetComponent<TMP_Text>().text = data.build.ToString();
+        playDataUI.transform.Find("Destroy").GetComponent<TMP_Text>().text = data.destroy.ToString();
+
+        int toIndex = (int)data.role;
+        if (parent.transform.childCount <= toIndex)
+        {
+            return;
+        }
+        playDataUI.transform.SetSiblingIndex(toIndex);
+    }
 
     private string GetFormattedTime(float time)
     {
@@ -143,13 +200,14 @@ public class GameManager : NetworkBehaviour
     public void ActiveRoleInfoImage()
     {
         int role = (int)ClientSingleton.Instance.UserData.userGamePreferences.gameRole;
+
         roleImages[role].SetActive(true);
     }
 
     [ClientRpc]
     public void DoorOpenClientRpc()
     {
-        for(int i = 0; i < doors.Length; i++)
+        for (int i = 0; i < doors.Length; i++)
         {
             doors[i].SetActive(false);
         }
@@ -166,7 +224,6 @@ public class GameManager : NetworkBehaviour
 
             if (players[i].gameObject.GetComponent<KingTest>() != null)
             {
-                Debug.Log(players[i]);
                 KingTest king = players[i].gameObject.GetComponent<KingTest>();
                 StartCoroutine(SoldierSpawnDelay(king));
             }
@@ -202,6 +259,7 @@ public class GameManager : NetworkBehaviour
         {
             kingCams[team].Priority = 10;
             Time.timeScale = 0.5f;
+            SendPlayDataToServer();
         })
         .AppendInterval(3f)
         .AppendCallback(() =>
@@ -223,6 +281,19 @@ public class GameManager : NetworkBehaviour
             }
         })
         .AppendInterval(3f)
+        .AppendCallback(() =>
+        {
+            if (team == 0)
+            {
+                playDataPanelResultImages[0].SetActive(true);
+            }
+            else
+            {
+                playDataPanelResultImages[1].SetActive(true);
+            }
+            resultPlayDataPanel.SetActive(true);
+        })
+        .AppendInterval(5f)
         .AppendCallback(() =>
         {
             circleImage.rectTransform.DOSizeDelta(new Vector2(0, 0), 1f);
@@ -248,18 +319,40 @@ public class GameManager : NetworkBehaviour
             int redPoint = occupyManager.redTeamOccupyCount.Value;
             int bluePoint = occupyManager.blueTeamOccupyCount.Value;
 
-            int winner = redPoint > bluePoint ? 1 : 0;
-
-            if (myTeam == winner)
+            if (redPoint == bluePoint)
             {
-                winPanel.SetActive(true);
+                drawPanel.SetActive(true);
+                playDataPanelResultImages[2].SetActive(true);
             }
             else
             {
-                losePanel.SetActive(true);
+                int winner = redPoint > bluePoint ? 1 : 0;
+
+                if (myTeam == winner)
+                {
+                    winPanel.SetActive(true);
+                }
+                else
+                {
+                    losePanel.SetActive(true);
+                }
+                if (winner == 0)
+                {
+                    playDataPanelResultImages[0].SetActive(true);
+                }
+                else
+                {
+                    playDataPanelResultImages[1].SetActive(true);
+                }
             }
         })
         .AppendInterval(3f)
+        .AppendCallback(() =>
+        {
+            resultPlayDataPanel.SetActive(true);
+        })
+        .AppendInterval(5f)
+
         .AppendCallback(() =>
         {
             circleImage.rectTransform.DOSizeDelta(new Vector2(0, 0), 1f);
@@ -276,5 +369,40 @@ public class GameManager : NetworkBehaviour
     {
         notiText.text = text;
         textSequence.Restart();
+    }
+}
+
+[Serializable]
+public struct PlayData : INetworkSerializable
+{
+    public string name;
+    public GameRole role;
+    public GameTeam team;
+    public int kill;
+    public int death;
+    public int build;
+    public int destroy;
+
+    public PlayData(string name, GameRole role, GameTeam team)
+    {
+        this.name = name;
+        this.role = role;
+        this.team = team;
+        this.kill = 0;
+        this.death = 0;
+        this.build = 0;
+        this.destroy = 0;
+        this.role = role;
+    }
+
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref name);
+        serializer.SerializeValue(ref role);
+        serializer.SerializeValue(ref team);
+        serializer.SerializeValue(ref kill);
+        serializer.SerializeValue(ref death);
+        serializer.SerializeValue(ref build);
+        serializer.SerializeValue(ref destroy);
     }
 }
