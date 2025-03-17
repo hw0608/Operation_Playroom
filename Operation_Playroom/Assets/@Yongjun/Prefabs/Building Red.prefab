@@ -133,6 +133,7 @@ MonoBehaviour:
     m_InternalValue: 0
   buildingData: {fileID: 11400000, guid: 2240b267c512f574d8a4edd7fb6ca780, type: 2}
   soundData: {fileID: 11400000, guid: 043c4ab7f798cd9418b36e6e960dcf61, type: 2}
+  isDestruction: 0
   audioSource: {fileID: 5211418994306083772}
   buildingOwner: 0
 --- !u!65 &9138538393873395376
@@ -201,7 +202,7 @@ AudioSource:
   m_GameObject: {fileID: 6421879673209478227}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -4840992377751955649, guid: 0bba5580c03d9a6408f2a51e04907118, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
