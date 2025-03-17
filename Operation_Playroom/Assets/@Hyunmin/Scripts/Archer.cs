@@ -10,6 +10,8 @@ public class Archer : Character
     [SerializeField] GameObject arrowObject;
     [SerializeField] public int damage;
 
+    //public NetworkVariable<bool> isAiming = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
     bool isAiming;
     float xRotation = 0;
     float mouseSensitivity = 100;
@@ -29,6 +31,41 @@ public class Archer : Character
         StartCoroutine(ShootAndReloadRoutine());
         PlaySFXServerRpc(2, 0.5f);
 
+    }
+
+    public override void TakeDamage()
+    {
+        base.TakeDamage();
+
+        ResetAimmingClientRpc();
+    }
+
+    [ClientRpc]
+    void ResetAimmingClientRpc()
+    {
+        if (isHoldingItem) return;
+        holdItemAble = true;
+
+        aimCanvas.SetActive(false);
+
+        SetAvatarLayerWeight(0);
+
+        aimCamera.Priority = -10;
+
+        transform.rotation = lastAimRotation;
+        currentRotation = lastAimRotation;
+
+        isAiming = false;
+    }
+
+    IEnumerator RezoomRoutine()
+    {
+        yield return new WaitForSeconds(2);
+        Debug.Log("Re Zoom");
+
+        networkAnimator.Animator.ResetTrigger("Damage");
+        SetAvatarLayerWeight(1);
+        SetTriggerAnimation("Aim");
     }
 
     // 이동 메서드

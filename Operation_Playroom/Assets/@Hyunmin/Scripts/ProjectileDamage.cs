@@ -29,6 +29,11 @@ public class ProjectileDamage : MonoBehaviour
         // 같은 팀 타격 시 리턴
         if (other.TryGetComponent<Character>(out Character character))
         {
+            if (character.team.Value == -1)
+            {
+                Debug.Log("Unknown Team");
+                return;
+            }
             if (ownerTeam == character.team.Value)
             {
                 Debug.Log("Team Kill");
