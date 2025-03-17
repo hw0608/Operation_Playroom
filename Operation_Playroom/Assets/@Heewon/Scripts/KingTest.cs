@@ -281,7 +281,7 @@ public class KingTest : Character
 
     public void CommandSoldierToAdvance()
     {
-        PlaySFXServerRpc(2, 0.5f);
+        PlaySFXServerRpc(2, 0.75f);
         foreach (SoldierTest soldier in soldiers)
         {
             if (soldier == null) continue;
@@ -318,7 +318,7 @@ public class KingTest : Character
         Debug.Log("HandleSoldierSpawn");
         if (newValue > previousValue && initialSoldiersCount + newValue > CountAllSoldiers())
         {
-            PlaySFXServerRpc(5);
+            PlaySFXServerRpc(5, 0.75f);
             SpawnSoldier();
         }
     }
