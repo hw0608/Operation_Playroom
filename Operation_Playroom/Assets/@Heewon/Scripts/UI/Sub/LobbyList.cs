@@ -88,6 +88,7 @@ public class LobbyList : MonoBehaviour
     {
         if (isJoining) return;
         isJoining = true;
+        bool joinSuccess = false;
         Lobby joiningLobby;
 
         try
@@ -115,7 +116,7 @@ public class LobbyList : MonoBehaviour
             joiningProgressPanel.SetActive(true);
 
             string joinCode = joiningLobby.Data["JoinCode"].Value;
-            await ClientSingleton.Instance.StartClientAsync(joinCode);
+            joinSuccess = await ClientSingleton.Instance.StartClientAsync(joinCode);
         }
         catch (LobbyServiceException e)
         {
@@ -144,6 +145,19 @@ public class LobbyList : MonoBehaviour
                 Debug.LogException(e);
             }
         }
+
+        if (!joinSuccess)
+        {
+            joiningProgressPanel.SetActive(false);
+            MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
+            if (popup != null)
+            {
+                popup.SetText("존재하지 않는 방입니다.");
+                popup.Show();
+                RefreshList();
+            }
+        }
+
         isJoining = false;
     }
 
