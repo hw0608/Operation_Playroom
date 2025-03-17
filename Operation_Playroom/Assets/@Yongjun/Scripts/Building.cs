@@ -60,7 +60,7 @@ public class Building : NetworkBehaviour
             if (IsServer)
             {
                 StartCoroutine(PlayDamageEffect());
-                PlaySFXClientRpc(Random.Range(4, 9), 0.5f);
+                PlaySFXClientRpc(Random.Range(4, 9));
             }
         }
         UpdateBuildingMesh(newVal);
@@ -96,7 +96,7 @@ public class Building : NetworkBehaviour
             buildEffect.transform.localPosition = Vector3.zero;
         }
 
-        PlaySFXClientRpc(Random.Range(0, 3), 0.25f);
+        PlaySFXClientRpc(Random.Range(0, 3));
 
         while (elapsedTime < duration)
         {
@@ -133,7 +133,7 @@ public class Building : NetworkBehaviour
             transform.localPosition = new Vector3(0, -25f, 0);
         }
 
-        PlaySFXClientRpc(3, 0.5f);
+        PlaySFXClientRpc(3);
     }
 
     IEnumerator DelayPushEffect(GameObject effect, float time)
