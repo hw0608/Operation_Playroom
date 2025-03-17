@@ -109,6 +109,13 @@ public class LobbyRoom : NetworkBehaviour
                 break;
             }
         }
+
+        for (int i = 0; i < players.Count; i++)
+        {
+            var updatedPlayer = players[i];
+            updatedPlayer.team = i % 2;
+            players[i] = updatedPlayer;
+        }
     }
 
     [ServerRpc]
