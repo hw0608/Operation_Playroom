@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Collections;
-using Unity.Entities.UniversalDelegates;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using UnityEngine;

@@ -27,6 +27,7 @@ public class SoldierTest : Character
     bool isResetting;
 
     Coroutine attackRoutine;
+    Coroutine putDownRoutine;
 
     public NetworkVariable<State> CurrentState
     {
@@ -225,7 +226,8 @@ public class SoldierTest : Character
     {
         if (hasArrived)
         {
-            DeliverItemToOccupy();
+            if (putDownRoutine != null) { return; }
+            putDownRoutine = StartCoroutine(DeliverItemToOccupy());
         }
         //else
         //{
@@ -243,17 +245,26 @@ public class SoldierTest : Character
         agent.SetDestination(occupy.transform.position);
     }
     // 점령지에 놓기
-    void DeliverItemToOccupy()
+    IEnumerator DeliverItemToOccupy()
     {
-        if (target == null)
+        if (target == null || myItem == null)
         {
             ResetState();
-            return;
+            yield break;
         }
 
+        yield return StartCoroutine(RotateToTarget());
+
+        while (agent.pathPending || agent.velocity.magnitude > 0.01f)
+        {
+            yield return null;
+        }
+        
         myItem.GetComponent<ResourceData>().isMarked = false;
-        PutDownItem();
+        myItem.transform.position = target.transform.position;
+        //PutDownItem();
         ResetState();
+        putDownRoutine = null;
     }
 
     public void TryPickupItem(GameObject item)
@@ -382,6 +393,7 @@ public class SoldierTest : Character
         float timer = 2f;
         while (timer > 0)
         {
+            
             if (target == null)
             {
                 yield break;
@@ -392,6 +404,13 @@ public class SoldierTest : Character
 
             Vector2 dir = targetPos - forward;
             float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+            float angleDifference = Mathf.DeltaAngle(transform.eulerAngles.y, targetAngle);
+
+            if (angleDifference < 2f)
+            {
+                yield break;
+            }
 
             float smoothAngle = Mathf.LerpAngle(transform.eulerAngles.y, targetAngle, Time.deltaTime * 5f);
             transform.eulerAngles = Vector3.up * smoothAngle;
@@ -544,6 +563,7 @@ public class SoldierTest : Character
         float smoothAngle = Mathf.LerpAngle(transform.eulerAngles.y, targetAngle, Time.deltaTime * 5f);
         transform.eulerAngles = Vector3.up * smoothAngle;
     }
+
     void PutDownItem(Health health = null)
     {
         if (myItem == null) return;
