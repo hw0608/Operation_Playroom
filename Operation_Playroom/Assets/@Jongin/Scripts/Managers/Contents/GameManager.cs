@@ -144,7 +144,7 @@ public class GameManager : NetworkBehaviour
             playDataUI = Instantiate(redPlayDataUIPrefab, redPlayDataUIParent);
         }
 
-        playDataUI.transform.Find("Name").GetComponent<TMP_Text>().text = data.name;
+        playDataUI.transform.Find("Name").GetComponent<TMP_Text>().text = data.name.Split('#')[0];
         playDataUI.transform.Find("Kill").GetComponent<TMP_Text>().text = data.kill.ToString();
         playDataUI.transform.Find("Death").GetComponent<TMP_Text>().text = data.death.ToString();
         playDataUI.transform.Find("Build").GetComponent<TMP_Text>().text = data.build.ToString();
@@ -313,11 +313,11 @@ public class GameManager : NetworkBehaviour
         {
             if (team == 0)
             {
-                playDataPanelResultImages[0].SetActive(true);
+                playDataPanelResultImages[1].SetActive(true);
             }
             else
             {
-                playDataPanelResultImages[1].SetActive(true);
+                playDataPanelResultImages[0].SetActive(true);
             }
             resultPlayDataPanel.SetActive(true);
         })

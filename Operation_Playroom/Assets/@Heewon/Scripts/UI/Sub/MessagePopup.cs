@@ -34,7 +34,7 @@ public class MessagePopup : MonoBehaviour
 
     public void Close()
     {
-        if (!isAnimating) { return; }
+        if (isAnimating) { return; }
         isAnimating = true;
 
         messageArea.alpha = 1f;
