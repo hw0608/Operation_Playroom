@@ -27,6 +27,7 @@ public class Archer : Character
     {
         // 화살 발사
         StartCoroutine(ShootAndReloadRoutine());
+        PlaySFXServerRpc(2, 0.5f);
 
     }
 

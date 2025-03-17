@@ -38,6 +38,7 @@ public class Swordman : Character
             if (attackAble)
             {
                 Attack();
+
             }
         }
         // ащ╠Б
@@ -77,6 +78,7 @@ public class Swordman : Character
         yield return new WaitForSeconds(0.4f);
 
         EnableHitboxServerRpc(true);
+        PlaySFXServerRpc(5, 0.25f);
 
         yield return new WaitForSeconds(0.5f);
 

@@ -56,6 +56,7 @@ public class WeaponDamage : NetworkBehaviour
                     isCollision = true;
 
                     building.TakeDamageServerRpc(damage, ownerClientId);
+                    GetComponentInParent<Character>().SwordSound();
 
                     NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
                     noise.AddNoiseGage(2);
@@ -68,6 +69,7 @@ public class WeaponDamage : NetworkBehaviour
             if (other.TryGetComponent<Health>(out Health health))
             {
                 isCollision = true;
+                GetComponentInParent<Character>().SwordSound();
 
                 if (health.IsServer)
                 {

@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using Unity.Netcode.Components;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Character : NetworkBehaviour, ICharacter
@@ -15,10 +16,13 @@ public abstract class Character : NetworkBehaviour, ICharacter
     [SerializeField] Material[] damageMaterials;
     [SerializeField] Renderer[] playerRenderers;
     [SerializeField] GameObject[] Icons;
+    [SerializeField] SoundScriptableObject soundData;
+
 
     public NetworkVariable<int> team = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     float detectItemRange = 0.2f;
+    AudioSource audioSource;
     Coroutine damageRoutine;
 
     protected bool attackAble;
@@ -31,17 +35,16 @@ public abstract class Character : NetworkBehaviour, ICharacter
     protected Quaternion currentRotation;
     protected Health health;
 
-
     public virtual void Start()
     {
 
     }
-
     public override void OnNetworkSpawn()
     {
         animator = GetComponent<Animator>();
         networkAnimator = GetComponent<NetworkAnimator>();
         health = GetComponent<Health>();
+        audioSource = GetComponent<AudioSource>();
 
         attackAble = true;
         holdItemAble = true;
@@ -122,6 +125,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     IEnumerator DamageRoutine()
     {
         SetAvatarLayerWeightClientRpc(1);
+        PlaySFXClientRpc(Random.Range(0, 2), 0.5f); // 피격 효과음 재생
         SetTriggerAnimationClientRpc("Damage");
 
         ApplyDamageMaterialClientRpc(team.Value);
@@ -242,6 +246,7 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public void Die()
     {
         DropClientRpc();
+        PlaySFXClientRpc(3, 0.75f);
         SetTriggerAnimation("Die");
     }
 
@@ -309,9 +314,12 @@ public abstract class Character : NetworkBehaviour, ICharacter
         // 아이템 오브젝트 위치시킴
         targetItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, OwnerClientId, true, team.Value);
         targetItem.GetComponent<ResourceData>().lastHoldClientId = OwnerClientId;
+
         // 줍는 애니메이션
         SetAvatarLayerWeight(1);
         SetTriggerAnimation("Holding");
+
+        PlaySFXServerRpc(4, 0.5f);
     }
 
     // 아이템을 내려놓는 메서드
@@ -330,6 +338,31 @@ public abstract class Character : NetworkBehaviour, ICharacter
         // 애니메이션 해제
         SetAvatarLayerWeight(0);
         SetTriggerAnimation("Idle");
+
+        PlaySFXServerRpc(4, 0.5f);
+    }
+
+    public void SwordSound()
+    {
+        PlaySFXServerRpc(2, 0.5f);
+    }
+
+    [ServerRpc]
+    protected void PlaySFXServerRpc(int index, float volume = 1)
+    {
+        PlaySFXClientRpc(index, volume);
+    }
+
+    [ClientRpc]
+    protected void PlaySFXClientRpc(int index, float volume = 1)
+    {
+        Debug.Assert(audioSource != null, $"{gameObject}: AudioSource is null");
+        Debug.Assert(index >= 0 && index < soundData.soundClips.Length, $"{gameObject}: AudioClip is invalid");
+
+        AudioClip clip = soundData.soundClips[index];
+        Debug.Assert(clip != null, $"{gameObject}: AudioClip is not assigned");
+        audioSource.volume = volume;
+        audioSource.PlayOneShot(clip);
     }
 
     [ServerRpc]
@@ -347,20 +380,6 @@ public abstract class Character : NetworkBehaviour, ICharacter
     public void InitializeAnimator()
     {
         networkAnimator.Animator.Rebind();
-    }
-
-    // 애니메이션 Trigger 메서드
-    [ServerRpc(RequireOwnership = false)]
-    public void SetTriggerAnimationserverRpc(string name)
-    {
-        networkAnimator.SetTrigger(name);
-    }
-
-    // 애니메이션 상체 웨이트 메서드
-    [ServerRpc(RequireOwnership = false)]
-    public void SetAvatarLayerWeightserverRpc(int value)
-    {
-        networkAnimator.Animator.SetLayerWeight(1, value);
     }
 
     protected void SetAvatarLayerWeight(int value)
