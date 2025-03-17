@@ -277,6 +277,8 @@ public class SoldierTest : Character
         SetTriggerAnimation("Holding");
         agent.stoppingDistance = 0.2f;
         agent.SetDestination(GetFormationPosition());
+
+        PlaySFXServerRpc(4, 0.5f);
     }
 
     #endregion
@@ -546,6 +548,7 @@ public class SoldierTest : Character
     {
         if (myItem == null) return;
 
+        PlaySFXServerRpc(4, 0.5f);
         myItem.GetComponent<ResourceData>().isMarked = false;
         myItem.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, OwnerClientId, false, team.Value);
         myItem = null;
