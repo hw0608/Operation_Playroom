@@ -70,7 +70,7 @@ public class NoiseCheckManager : NetworkBehaviour
 
         if (totalNoise.Value >= 0 && totalNoise.Value < 5)
         {
-            change = 0; // 변화 없음
+            change = 2f * Time.deltaTime; // 초당 1 증가
         }
         else if (totalNoise.Value >= 10 && totalNoise.Value < 20)
         {
@@ -82,7 +82,7 @@ public class NoiseCheckManager : NetworkBehaviour
         }
 
         sleep.Value = Mathf.Clamp(sleep.Value + change, 0, 100); // sleep 값 범위 제한
-        totalNoise.Value = Mathf.Max(0, totalNoise.Value - (2f * Time.deltaTime)); // 점진적으로 noise 감소
+        totalNoise.Value = Mathf.Max(0, totalNoise.Value - (3f * Time.deltaTime)); // 점진적으로 noise 감소
         if(sleep.Value <= 0)
         {
             timmyDirection.timmyState = ETimmyState.Move;

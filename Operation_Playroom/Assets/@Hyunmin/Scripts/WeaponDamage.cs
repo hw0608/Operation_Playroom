@@ -11,7 +11,7 @@ public class WeaponDamage : NetworkBehaviour
     int ownerTeam;
 
     bool isCollision;
-    NoiseCheckManager noise;
+
     public void SetOwner(ulong ownerClientId, int ownerTeam, int damage)
     {
         this.ownerClientId = ownerClientId;
@@ -63,9 +63,8 @@ public class WeaponDamage : NetworkBehaviour
                     building.TakeDamageServerRpc(damage, ownerClientId);
                     GetComponentInParent<Character>().SwordSound();
 
-                    if(noise ==null)
-                        noise = FindFirstObjectByType<NoiseCheckManager>();
-                    noise.AddNoiseGage(1);
+                    NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+                    noise.AddNoiseGage(2);
 
                     StartCoroutine(ResetCollisionRoutine());
                 }
@@ -87,9 +86,8 @@ public class WeaponDamage : NetworkBehaviour
                     Debug.Log("else Damage");
                     health.TakeDamageServerRpc(damage, ownerClientId);
                 }
-                if (noise == null)
-                    noise = FindFirstObjectByType<NoiseCheckManager>();
-                noise.AddNoiseGage(1);
+                NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+                noise.AddNoiseGage(2);
 
                 StartCoroutine(ResetCollisionRoutine());
             }

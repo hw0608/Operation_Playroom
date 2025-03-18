@@ -8,7 +8,6 @@ public class ProjectileDamage : MonoBehaviour
     ulong ownerClientId;
     int ownerTeam;
 
-    NoiseCheckManager noise;
     public void SetOwner(ulong ownerClientId, int ownerTeam, int damage)
     {
         this.ownerClientId = ownerClientId;
@@ -51,9 +50,8 @@ public class ProjectileDamage : MonoBehaviour
             {
                 building.TakeDamage(damage, ownerClientId);
 
-                if (noise == null)
-                    noise = FindFirstObjectByType<NoiseCheckManager>();
-                noise.SubmitNoiseTo(1);
+                NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+                noise.SubmitNoiseTo(2);
 
             }
             Managers.Pool.Push(gameObject);
@@ -64,9 +62,8 @@ public class ProjectileDamage : MonoBehaviour
         {
             health.TakeDamage(damage, ownerClientId);
 
-            if (noise == null)
-                noise = FindFirstObjectByType<NoiseCheckManager>();
-            noise.SubmitNoiseTo(1);
+            NoiseCheckManager noise = FindFirstObjectByType<NoiseCheckManager>();
+            noise.SubmitNoiseTo(2);
 
             Managers.Pool.Push(gameObject);
         }

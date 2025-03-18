@@ -26,7 +26,6 @@ public class Building : NetworkBehaviour
     // °Ç¹° ÆÀ
     public Owner buildingOwner;
 
-    NoiseCheckManager noise;
     void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
@@ -90,9 +89,6 @@ public class Building : NetworkBehaviour
         Vector3 startPos = new Vector3(0, -25f, 0);
         Vector3 targetPos = new Vector3(0f, 5f, 0f);
 
-        if (noise == null)
-            noise = FindFirstObjectByType<NoiseCheckManager>();
-        noise.SubmitNoiseTo(3);
         GameObject buildEffect = Managers.Resource.Instantiate("BuildingSmokeEffect", null, true);
         ActiveNetworkObjectClientRpc(buildEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
         if (buildEffect.GetComponent<NetworkObject>().TrySetParent(transform.parent, true))
@@ -129,9 +125,6 @@ public class Building : NetworkBehaviour
     {
         GetComponentInParent<OccupySystem>().ResetOwnership();
         GameObject destructionEffect = Managers.Resource.Instantiate("BuildingDestroyEffect", null, true);
-        if (noise == null)
-            noise = FindFirstObjectByType<NoiseCheckManager>();
-        noise.SubmitNoiseTo(3);
         ActiveNetworkObjectClientRpc(destructionEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
         if (destructionEffect.GetComponent<NetworkObject>().TrySetParent(transform.parent, true))
         {
