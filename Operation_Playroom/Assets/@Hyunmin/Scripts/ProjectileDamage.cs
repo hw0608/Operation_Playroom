@@ -53,7 +53,7 @@ public class ProjectileDamage : MonoBehaviour
 
                 if (noise == null)
                     noise = FindFirstObjectByType<NoiseCheckManager>();
-                noise.SubmitNoiseTo(2);
+                noise.SubmitNoiseTo(1);
 
             }
             Managers.Pool.Push(gameObject);
@@ -66,7 +66,7 @@ public class ProjectileDamage : MonoBehaviour
 
             if (noise == null)
                 noise = FindFirstObjectByType<NoiseCheckManager>();
-            noise.SubmitNoiseTo(2);
+            noise.SubmitNoiseTo(1);
 
             Managers.Pool.Push(gameObject);
         }
