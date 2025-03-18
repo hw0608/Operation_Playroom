@@ -32,12 +32,10 @@ public class ProjectileDamage : MonoBehaviour
         {
             if (character.team.Value == -1)
             {
-                Debug.Log("Unknown Team");
                 return;
             }
             if (ownerTeam == character.team.Value)
             {
-                Debug.Log("Team Kill");
                 return;
             }
         }

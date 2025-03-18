@@ -60,8 +60,6 @@ public class PlayerRespawnManager : NetworkBehaviour
         GameTeam gameTeam = (GameTeam)character.team.Value;
         Vector3 spawnPosition = SpawnPoint.GetSpawnPoint(gameTeam, GameRole.King);
 
-        Debug.Log($"Respawn Position: {spawnPosition}, Team: {gameTeam}");
-
         // 서버에서 위치 설정
         player.transform.position = spawnPosition;
 
@@ -113,8 +111,6 @@ public class PlayerRespawnManager : NetworkBehaviour
                     timerText.gameObject.SetActive(false);
                 }
             }
-
-            Debug.Log($"Client {player.OwnerClientId} respawned at {position}");
         }
     }
 
@@ -124,11 +120,6 @@ public class PlayerRespawnManager : NetworkBehaviour
         yield return new WaitForSeconds(5f);
 
         PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-
-        if (players.Length <= 0)
-        {
-            Debug.Log("None Players");
-        }
 
         foreach (PlayerController player in players)
         {
@@ -146,12 +137,6 @@ public class PlayerRespawnManager : NetworkBehaviour
     {
         // 플레이어 찾기
         PlayerController[] players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-
-        if (players.Length <= 0)
-        {
-            Debug.Log("None Players");
-        }
-
         Vector3 spawnPosition = Vector3.zero;
 
         // 캐릭터 별 위치로 이동

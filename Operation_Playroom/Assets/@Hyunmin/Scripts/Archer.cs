@@ -58,16 +58,6 @@ public class Archer : Character
         isAiming = false;
     }
 
-    IEnumerator RezoomRoutine()
-    {
-        yield return new WaitForSeconds(2);
-        Debug.Log("Re Zoom");
-
-        networkAnimator.Animator.ResetTrigger("Damage");
-        SetAvatarLayerWeight(1);
-        SetTriggerAnimation("Aim");
-    }
-
     // 이동 메서드
     public override void Move(CinemachineCamera cam, Rigidbody rb)
     {

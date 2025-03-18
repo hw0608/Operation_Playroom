@@ -40,12 +40,10 @@ public class WeaponDamage : NetworkBehaviour
             {
                 if (character.team.Value == -1)
                 {
-                    Debug.Log("Unknown Team");
                     return;
                 }
                 if (ownerTeam == character.team.Value)
                 {
-                    Debug.Log("Team Kill");
                     return;
                 }
             }
@@ -79,12 +77,10 @@ public class WeaponDamage : NetworkBehaviour
 
                 if (health.IsServer)
                 {
-                    Debug.Log("IsServer Damage");
                     health.TakeDamage(damage, ownerClientId);
                 }
                 else
                 {
-                    Debug.Log("else Damage");
                     health.TakeDamageServerRpc(damage, ownerClientId);
                 }
                 if (noise == null)
