@@ -117,28 +117,20 @@ public class KingTest : Character
         {
             if (FindNearestEnemy() != null)
             {
-                Debug.Log("CommandSoldierToAdvance");
                 CommandSoldierToAdvance();
             }
             else if (FindNearestOccupy() != null && HasSoldierWithItem())
             {
-                Debug.Log("CommandSoldierToDeliverItem");
                 CommandSoldierToDeliverItem();
             }
             else if (FindNearestItem() != null)
             {
-                Debug.Log("CommandSoldierToPickupItem");
                 CommandSoldierToPickupItem();
             }
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
             CommandSoldierToReturn();
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            CommandSoldierToWarp();
         }
     }
 
@@ -315,7 +307,6 @@ public class KingTest : Character
 
     void HandleSoldierSpawn(int previousValue, int newValue)
     {
-        Debug.Log("HandleSoldierSpawn");
         if (newValue > previousValue && initialSoldiersCount + newValue > CountAllSoldiers())
         {
             PlaySFXServerRpc(5, 0.75f);
@@ -327,11 +318,7 @@ public class KingTest : Character
     {
         int occupyCount = team.Value == 0 ? occupyManager.blueTeamOccupyCount.Value : occupyManager.redTeamOccupyCount.Value;
 
-        Debug.Log($"{occupyCount} , {CountAliveSoldiers()}");
-
         if (occupyCount + initialSoldiersCount <= CountAliveSoldiers()) { return; }
-
-        Debug.Log("SpawnSoldier.");
 
         int idx = GetAvailableSoldierIndex();
         soldierSpawner.index = idx == -1 ? soldiers.Count : idx;
@@ -391,13 +378,11 @@ public class KingTest : Character
     public override void Attack()
     {
         // 검 휘두르며 공격
-        Debug.Log("Sword Attack");
     }
     // 상호작용 메서드
     public override void Interaction()
     {
         // 줍기
-        Debug.Log("King Interaction");
     }
 
 
