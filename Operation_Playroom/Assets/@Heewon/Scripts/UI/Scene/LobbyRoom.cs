@@ -141,8 +141,6 @@ public class LobbyRoom : NetworkBehaviour
             readyButton.SetActive(false);
             startButton.SetActive(true);
         }
-
-        Debug.Log("Player Count: " + players.Count);
     }
 
     int AssignTeam()
@@ -224,14 +222,12 @@ public class LobbyRoom : NetworkBehaviour
     }
     public void ToggleReady()
     {
-        Debug.Log($"ToggleReady() called by client {NetworkManager.Singleton.LocalClientId}");
         ToggleReadyServerRpc(NetworkManager.Singleton.LocalClientId);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void ToggleReadyServerRpc(ulong clientId)
     {
-        Debug.Log($"ToggleReadyServerRpc() called by client {NetworkManager.Singleton.LocalClientId}");
         for (int i = 0; i < players.Count; i++)
         {
             if (players[i].clientId == clientId)
@@ -241,11 +237,6 @@ public class LobbyRoom : NetworkBehaviour
                 players[i] = updatedPlayer;
                 break;
             }
-        }
-
-        foreach (var player in players)
-        {
-            Debug.Log($"{player.clientId} : {player.isReady}");
         }
     }
 
@@ -346,7 +337,6 @@ public class LobbyRoom : NetworkBehaviour
     [ClientRpc]
     void SwitchToDSClientRpc(string ip, ushort port)
     {
-        Debug.Log($"{NetworkManager.Singleton.LocalClientId} called SwitchToDSClientRpc.");
         Debug.Log($"ip : {ip} , port : {port}");
 
         foreach (var player in players)

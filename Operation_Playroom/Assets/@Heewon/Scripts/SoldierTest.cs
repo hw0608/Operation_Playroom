@@ -269,7 +269,6 @@ public class SoldierTest : Character
 
     public void TryPickupItem(GameObject item)
     {
-        Debug.Log("TryPickupItem");
         currentState.Value = State.MoveToward;
         target = item;
         target.GetComponent<ResourceData>().isMarked = true;
@@ -279,7 +278,6 @@ public class SoldierTest : Character
 
     void PickupItem()
     {
-        Debug.Log("PickupItem");
         currentState.Value = State.Following;
         isHoldingItem = true;
         target.GetComponent<ResourceData>().SetParentOwnerserverRpc(GetComponent<NetworkObject>().NetworkObjectId, OwnerClientId, true, team.Value);
@@ -342,7 +340,6 @@ public class SoldierTest : Character
 
     public void TryAttack(GameObject enemy)
     {
-        Debug.Log("TryAttack");
         currentState.Value = State.MoveToward;
         target = enemy;
         agent.stoppingDistance = 0.1f;
@@ -444,7 +441,6 @@ public class SoldierTest : Character
     {
         if (target != null && target.TryGetComponent(out ResourceData data))
         {
-            Debug.Log("Mark «ÿ¡¶");
             data.isMarked = false;
         }
         if (myItem != null)
@@ -475,9 +471,6 @@ public class SoldierTest : Character
 
     public void HandleOnDie(Health health)
     {
-        Debug.Log("HandleOnDie");
-
-
         StartCoroutine(DespawnSoldierRoutine());
     }
 
@@ -523,7 +516,6 @@ public class SoldierTest : Character
             }
             else
             {
-                Debug.Log("PutDownItem");
                 PutDownItem();
             }
         }

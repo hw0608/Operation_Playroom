@@ -10,9 +10,9 @@ public class GameSceneManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            Disconnect();
-        }
+        //if (Input.GetKeyDown(KeyCode.F1))
+        //{
+        //    Disconnect();
+        //}
     }
 }

@@ -43,46 +43,6 @@ public class TitleSceneUI : MonoBehaviour
         //Managers.Resource.LoadAllAsync<GameObject>("default", null);
     }
 
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                ChangeGameRole(GameRole.Archer);
-            }
-            else if (Input.GetKeyDown(KeyCode.S))
-            {
-                ChangeGameRole(GameRole.Swordman);
-            }
-            else if (Input.GetKeyDown(KeyCode.K))
-            {
-                ChangeGameRole(GameRole.King);
-            }
-
-            if (Input.GetKeyDown(KeyCode.B))
-            {
-                ChangeGameTeam(GameTeam.Blue);
-            }
-            else if (Input.GetKeyDown(KeyCode.R))
-            {
-                ChangeGameTeam(GameTeam.Red);
-            }
-        }
-    }
-
-    void ChangeGameTeam(GameTeam team)
-    {
-        ClientSingleton.Instance.UserData.userGamePreferences.gameTeam = team;
-        Debug.Log($"Current GameTeam : {team}");
-    }
-
-    void ChangeGameRole(GameRole role)
-    {
-        ClientSingleton.Instance.UserData.userGamePreferences.gameRole = role;
-        Debug.Log($"Current GameRole : {role}");
-    }
-
     public async void OnStartButtonPressed()
     {
         string name = await AuthenticationService.Instance.GetPlayerNameAsync();
