@@ -152,7 +152,7 @@ public class LobbyRoom : NetworkBehaviour
             else red++;
         }
 
-        return (blue == red) ? UnityEngine.Random.Range(0, 1) : blue < red ? 0 : 1;
+        return (blue == red) ? UnityEngine.Random.Range(0, 2) : blue < red ? 0 : 1;
     }
 
     public void OnBackButtonPressedAsync()
@@ -299,22 +299,24 @@ public class LobbyRoom : NetworkBehaviour
     {
         List<UserData> userDatas = new List<UserData>();
 
-        List<int> availableRoles = Enum.GetValues(typeof(GameRole)).Cast<int>().ToList();
-        availableRoles.Remove((int)GameRole.None);
-        availableRoles = availableRoles.OrderBy(x => UnityEngine.Random.value).ToList();
+        List<int> blue = new List<int>();
+        List<int> red = new List<int>();
 
-        int idx = 0;
-
-        for (int i = 0; i < players.Count; i++)
+        for (int i=0;i < players.Count;i++)
         {
-            var updatedPlayer = players[i];
-            updatedPlayer.role = availableRoles[idx];
-            players[i] = updatedPlayer;
-
-            idx = (idx + 1) % 3;
+            if (players[i].team == 0) blue.Add(i);
+            else if (players[i].team == 1) red.Add(i);
         }
 
+        AssignRoles(blue);
+        AssignRoles(red);
+
         userDatas = ServerSingleton.Instance.authIdToUserData.Values.ToList();
+
+        if (userDatas.Count < 6)
+        {
+            return MatchmakerPollingResult.MatchAssignmentError;
+        }
 
         MatchmakingResult result = await matchmaker.Matchmake(userDatas);
 
@@ -332,6 +334,23 @@ public class LobbyRoom : NetworkBehaviour
         }
 
         return result.result;
+    }
+
+    void AssignRoles(List<int> team)
+    {
+        List<int> availableRoles = Enum.GetValues(typeof(GameRole)).Cast<int>().ToList();
+        availableRoles.Remove((int)GameRole.None);
+        availableRoles = availableRoles.OrderBy(x => UnityEngine.Random.value).ToList();
+
+        int idx = 0;
+
+        for (int i = 0; i < team.Count; i++)
+        {
+            var updatedPlayer = players[team[i]];
+            updatedPlayer.role = availableRoles[idx];
+            idx = (idx + 1) % 3;
+            players[team[i]] = updatedPlayer;
+        }
     }
 
     [ClientRpc]

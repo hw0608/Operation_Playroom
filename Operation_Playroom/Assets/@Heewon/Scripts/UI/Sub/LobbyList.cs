@@ -149,13 +149,7 @@ public class LobbyList : MonoBehaviour
         if (!joinSuccess)
         {
             joiningProgressPanel.SetActive(false);
-            MessagePopup popup = Managers.Resource.Instantiate("MessagePopup").GetComponent<MessagePopup>();
-            if (popup != null)
-            {
-                popup.SetText("존재하지 않는 방입니다.");
-                popup.Show();
-                RefreshList();
-            }
+            RefreshList();
         }
 
         isJoining = false;
