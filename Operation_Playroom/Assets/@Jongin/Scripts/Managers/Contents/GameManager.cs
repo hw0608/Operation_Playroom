@@ -96,36 +96,12 @@ public class GameManager : NetworkBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            //if (IsServer)
-            //{
-            //    userPlayDatas = new Dictionary<ulong, PlayData>();
-            //    foreach(var clientIdToUserData in ServerSingleton.Instance.clientIdToUserData)
-            //    {
-            //        ulong clientId = clientIdToUserData.Key;
-            //        UserData userData = clientIdToUserData.Value;
-            //        PlayData playData = new PlayData(userData.userName, userData.userGamePreferences.gameRole, userData.userGamePreferences.gameTeam);
-            //        userPlayDatas.Add(clientId, playData);
-            //    }
-            //}
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            //foreach(var playData in userPlayDatas.Values)
-            //{
-            //    SubmitPlayDataClientRpc(playData);
-            //}
-        }
-
         if (gameState != EGameState.Play) return;
     }
 
     [ClientRpc]
     private void SubmitPlayDataClientRpc(PlayData data, ClientRpcParams rpcParams = default)
     {
-        Debug.Log(data.name);
-        Debug.Log(data.kill);
         MakePlayDataUI(data.team, data);
     }
 

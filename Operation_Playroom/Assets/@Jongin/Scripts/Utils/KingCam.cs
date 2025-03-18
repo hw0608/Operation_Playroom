@@ -18,7 +18,6 @@ public class KingCam : MonoBehaviour
         {
             yield return new WaitForSeconds(0.5f);
             KingTest[] kings = FindObjectsByType<KingTest>(FindObjectsSortMode.None);
-            Debug.Log(kings.Length);
             for (int i = 0; i < kings.Length; i++)
             {
                 if (kings[i].team.Value == (int)team)
