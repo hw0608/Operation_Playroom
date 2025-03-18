@@ -6,6 +6,7 @@ using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Authentication;
+using Unity.Services.Matchmaker.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -145,7 +146,7 @@ public class LobbyRoom : NetworkBehaviour
 
     int AssignTeam()
     {
-        if (IsHost) { return 0; }
+        if (players.Count == 0) { return 0; }
 
         int blue = 0, red = 0;
 
@@ -181,6 +182,7 @@ public class LobbyRoom : NetworkBehaviour
             {
                 playerNameTexts[i].texts[j].text = "Waiting...";
                 playerReadyImages[i].images[j].gameObject.SetActive(false);
+                playerBGImages[i].images[j].sprite = BGImagesByTeam[2];
             }
         }
 
