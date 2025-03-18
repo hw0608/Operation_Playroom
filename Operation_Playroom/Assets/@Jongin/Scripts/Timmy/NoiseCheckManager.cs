@@ -67,7 +67,7 @@ public class NoiseCheckManager : NetworkBehaviour
 
         if (totalNoise.Value >= 5 && totalNoise.Value < 20)
         {
-            change = -0.5f; // 변화 없음
+            change = -0.5f * Time.deltaTime; // 변화 없음
         }
         else if (totalNoise.Value >= 20 && totalNoise.Value <= 30)
         {
