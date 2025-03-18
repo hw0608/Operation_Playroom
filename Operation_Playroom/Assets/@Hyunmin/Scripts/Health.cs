@@ -136,7 +136,6 @@ public class Health : NetworkBehaviour
         if(hpBar != null)
         {
             hpBar.fillAmount = (float)currentHealth.Value / maxHealth;
-            Debug.Log(hpBar.fillAmount);
         }
     }
 
