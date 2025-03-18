@@ -145,6 +145,8 @@ public class LobbyRoom : NetworkBehaviour
 
     int AssignTeam()
     {
+        if (IsHost) { return 0; }
+
         int blue = 0, red = 0;
 
         foreach (var player in players) {
@@ -329,6 +331,11 @@ public class LobbyRoom : NetworkBehaviour
                 return MatchmakerPollingResult.MatchAssignmentError;
             }
 
+            if (players.Count < 6)
+            { 
+                return MatchmakerPollingResult.MatchAssignmentError;
+            }
+
             // 클라이언트 시작
             SwitchToDSClientRpc(result.ip, (ushort)result.port);
         }
@@ -357,6 +364,10 @@ public class LobbyRoom : NetworkBehaviour
     void SwitchToDSClientRpc(string ip, ushort port)
     {
         Debug.Log($"ip : {ip} , port : {port}");
+
+        if (players.Count < 6) { 
+            return; 
+        }
 
         foreach (var player in players)
         {
