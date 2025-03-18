@@ -39,7 +39,6 @@ public class Health : NetworkBehaviour
 
     public void InitializeHealth() 
     {
-        Debug.Log("Restore");
         if (IsServer)
         {
             currentHealth.Value = maxHealth;
