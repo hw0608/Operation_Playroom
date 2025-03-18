@@ -298,7 +298,7 @@ public class GameManager : NetworkBehaviour
             }
             resultPlayDataPanel.SetActive(true);
         })
-        .AppendInterval(5f)
+        .AppendInterval(10f)
         .AppendCallback(() =>
         {
             circleImage.rectTransform.DOSizeDelta(new Vector2(0, 0), 1f);
@@ -358,7 +358,7 @@ public class GameManager : NetworkBehaviour
         {
             resultPlayDataPanel.SetActive(true);
         })
-        .AppendInterval(5f)
+        .AppendInterval(10f)
 
         .AppendCallback(() =>
         {
