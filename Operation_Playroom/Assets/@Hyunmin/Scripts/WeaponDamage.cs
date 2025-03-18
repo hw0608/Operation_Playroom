@@ -65,7 +65,7 @@ public class WeaponDamage : NetworkBehaviour
 
                     if(noise ==null)
                         noise = FindFirstObjectByType<NoiseCheckManager>();
-                    noise.AddNoiseGage(1);
+                    noise.AddNoiseGage(2);
 
                     StartCoroutine(ResetCollisionRoutine());
                 }
@@ -89,7 +89,7 @@ public class WeaponDamage : NetworkBehaviour
                 }
                 if (noise == null)
                     noise = FindFirstObjectByType<NoiseCheckManager>();
-                noise.AddNoiseGage(1);
+                noise.AddNoiseGage(2);
 
                 StartCoroutine(ResetCollisionRoutine());
             }
