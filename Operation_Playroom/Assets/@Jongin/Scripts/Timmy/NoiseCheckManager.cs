@@ -68,17 +68,17 @@ public class NoiseCheckManager : NetworkBehaviour
         
         float change = 0f;
 
-        if (totalNoise.Value >= 0 && totalNoise.Value < 5)
+        if (totalNoise.Value >= 5 && totalNoise.Value < 10)
         {
-            change = 0; // 변화 없음
+            change = -0.5f; // 변화 없음
         }
         else if (totalNoise.Value >= 10 && totalNoise.Value < 20)
         {
-            change = -0.5f * Time.deltaTime; // 초당 1 감소
+            change = -1f * Time.deltaTime; // 초당 1 감소
         }
         else if (totalNoise.Value >= 20 && totalNoise.Value <= 30)
         {
-            change = -1f * Time.deltaTime; // 초당 2 감소
+            change = -1.5f * Time.deltaTime; // 초당 2 감소
         }
 
         sleep.Value = Mathf.Clamp(sleep.Value + change, 0, 100); // sleep 값 범위 제한

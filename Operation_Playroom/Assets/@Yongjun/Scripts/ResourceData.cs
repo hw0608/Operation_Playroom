@@ -71,7 +71,7 @@ public class ResourceData : NetworkBehaviour
             isHolding.Value = false;
             NetworkObject go = NetworkManager.Singleton.SpawnManager.SpawnedObjects[targetId];
             GetComponent<NetworkObject>().TrySetParent(originalTransform);
-            Vector3 newPos = go.transform.position + go.transform.forward * 0.4f;
+            Vector3 newPos = go.transform.position + go.transform.forward * 0.2f;
             transform.position = new Vector3(newPos.x, 0, newPos.z); // 앞에 내려놓기
             isColliderEnable.Value = true;
         }
