@@ -266,6 +266,8 @@ public class LobbyRoom : NetworkBehaviour
     {
         if (!IsServer) return;
 
+        if (players.Count < 6) { return; }
+
         if (CheckAllPlayersReady())
         {
             MatchmakeAsync(HandleMatchmakeAssignment);
