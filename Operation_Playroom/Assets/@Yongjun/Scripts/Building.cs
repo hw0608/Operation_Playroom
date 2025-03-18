@@ -92,7 +92,7 @@ public class Building : NetworkBehaviour
 
         if (noise == null)
             noise = FindFirstObjectByType<NoiseCheckManager>();
-        noise.SubmitNoiseTo(3);
+        noise.SubmitNoiseTo(2);
         GameObject buildEffect = Managers.Resource.Instantiate("BuildingSmokeEffect", null, true);
         ActiveNetworkObjectClientRpc(buildEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
         if (buildEffect.GetComponent<NetworkObject>().TrySetParent(transform.parent, true))
@@ -131,7 +131,7 @@ public class Building : NetworkBehaviour
         GameObject destructionEffect = Managers.Resource.Instantiate("BuildingDestroyEffect", null, true);
         if (noise == null)
             noise = FindFirstObjectByType<NoiseCheckManager>();
-        noise.SubmitNoiseTo(3);
+        noise.SubmitNoiseTo(2);
         ActiveNetworkObjectClientRpc(destructionEffect.GetComponent<NetworkObject>().NetworkObjectId, true);
         if (destructionEffect.GetComponent<NetworkObject>().TrySetParent(transform.parent, true))
         {
