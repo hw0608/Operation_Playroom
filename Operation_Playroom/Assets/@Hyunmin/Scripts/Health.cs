@@ -3,6 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class Health : NetworkBehaviour
 {
@@ -99,15 +100,19 @@ public class Health : NetworkBehaviour
         if (currentHealth.Value == 0)
         {
             isDead = true;
-            //add death score
-            PlayData deadPlayerData = GameManager.Instance.userPlayDatas[OwnerClientId];
-            deadPlayerData.death++;
-            GameManager.Instance.userPlayDatas[OwnerClientId] = deadPlayerData;
 
-            //add kill score
-            PlayData killPlayerData = GameManager.Instance.userPlayDatas[clientId];
-            killPlayerData.kill++;
-            GameManager.Instance.userPlayDatas[clientId] = killPlayerData;
+            if (GetComponent<SoldierTest>() == null)
+            {
+                //add death score
+                PlayData deadPlayerData = GameManager.Instance.userPlayDatas[OwnerClientId];
+                deadPlayerData.death++;
+                GameManager.Instance.userPlayDatas[OwnerClientId] = deadPlayerData;
+
+                //add kill score
+                PlayData killPlayerData = GameManager.Instance.userPlayDatas[clientId];
+                killPlayerData.kill++;
+                GameManager.Instance.userPlayDatas[clientId] = killPlayerData;
+            }
 
             character.Die();
 
