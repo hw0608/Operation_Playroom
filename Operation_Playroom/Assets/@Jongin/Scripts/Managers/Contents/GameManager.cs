@@ -227,6 +227,7 @@ public class GameManager : NetworkBehaviour
     {
         for (int i = 0; i < doors.Length; i++)
         {
+            doors[i].GetComponent<Collider>().enabled = false;  
             doors[i].SetActive(false);
         }
     }
