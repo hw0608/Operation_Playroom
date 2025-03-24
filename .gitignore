@@ -73,11 +73,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 
-./CCDBuildData/
-./Packages/
-./ProjectSettings/
+./Operation_Playroom/CCDBuildData/
+./Operation_Playroom/Packages/
+./Operation_Playroom/ProjectSettings/
 
-./Assets/*
-!./Assets/@Heewon
-
-
+./Operation_Playroom/Assets/*
+!./Operation_Playroom/Assets/@Heewon
