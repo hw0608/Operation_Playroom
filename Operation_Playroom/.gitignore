@@ -78,4 +78,4 @@ crashlytics-build.properties
 ./ProjectSettings/
 
 ./Assets/*
-!./Assets/@Heewon
+!./Assets/@Heewon/Scripts
