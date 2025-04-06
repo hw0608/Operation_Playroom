@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -9,10 +9,17 @@ public class KingTest : Character
     [SerializeField] int damage;
     [SerializeField] int initialSoldiersCount;
     [SerializeField] float itemDetectRange;
-    [SerializeField] float occupyDetectRange; // Á¡·ÉÁö °¨Áö ¹üÀ§
+    [SerializeField] float occupyDetectRange; // ì ë ¹ì§€ ê°ì§€ ë²”ìœ„
     [SerializeField] float enemyDetectRange;
     [SerializeField] float soldierSpacing = 0.2f;
     [SerializeField] int maxSoldierCount = 10;
+
+    Dictionary<string, ICommand> commands = new Dictionary<string, ICommand>
+    {
+        {"Attack" , new AttackCommand() },
+        {"Pickup" , new PickupItemCommand() },
+        {"Deliver" , new DeliverItemCommand() }
+    };
 
     Spawner soldierSpawner;
     public List<SoldierTest> soldiers = new List<SoldierTest>();
@@ -26,7 +33,6 @@ public class KingTest : Character
     {
         base.Start();
         InitializeCharacterStat();
-
     }
 
     Vector3 GetFormationOffset(int index, int[] colOffsets)
@@ -109,34 +115,51 @@ public class KingTest : Character
 
     #endregion
 
-    // Å° ÀÔ·Â ¸Ş¼­µå
+    // í‚¤ ì…ë ¥ ë©”ì„œë“œ
     public override void HandleInput()
     {
-        // E ¹öÆ° ´©¸£¸é
+        // E ë²„íŠ¼ ëˆ„ë¥´ë©´
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (FindNearestEnemy() != null)
-            {
-                CommandSoldierToAdvance();
-            }
-            else if (FindNearestOccupy() != null && HasSoldierWithItem())
-            {
-                CommandSoldierToDeliverItem();
-            }
-            else if (FindNearestItem() != null)
-            {
-                CommandSoldierToPickupItem();
-            }
+            ExecuteContextCommand();
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
             CommandSoldierToReturn();
         }
+
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            soldierSpawner.SpawnSoldiers(1);
+        }
+    }
+
+    void ExecuteContextCommand()
+    {
+        foreach (SoldierTest soldier in soldiers.Where(s => s != null))
+        {
+            GameObject enemy = FindNearestEnemy();
+            GameObject occupy = FindNearestOccupy();
+            GameObject item = FindNearestItem();
+
+            if (enemy != null && commands["Attack"].CanExecute(soldier, enemy))
+            {
+                commands["Attack"].Execute(soldier, enemy);
+            }
+            else if (occupy != null && commands["Deliver"].CanExecute(soldier, occupy))
+            {
+                commands["Deliver"].Execute(soldier, occupy);
+            }
+            else if (item != null && commands["Pickup"].CanExecute(soldier, item))
+            {
+                commands["Pickup"].Execute(soldier, item);
+            }
+        }
     }
 
     #region Find
 
-    // ±ÙÃ³ Á¡·ÉÁö Ã£±â
+    // ê·¼ì²˜ ì ë ¹ì§€ ì°¾ê¸°
     GameObject FindNearestOccupy()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, occupyDetectRange, LayerMask.GetMask("Occupy"));
@@ -164,12 +187,12 @@ public class KingTest : Character
     }
 
 
-    // ÀûÀ» Ã£´Â ¸Ş¼­µå (¹üÀ§ ³» °¡Àå °¡±î¿î Àû)
+    // ì ì„ ì°¾ëŠ” ë©”ì„œë“œ (ë²”ìœ„ ë‚´ ê°€ì¥ ê°€ê¹Œìš´ ì )
     private GameObject FindNearestEnemy()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.4f, enemyDetectRange, LayerMask.GetMask("Enemy")); // ³ªÁß¿¡ Äİ¶óÀÌ´õ·Î ¼öÁ¤
-        GameObject nearestEnemy = null; // °¡Àå °¡±î¿î ÀûÀ» ÀúÀåÇÒ ¿ÀºêÁ§Æ®
-        float minDistance = Mathf.Infinity; // °¡Àå °¡±î¿î °Å¸®¸¦ ÀúÀå. ÃÊ±â °ªÀº ¹«ÇÑ´ë·Î ¼³Á¤
+        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.4f, enemyDetectRange, LayerMask.GetMask("Enemy")); // ë‚˜ì¤‘ì— ì½œë¼ì´ë”ë¡œ ìˆ˜ì •
+        GameObject nearestEnemy = null; // ê°€ì¥ ê°€ê¹Œìš´ ì ì„ ì €ì¥í•  ì˜¤ë¸Œì íŠ¸
+        float minDistance = Mathf.Infinity; // ê°€ì¥ ê°€ê¹Œìš´ ê±°ë¦¬ë¥¼ ì €ì¥. ì´ˆê¸° ê°’ì€ ë¬´í•œëŒ€ë¡œ ì„¤ì •
 
         Owner myTeam = team.Value == 0 ? Owner.Blue : Owner.Red;
 
@@ -188,47 +211,47 @@ public class KingTest : Character
                     return Enumerable.Empty<GameObject>();
                 }).ToArray();
 
-        foreach (GameObject enemy in enemies) // Å½»öµÈ ¸ğµç Àû ¼øÈ¸
+        foreach (GameObject enemy in enemies) // íƒìƒ‰ëœ ëª¨ë“  ì  ìˆœíšŒ
         {
-            float distance = Vector3.Distance(transform.position, enemy.transform.position); // ¿Õ, °¢ ÀûÀÇ °Å¸®¸¦ °è»ê
-            if (distance < minDistance) // ÇöÀç °è»êµÈ °Å¸®°¡ ÃÖ¼Ò °Å¸®º¸´Ù ÀÛÀ¸¸é 
+            float distance = Vector3.Distance(transform.position, enemy.transform.position); // ì™•, ê° ì ì˜ ê±°ë¦¬ë¥¼ ê³„ì‚°
+            if (distance < minDistance) // í˜„ì¬ ê³„ì‚°ëœ ê±°ë¦¬ê°€ ìµœì†Œ ê±°ë¦¬ë³´ë‹¤ ì‘ìœ¼ë©´ 
             {
-                minDistance = distance; // ÃÖ¼Ò°Å¸®¸¦ ÇöÀç °è»ê °Å¸®·Î ¾÷µ¥ÀÌÆ®
-                nearestEnemy = enemy; // °¡±î¿î Àû ¿ÀºêÁ§Æ®¿¡ ÇöÀç ÀûÀÇ ¿ÀºêÁ§Æ®·Î ÀúÀå 
+                minDistance = distance; // ìµœì†Œê±°ë¦¬ë¥¼ í˜„ì¬ ê³„ì‚° ê±°ë¦¬ë¡œ ì—…ë°ì´íŠ¸
+                nearestEnemy = enemy; // ê°€ê¹Œìš´ ì  ì˜¤ë¸Œì íŠ¸ì— í˜„ì¬ ì ì˜ ì˜¤ë¸Œì íŠ¸ë¡œ ì €ì¥ 
             }
         }
-        return nearestEnemy; // °¡±î¿î Àû ¿ÀºêÁ§Æ®¸¦ ¹İÈ¯
+        return nearestEnemy; // ê°€ê¹Œìš´ ì  ì˜¤ë¸Œì íŠ¸ë¥¼ ë°˜í™˜
     }
 
-    // ÀÚ¿ø Ã£±â (¹üÀ§ ³» °¡Àå °¡±î¿î ÀÚ¿ø)
+    // ìì› ì°¾ê¸° (ë²”ìœ„ ë‚´ ê°€ì¥ ê°€ê¹Œìš´ ìì›)
     private GameObject FindNearestItem()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, itemDetectRange, LayerMask.GetMask("Item")); // (¿ÕÀÇ À§Ä¡¸¦ Áß½ÉÀ¸·Î, ~)
-        GameObject nearestItem = null; // °¡±î¿î ÀÚ¿øÀ» ÀúÀåÇÒ ¿ÀºêÁ§Æ®
-        float minDistance = Mathf.Infinity; // °¡Àå °¡±î¿î °Å¸®¸¦ ÀúÀå, ÃÊ±â°ªÀº ¹«ÇÑ´ë 
+        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * 0.5f, itemDetectRange, LayerMask.GetMask("Item")); // (ì™•ì˜ ìœ„ì¹˜ë¥¼ ì¤‘ì‹¬ìœ¼ë¡œ, ~)
+        GameObject nearestItem = null; // ê°€ê¹Œìš´ ìì›ì„ ì €ì¥í•  ì˜¤ë¸Œì íŠ¸
+        float minDistance = Mathf.Infinity; // ê°€ì¥ ê°€ê¹Œìš´ ê±°ë¦¬ë¥¼ ì €ì¥, ì´ˆê¸°ê°’ì€ ë¬´í•œëŒ€ 
 
         var items = colliders
             .Select(col => col.GetComponent<ResourceData>())
             .Where(r => r != null && !r.isMarked && !r.isHolding.Value)
             .ToArray();
 
-        foreach (ResourceData resource in items) // Å½»öµÈ ¸ğµç ÀÚ¿ø ¼øÈ¸ÇÏ¸ç
+        foreach (ResourceData resource in items) // íƒìƒ‰ëœ ëª¨ë“  ìì› ìˆœíšŒí•˜ë©°
         {
-            float distance = Vector3.Distance(transform.position, resource.transform.position); // ¿Õ°ú °¢ ÀÚ¿ø°£ °Å¸® °è»ê
-            if (distance < minDistance) // ÇöÀç °è»êµÈ°Å¸®°¡ ÃÖ¼Ò °Å¸®º¸´Ù ÀÛÀ¸¸é
+            float distance = Vector3.Distance(transform.position, resource.transform.position); // ì™•ê³¼ ê° ìì›ê°„ ê±°ë¦¬ ê³„ì‚°
+            if (distance < minDistance) // í˜„ì¬ ê³„ì‚°ëœê±°ë¦¬ê°€ ìµœì†Œ ê±°ë¦¬ë³´ë‹¤ ì‘ìœ¼ë©´
             {
-                minDistance = distance; // ÃÖ¼Ò°Å¸®¿¡ ÇöÀç °è»ê °Å¸® ¾÷µ¥ÀÌÆ®
-                nearestItem = resource.gameObject; // ¿ÀºêÁ§Æ®¿¡ ÀÚ¿ø ÀúÀå
+                minDistance = distance; // ìµœì†Œê±°ë¦¬ì— í˜„ì¬ ê³„ì‚° ê±°ë¦¬ ì—…ë°ì´íŠ¸
+                nearestItem = resource.gameObject; // ì˜¤ë¸Œì íŠ¸ì— ìì› ì €ì¥
             }
         }
-        return nearestItem; // ÃÖ¼Ò°Å¸®ÀÚ¿ø ¿ÀºêÁ§Æ® ¹İÈ¯
+        return nearestItem; // ìµœì†Œê±°ë¦¬ìì› ì˜¤ë¸Œì íŠ¸ ë°˜í™˜
     }
 
     #endregion
 
     #region Command
 
-    // Á¡·ÉÁö·Î ÀÚ¿ø ³Ö±â
+    // ì ë ¹ì§€ë¡œ ìì› ë„£ê¸°
     void CommandSoldierToDeliverItem()
     {
         foreach (SoldierTest soldier in soldiers)
@@ -247,7 +270,7 @@ public class KingTest : Character
         foreach (SoldierTest soldier in soldiers)
         {
             if (soldier == null) continue;
-            // ¸í·ÉÀ» ¹ŞÀ» ¼ö ¾ø´Â »óÅÂ
+            // ëª…ë ¹ì„ ë°›ì„ ìˆ˜ ì—†ëŠ” ìƒíƒœ
             if (!soldier.CanReceiveCommand)
             {
                 continue;
@@ -374,15 +397,15 @@ public class KingTest : Character
         return soldiers.Any(soldier => soldier != null && soldier.HasItem);
     }
 
-    // °ø°İ ¸Ş¼­µå
+    // ê³µê²© ë©”ì„œë“œ
     public override void Attack()
     {
-        // °Ë ÈÖµÎ¸£¸ç °ø°İ
+        // ê²€ íœ˜ë‘ë¥´ë©° ê³µê²©
     }
-    // »óÈ£ÀÛ¿ë ¸Ş¼­µå
+    // ìƒí˜¸ì‘ìš© ë©”ì„œë“œ
     public override void Interaction()
     {
-        // Áİ±â
+        // ì¤ê¸°
     }
 
 
@@ -407,7 +430,7 @@ public class KingTest : Character
         }
         else
         {
-            Debug.LogError("King µ¥ÀÌÅÍ(ID: 201002)¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("King ë°ì´í„°(ID: 201002)ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         }
     }
 }
